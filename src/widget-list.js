@@ -1,9 +1,9 @@
 import {hot} from 'react-hot-loader'
 import React, {Component} from 'react'
-import {Link, Route} from 'react-router-dom'
 import RENDERERS from './myRenderers'
-import WidgetForm from './widget-form'
 import Octicon from 'react-component-octicons'
+import {fetchJsonData, apiPath} from './helpers'
+import WidgetForm from './widget-form'
 
 
 /**
@@ -13,36 +13,112 @@ import Octicon from 'react-component-octicons'
  *    fetchRoute: where to fetch widgets in list from
  */
 class WidgetList extends Component {
-  state = {widgetInstances: null}
+  state = {
+    editModeActive: false,
+    retrieveFormRoute: null,
+    submitFormRoute: null,
+    widgetInstances: null,
+  }
 
   componentDidMount() {
     /**
      * Fetch data on widget instances in list from fetchRoute
      */
-    fetch(this.props.fetchRoute)
-      .then(data => {
-        return data.json()
-      })
-      .then(jsonData => {
-        this.setState({widgetInstances: jsonData})
-      })
-      .catch(error => console.error(error))
+    fetchJsonData(apiPath('get_list', this.props.widgetListId), this.updateWidgetList)
   }
 
   componentDidUpdate(prevProps) {
     /**
      * Fetch new widgets when url changes
      */
-    if (prevProps.fetchRoute !== this.props.fetchRoute) {
-      this.componentDidMount()
+    if (prevProps.widgetListId !== this.props.widgetListId) {
+      fetchJsonData(apiPath('get_list', this.props.widgetListId), this.updateWidgetList)
     }
   }
 
-  onChange = (jsonData) => {
-    /**
-     * Update current widget instances on any edits to widget list
-     */
-    this.setState({widgetInstances: jsonData})
+  updateWidgetList = (data) => this.setState({widgetInstances: data})
+
+  editWidget = (widgetId) => {null}
+
+  toggleEditMode = () => this.setState({editModeActive: !this.state.editModeActive})
+
+  addWidget = () => this.setState({
+    retrieveFormRoute: apiPath('get_configurations'),
+    submitFormRoute: apiPath('create_widget', this.props.widgetListId),
+  })
+
+  renderWidgetList = () => {
+    let ListWrapper, listWrapperProps
+    if ('listWrapper' in this.props) {
+      ListWrapper = this.props.listWrapper
+      if ('listWrapperProps' in this.props) {
+        listWrapperProps = this.props.listWrapperProps
+      }
+    } else {
+      ListWrapper = DefaultListWrapper
+      listWrapperProps = {
+        addWidget: this.addWidget,
+        editModeActive: this.state.editModeActive,
+        toggleEditMode: this.toggleEditMode,
+      }
+    }
+
+    return (
+      <ListWrapper renderList={this.renderListBody}
+                   widgetListId={this.props.widgetListId}
+                   {...listWrapperProps}
+      />
+    )
+  }
+
+  renderListBody = () => {
+    return (
+      this.state.widgetInstances.map(widgetInstance => this.renderWidget(widgetInstance))
+    )
+  }
+
+  renderWidget = (widgetInstance) => {
+    let WidgetWrapper, widgetWrapperProps
+    if ('widgetWrapper' in this.props) {
+      WidgetWrapper = this.props.widgetWrapper
+      if ('widgetWrapperProps' in this.props) {
+        widgetWrapperProps = this.props.widgetWrapperProps
+      }
+    } else {
+      WidgetWrapper = DefaultWidgetWrapper
+      widgetWrapperProps = {
+        editWidget: this.editWidget,
+        widgetListId: this.props.widgetListId,
+      }
+    }
+    return (
+      <WidgetWrapper renderWidget={this.renderWidgetBody}
+                     widgetInstance={widgetInstance}
+                     {...widgetWrapperProps}
+      />
+    )
+  }
+
+  renderWidgetBody = (widgetInstance) => {
+    const Renderer = RENDERERS[widgetInstance.props.reactRenderer]
+    return (
+      <Renderer {...widgetInstance.props}/>
+    )
+  }
+
+  renderWidgetForm = () => {
+    if (this.state.retrieveFormRoute === null) {
+      return null
+    } else {
+      return (
+        <WidgetForm csrfToken={window.csrfToken}
+                    fetchRoute={this.state.retrieveFormRoute}
+                    onSubmit={this.updateWidgetList}
+                    submitUrl={this.state.submitFormRoute}
+                    widgetList={this.props.widgetListId}
+        />
+      )
+    }
   }
 
   render() {
@@ -53,152 +129,88 @@ class WidgetList extends Component {
       return (<p>Loading</p>)
     } else {
       return (
-        <div className={'widget-list container bg-secondary rounded'}>
-          <Route exact path='/list/:listId' render={({match}) => (
-            <Link className={'edit-widget-link btn btn-primary'}
-                  to={'/list/' + match.params.listId + '/edit'}>
-              Edit widget list
-            </Link>
-          )}/>
-          <Route path='/list/:listId/edit' render={({match}) => (
-            <Link className={'edit-widget-link btn btn-primary active'}
-                  to={'/list/' + match.params.listId}>
-              Finish editing
-            </Link>
-          )}/>
-          <Route exact path='/list/:listId/edit' render={({match}) => (
-            <Link className={'add-widget-link btn btn-success float-right'}
-                  to={'/list/' + match.params.listId + '/edit/add'}>
-              Add widget to list
-            </Link>
-          )}/>
-          <Route exact path='/list/:listId/edit/add' render={({match, history}) => (
-            <div className={'mt-3'}>
-              <WidgetForm {...this.props}
-                          csrfToken={window.csrfToken}
-                          editWidget={false}
-                          fetchRoute={this.props.configurationsUrl}
-                          formDidSubmit={jsonData => {
-                            this.onChange(jsonData)
-                            history.push('/list/' + match.params.listId + '/edit')
-                          }}
-                          submitUrl={this.props.apiUrl + 'widget/create'}
-                          widgetList={match.params.listId}/>
-            </div>
-          )}/>
-          <Route path='/list/:listId/edit/:widgetId([0-9]+)' render={({match, history}) => (
-            <div className={'mt-3'}>
-              <WidgetForm {...this.props}
-                          csrfToken={window.csrfToken}
-                          editWidget={true}
-                          fetchRoute={this.props.apiUrl + 'widget/' + match.params.widgetId}
-                          formDidSubmit={jsonData => {
-                            this.onChange(jsonData)
-                            history.push('/list/' + match.params.listId + '/edit')
-                          }}
-                          submitUrl={this.props.apiUrl + 'widget/' + match.params.widgetId + '/update'}
-                          widgetList={match.params.listId}
-                          widgetToEdit={match.params.widgetId}/>
-            </div>
-          )}/>
-
+        <div className={'widget-sidebar container bg-secondary rounded'}>
+          {this.renderWidgetForm()}
           <hr/>
-          <div className={'widgets'}>
-            {this.state.widgetInstances.map(
-              (widgetInstance) => <WidgetDisplay
-                deleteUrl={this.props.apiUrl + 'widget/' + widgetInstance.id + '/delete'}
-                first={widgetInstance.props.position === 0}
-                id={widgetInstance.id}
-                key={widgetInstance.id.toString()}
-                last={widgetInstance.props.position
-                  === this.state.widgetInstances.length - 1}
-                onChange={this.onChange}
-                repositionUrl={
-                  this.props.apiUrl + 'widget/' + widgetInstance.id + '/move'}
-                {...widgetInstance.props}/>
-            )}
-          </div>
+          {this.renderWidgetList()}
         </div>
       )
     }
   }
 }
 
-/**
- * WidgetDisplay is a single rendered widget
- *
- * Props:
- *    deleteUrl: api endpoint for widget delete
- *    first: true if widget is the first in the list
- *    id: unique widget id matching django object id
- *    key: unique key for react rendering
- *    last: true if widget is last in the list
- *    onChange: what to do after a successful widget edit
- *    repositionUrl: api endpoint for widget reposition
- */
-class WidgetDisplay extends Component {
-  deleteWidget = () => {
-    /**
-     * Make request to server to delete widget
-     */
-    fetch(this.props.deleteUrl)
-      .then(data => { return data.json() })
-      .then(this.props.onChange)
-      .catch((error) => { console.error(error) })
-  }
-
-  moveWidgetUp = () => {
-    /**
-     * Make request to server to move widget up
-     */
-    fetch(this.props.repositionUrl + '?position=' + (this.props.position - 1))
-      .then(data => { return data.json() })
-      .then(this.props.onChange)
-      .catch((error) => { console.error(error) })
-  }
-
-  moveWidgetDown = () => {
-    /**
-     * Make request to server to move widget down
-     */
-    fetch(this.props.repositionUrl + '?position=' + (this.props.position + 1))
-      .then(data => { return data.json() })
-      .then(this.props.onChange)
-      .catch((error) => { console.error(error) })
-  }
-
+class DefaultListWrapper extends Component {
   render() {
-    /**
-     * Render widget using reactRenderer specified on widget configuration or defaultRenderer along with edit button
-     * panel if editing is engaged
-     */
-    const Renderer = RENDERERS[this.props.reactRenderer]
     return (
-      <div className={'widget card mb-3 bg-light'} id={'widget-' + this.props.id}>
-        <Route path={'/list/:listId/edit'} render={({match}) =>
-          <div className={'edit-widget-bar btn-group card-header'}>
-            <button className={'btn btn-info col' + (this.props.first ? ' disabled' : '')}
-                    onClick={this.props.first ? null : this.moveWidgetUp} title={'Move widget up'}>
-              <Octicon name={'chevron-up'}/>
-            </button>
-            <button className={'btn btn-info col' + (this.props.last ? ' disabled' : '')}
-                    onClick={this.props.last ? null : this.moveWidgetDown} title={'Move widget down'}>
-              <Octicon name={'chevron-down'}/>
-            </button>
-            <Link className={'btn btn-info col'} title={'Edit widget'}
-                  to={'/list/' + match.params.listId + '/edit/' + this.props.id}>
-              <Octicon name={'pencil'}/>
-            </Link>
-            <button className={'btn btn-danger col'} onClick={this.deleteWidget} title={'Delete widget'}>
-              <Octicon name={'x'}/>
-            </button>
-          </div>
-        }/>
-        <Renderer {...this.props}/>
-        <br/>
+      <div>
+        <div className={'edit-widget-list-bar btn-group'} role={'group'}>
+          <button className={'btn btn-info' + (this.props.editModeActive ? ' active' : '') }
+                  onClick={this.props.toggleEditMode}>
+            <Octicon name={'pencil'}/>
+          </button>
+          {this.props.editModeActive ? null : (
+            <button className={'btn btn-info'} onClick={this.props.addWidget}>
+              <Octicon name={'plus'}/>
+            </button>)}
+        </div>
+        <hr/>
+        <div>
+          {this.props.renderList()}
+        </div>
       </div>
     )
   }
 }
 
-export default hot(module)(WidgetList)
+class DefaultWidgetWrapper extends Component {
+  state = {
+    first: this.props.widgetInstance.props.position === 0,
+    id: this.props.widgetInstance.id,
+    last: this.props.widgetInstance.props.position === this.props.listLength - 1,
+    position: this.props.widgetInstance.props.position,
+  }
+
+  deleteWidget = () => {
+    /**
+     * Make request to server to delete widget
+     */
+    fetchJsonData(apiPath('delete_widget', this.props.widgetListId, this.state.id), this.onChange)
+  }
+
+  moveWidget = (position) => {
+    /**
+     * Make request to server to move widget up
+     */
+    fetchJsonData(apiPath('move_widget', this.props.widgetListId, this.state.id, {position: position}), this.onChange)
+  }
+
+  render() {
+    return (
+      <div className={'widget card mb-3 bg-light'} id={'widget-' + this.state.id}>
+        <div className={'edit-widget-bar btn-group card-header'}>
+          <button className={'btn btn-info col' + (this.props.first ? ' disabled' : '')}
+                  onClick={() => this.state.first ? null : this.moveWidget(this.state.position - 1)}
+                  title={'Move widget up'}>
+            <Octicon name={'chevron-up'}/>
+          </button>
+          <button className={'btn btn-info col' + (this.props.last ? ' disabled' : '')}
+                  onClick={() => this.state.last ? null : this.moveWidget(this.state.position + 1)}
+                  title={'Move widget down'}>
+            <Octicon name={'chevron-down'}/>
+          </button>
+          <button className={'btn btn-info col'} onClick={() => this.props.editWidget(this.state.id)}
+                  title={'Update widget'}>
+            <Octicon name={'pencil'}/>
+          </button>
+          <button className={'btn btn-danger col'} onClick={() => this.deleteWidget(this.state.id)}
+                  title={'Delete widget'}>
+            <Octicon name={'x'}/>
+          </button>
+        </div>
+        {this.props.renderWidget(this.props.widgetInstance)}
+      </div>
+    )
+  }
+}
+
+export default WidgetList

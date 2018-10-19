@@ -4,6 +4,7 @@ import Select from 'react-select'
 import {Link} from 'react-router-dom'
 
 import {makeOptions} from './utils'
+import {fetchJsonData} from './helpers'
 
 
 /**
@@ -36,8 +37,8 @@ class WidgetForm extends Component {
       })
       .then(jsonData => {
         this.setState({
-          editWidget: jsonData.hasOwnProperty('widgetData'),
-          formData: jsonData.hasOwnProperty('widgetData') ? jsonData.widgetData
+          editWidget: 'widgetData' in jsonData,
+          formData: 'widgetData' in jsonData ? jsonData.widgetData
             : {
               widget_class: '',
               widget_list: this.props.widgetList,
@@ -66,19 +67,7 @@ class WidgetForm extends Component {
      * Submit widget configuration from this.state.formData to the server
      */
     event.preventDefault()
-    fetch(this.props.submitUrl, {
-      body: JSON.stringify(this.state.formData),
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': this.props.csrfToken,
-      },
-      method: 'POST',
-    })
-      .then(data => { return data.json() })
-      .then(jsonData => {
-        this.props.formDidSubmit(jsonData)
-      })
-      .catch((error) => { console.error(error) })
+    fetchJsonData(this.props.submitUrl, this.props.onSubmit, {body: JSON.stringify(this.state.formData)})
   }
 
   makeWidgetClassSelect = () => {
@@ -201,4 +190,4 @@ class WidgetForm extends Component {
   }
 }
 
-export default hot(module)(WidgetForm)
+export default WidgetForm

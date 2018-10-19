@@ -2,7 +2,7 @@
     position: relative;
 }
 
-#react .widget-home .widget-list {
+#react .widget-home .widget-sidebar {
     position: absolute;
     width: 400px;
     right: 0;

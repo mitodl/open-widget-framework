@@ -4,6 +4,8 @@ import {BrowserRouter as Router, Link, Route} from 'react-router-dom'
 import Octicon from 'react-component-octicons'
 import WidgetList from './widget-list'
 
+import {fetchJsonData, apiPath} from './helpers'
+
 /**
  * Home is the home page of the sample widget-framework app. It renders a list of widget lists and one specified
  * widget list
@@ -14,7 +16,6 @@ import WidgetList from './widget-list'
  */
 class Home extends Component {
   state = {
-    apiUrl: 'http://127.0.0.1:8000/api/v1/',
     widgetLists: null,
   }
 
@@ -22,38 +23,23 @@ class Home extends Component {
     /**
      * Fetch data on widget lists from fetchRoute
      */
-    fetch(this.state.apiUrl + 'lists')
-      .then(data => { return data.json() })
-      .then(jsonData => {
-        this.setState({widgetLists: jsonData.map(obj => obj.id)})
-      })
-      .catch(error => console.error(error))
+    fetchJsonData(apiPath('get_lists'), this.updateLists)
   }
+
+  updateLists = (data) => this.setState({widgetLists: data.map(obj => obj.id)})
 
   addList = () => {
     /**
      * Make request to create new widget list
      */
-    fetch(this.state.apiUrl + 'list/create')
-      .then(data => {
-        return data.json()
-      })
-      .then(jsonData => {
-        this.setState({widgetLists: jsonData.map(obj => obj.id)})
-      })
-      .catch(error => console.error(error))
+    fetchJsonData(apiPath('create_list'), this.updateLists)
   }
 
   deleteList = (listId) => {
     /**
      * Make request to delete widget list
      */
-    fetch(this.state.apiUrl + 'list/' + listId + '/delete')
-      .then(data => { return data.json() })
-      .then(jsonData => {
-        this.setState({widgetLists: jsonData.map(obj => obj.id)})
-      })
-      .catch(error => console.error(error))
+    fetchJsonData(apiPath('delete_list', listId), this.updateLists)
   }
 
   render() {
@@ -66,11 +52,8 @@ class Home extends Component {
       return (
         <Router>
           <div className={'widget-home'}>
-            <Route path='/list/:listId' render={({match}) => (
-              <WidgetList {...this.props}
-                          apiUrl={this.state.apiUrl + 'list/' + match.params.listId + '/'}
-                          configurationsUrl={this.state.apiUrl + 'configurations'}
-                          fetchRoute={this.state.apiUrl + 'list/' + match.params.listId}/>
+            <Route path='/list/:widgetListId' render={({match}) => (
+              <WidgetList widgetListId={match.params.widgetListId}/>
             )}/>
             <div className={'widget-list-navigator container'}>
               <Link className={'btn btn-link mt-3'} to='/'>Home</Link>
@@ -80,7 +63,7 @@ class Home extends Component {
               <ul className={'mt-3'}>
                 {this.state.widgetLists.map(
                   (widgetListId) => <li className={''} key={widgetListId}>
-                    <Link className={''} to={'/list/' + widgetListId}>Widget List {widgetListId}</Link>
+                    <Link to={'/list/' + widgetListId}>Widget List {widgetListId}</Link>
                     <span className={'btn text-danger'} onClick={() => this.deleteList(widgetListId)}>
                       <Octicon name={'x'}/>
                     </span>
