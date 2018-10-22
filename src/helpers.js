@@ -14,7 +14,7 @@ function fetchJsonData(url, resolve, request, reject) {
     if ('headers' in request === false) {
       request.headers = {
         'Content-Type': 'application/json',
-        'X-CSRFToken': window.csrfToken,
+        //'X-CSRFToken': window.csrfToken,
       }
     }
   }

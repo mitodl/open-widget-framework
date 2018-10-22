@@ -1,7 +1,8 @@
 {
-  "name": "widget-framework",
+  "name": "open-widget-framework",
   "version": "1.0.0",
-  "description": "Describe widget-framework here",
+  "description": "Describe open-widget-framework here",
+  "main": "index.js",
   "private": true,
   "scripts": {
     "build": "nwb build-react-app",

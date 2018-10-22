@@ -12,11 +12,25 @@ import WidgetForm from './widget-form'
  *    fetchRoute: where to fetch widgets in list from
  */
 class WidgetList extends Component {
-  state = {
-    editModeActive: false,
-    retrieveFormRoute: null,
-    submitFormRoute: null,
-    widgetInstances: null,
+  constructor(props) {
+    super(props)
+    this.state = {
+      editModeActive: false,
+      retrieveFormRoute: null,
+      submitFormRoute: null,
+      widgetInstances: null,
+    }
+    this.updateWidgetList = this.updateWidgetList.bind(this)
+    this.closeForm= this.closeForm.bind(this)
+    this.submitWidgetForm = this.submitWidgetForm.bind(this)
+    this.editWidget= this.editWidget.bind(this)
+    this.toggleEditMode = this.toggleEditMode.bind(this)
+    this.addWidget = this.addWidget.bind(this)
+    this.renderWidgetList = this.renderWidgetList.bind(this)
+    this.renderListBody= this.renderListBody.bind(this)
+    this.renderWidget = this.renderWidget.bind(this)
+    this.renderWidgetBody = this.renderWidgetBody.bind(this)
+    this.renderWidgetForm = this.renderWidgetForm.bind(this)
   }
 
   componentDidMount() {
@@ -36,19 +50,23 @@ class WidgetList extends Component {
     }
   }
 
-  updateWidgetList = (data) => this.setState({widgetInstances: data})
+  updateWidgetList(data) {
+    this.setState({widgetInstances: data})
+  }
 
-  closeForm = () => this.setState({
-    retrieveFormRoute: null,
-    submitFormRoute: null,
-  })
+  closeForm() {
+    this.setState({
+      retrieveFormRoute: null,
+      submitFormRoute: null,
+    })
+  }
 
-  submitWidgetForm = (data) => {
+  submitWidgetForm(data) {
     this.updateWidgetList(data)
     this.closeForm()
   }
 
-  editWidget = (widgetId) => {
+  editWidget(widgetId) {
     this.closeForm()
     this.setState({
       retrieveFormRoute: apiPath('get_widget', this.props.widgetListId, widgetId),
@@ -56,17 +74,19 @@ class WidgetList extends Component {
     })
   }
 
-  toggleEditMode = () => {
+  toggleEditMode() {
     this.setState({editModeActive: !this.state.editModeActive})
     this.closeForm()
   }
 
-  addWidget = () => this.setState({
-    retrieveFormRoute: apiPath('get_configurations'),
-    submitFormRoute: apiPath('create_widget', this.props.widgetListId),
-  })
+  addWidget() {
+    this.setState({
+      retrieveFormRoute: apiPath('get_configurations'),
+      submitFormRoute: apiPath('create_widget', this.props.widgetListId),
+    })
+  }
 
-  renderWidgetList = () => {
+  renderWidgetList() {
     let ListWrapper, listWrapperProps
     if ('listWrapper' in this.props) {
       ListWrapper = this.props.listWrapper
@@ -90,13 +110,13 @@ class WidgetList extends Component {
     )
   }
 
-  renderListBody = () => {
+  renderListBody() {
     return (
       this.state.widgetInstances.map(widgetInstance => this.renderWidget(widgetInstance))
     )
   }
 
-  renderWidget = (widgetInstance) => {
+  renderWidget(widgetInstance) {
     let WidgetWrapper, widgetWrapperProps
     if ('widgetWrapper' in this.props) {
       WidgetWrapper = this.props.widgetWrapper
@@ -122,14 +142,14 @@ class WidgetList extends Component {
     )
   }
 
-  renderWidgetBody = (widgetProps) => {
+  renderWidgetBody(widgetProps) {
     const Renderer = RENDERERS[widgetProps.reactRenderer]
     return (
       <Renderer {...widgetProps}/>
     )
   }
 
-  renderWidgetForm = () => {
+  renderWidgetForm() {
     if (this.state.retrieveFormRoute === null) {
       return null
     } else {
@@ -164,11 +184,13 @@ class WidgetList extends Component {
 }
 
 class DefaultListWrapper extends Component {
-  renderAddWidgetButton = () => (
-    <button className={'btn btn-info'} onClick={this.props.addWidget}>
-      <Octicon name={'plus'}/>
-    </button>
-  )
+  renderAddWidgetButton() {
+    return (
+      <button className={'btn btn-info'} onClick={this.props.addWidget}>
+        <Octicon name={'plus'}/>
+      </button>
+    )
+  }
   render() {
     return (
       <div>
@@ -189,14 +211,14 @@ class DefaultListWrapper extends Component {
 }
 
 class DefaultWidgetWrapper extends Component {
-  deleteWidget = () => {
+  deleteWidget() {
     /**
      * Make request to server to delete widget
      */
     fetchJsonData(apiPath('delete_widget', this.props.widgetListId, this.props.id), this.props.onChange)
   }
 
-  moveWidget = (position) => {
+  moveWidget(position) {
     /**
      * Make request to server to move widget up
      */
@@ -204,30 +226,32 @@ class DefaultWidgetWrapper extends Component {
                   this.props.onChange)
   }
 
-  renderEditBar = () => (
-    <div className={'edit-widget-bar btn-group card-header'}>
-      <button className={'btn btn-info col'}
-              disabled={this.props.position === 0}
-              onClick={() => this.moveWidget(this.props.position - 1)}
-              title={'Move widget up'}>
-        <Octicon name={'chevron-up'}/>
-      </button>
-      <button className={'btn btn-info col'}
-              disabled={this.props.position === this.props.listLength - 1}
-              onClick={() => this.moveWidget(this.props.position + 1)}
-              title={'Move widget down'}>
-        <Octicon name={'chevron-down'}/>
-      </button>
-      <button className={'btn btn-info col'} onClick={() => this.props.editWidget(this.props.id)}
-              title={'Update widget'}>
-        <Octicon name={'pencil'}/>
-      </button>
-      <button className={'btn btn-danger col'} onClick={() => this.deleteWidget(this.props.id)}
-              title={'Delete widget'}>
-        <Octicon name={'x'}/>
-      </button>
-    </div>
-  )
+  renderEditBar() {
+    return (
+      <div className={'edit-widget-bar btn-group card-header'}>
+        <button className={'btn btn-info col'}
+                disabled={this.props.position === 0}
+                onClick={() => this.moveWidget(this.props.position - 1)}
+                title={'Move widget up'}>
+          <Octicon name={'chevron-up'}/>
+        </button>
+        <button className={'btn btn-info col'}
+                disabled={this.props.position === this.props.listLength - 1}
+                onClick={() => this.moveWidget(this.props.position + 1)}
+                title={'Move widget down'}>
+          <Octicon name={'chevron-down'}/>
+        </button>
+        <button className={'btn btn-info col'} onClick={() => this.props.editWidget(this.props.id)}
+                title={'Update widget'}>
+          <Octicon name={'pencil'}/>
+        </button>
+        <button className={'btn btn-danger col'} onClick={() => this.deleteWidget(this.props.id)}
+                title={'Delete widget'}>
+          <Octicon name={'x'}/>
+        </button>
+      </div>
+    )
+  }
 
   render() {
     return (

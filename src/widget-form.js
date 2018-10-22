@@ -41,7 +41,7 @@ class WidgetForm extends Component {
     }
   }
 
-  updateForm = (data) => {
+  updateForm(data) {
     this.setState({
       editWidget: 'widgetData' in data,
       formData: 'widgetData' in data ? data.widgetData
@@ -54,7 +54,7 @@ class WidgetForm extends Component {
     })
   }
 
-  onChange = (key, value) => {
+  onChange(key, value) {
     /**
      * Update this.state.formData with the new value on input form change
      */
@@ -66,7 +66,7 @@ class WidgetForm extends Component {
     })
   }
 
-  onSubmit = (event) => {
+  onSubmit(event) {
     /**
      * Submit widget configuration from this.state.formData to the server
      */
@@ -74,7 +74,7 @@ class WidgetForm extends Component {
     fetchJsonData(this.props.submitUrl, this.props.onSubmit, {body: JSON.stringify(this.state.formData)})
   }
 
-  makeWidgetClassSelect = () => {
+  makeWidgetClassSelect() {
     if (this.state.widgetClasses.length > 1) {
       return (
         <Select className={'widget-form-select'}

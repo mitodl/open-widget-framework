@@ -6,7 +6,7 @@ from rest_framework import serializers
 
 class ReactField(serializers.Field):
     """
-    ReactField is a base extension of the serializer field for use with the widget-framework. Any additional React
+    ReactField is a base extension of the serializer field for use with the widget framework. Any additional React
     serializer fields should utilize multiple inheritance and inherit first from their standard serializer counterpart
     and second from ReactField and implement __init__ and configure_from_spec
     """
