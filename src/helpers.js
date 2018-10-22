@@ -2,7 +2,7 @@ import {apiBase} from './config'
 
 function fetchJsonData(url, resolve, request, reject) {
   if (reject === undefined) {
-    reject = error => console.error(error)
+    reject = (error) => console.error(error)
   }
 
   if (request === undefined) {
@@ -21,8 +21,8 @@ function fetchJsonData(url, resolve, request, reject) {
 
   fetch(url, request)
     .then(data => data.json())
-    .then((data) => {console.log(data); resolve(data)})
-    .catch(reject)
+    .then((data) => { resolve(data) })
+    .catch((data) => reject(data))
 }
 
 function apiPath(name, listId, widgetId, args) {

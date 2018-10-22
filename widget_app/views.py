@@ -47,7 +47,8 @@ def get_widget_list(request, widget_list_id):
     widget_list = [
         {
             'id': widget.pop('id'),
-            'props': widget_class_dict[widget.pop('widget_class')]().render_with_title(request, widget)
+            'position': widget['position'],
+            'widgetProps': widget_class_dict[widget.pop('widget_class')]().render_with_title(request, widget)
         }
         for widget in get_widget_list_data(widget_list_id)]
 
@@ -123,8 +124,8 @@ def delete_widget(request, widget_list_id, widget_id):
         widget_list_id (int): id of WidgetList containing the Widget
         widget_id (int): id of Widget to delete
     """
-    widget = get_object_or_404(WidgetInstance, id=widget_id)
-    widget.delete()
+    widget_list = get_object_or_404(WidgetList, id=widget_list_id)
+    widget_list.remove_widget(widget_id)
     return get_widget_list(request, widget_list_id)
 
 

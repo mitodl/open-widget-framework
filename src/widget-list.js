@@ -38,6 +38,16 @@ class WidgetList extends Component {
 
   updateWidgetList = (data) => this.setState({widgetInstances: data})
 
+  closeForm = () => this.setState({
+    retrieveFormRoute: null,
+    submitFormRoute: null,
+  })
+
+  submitWidgetForm = (data) => {
+    this.updateWidgetList(data)
+    this.closeForm()
+  }
+
   editWidget = (widgetId) => {null}
 
   toggleEditMode = () => this.setState({editModeActive: !this.state.editModeActive})
@@ -88,21 +98,24 @@ class WidgetList extends Component {
       WidgetWrapper = DefaultWidgetWrapper
       widgetWrapperProps = {
         editWidget: this.editWidget,
+        onChange: this.updateWidgetList,
         widgetListId: this.props.widgetListId,
       }
     }
     return (
-      <WidgetWrapper renderWidget={this.renderWidgetBody}
-                     widgetInstance={widgetInstance}
+      <WidgetWrapper key={widgetInstance.id}
+                     listLength={this.state.widgetInstances.length}
+                     renderWidget={this.renderWidgetBody}
+                     {...widgetInstance}
                      {...widgetWrapperProps}
       />
     )
   }
 
-  renderWidgetBody = (widgetInstance) => {
-    const Renderer = RENDERERS[widgetInstance.props.reactRenderer]
+  renderWidgetBody = (widgetProps) => {
+    const Renderer = RENDERERS[widgetProps.reactRenderer]
     return (
-      <Renderer {...widgetInstance.props}/>
+      <Renderer {...widgetProps}/>
     )
   }
 
@@ -113,7 +126,8 @@ class WidgetList extends Component {
       return (
         <WidgetForm csrfToken={window.csrfToken}
                     fetchRoute={this.state.retrieveFormRoute}
-                    onSubmit={this.updateWidgetList}
+                    onCancel={this.closeForm}
+                    onSubmit={this.submitWidgetForm}
                     submitUrl={this.state.submitFormRoute}
                     widgetList={this.props.widgetListId}
         />
@@ -155,7 +169,7 @@ class DefaultListWrapper extends Component {
         </div>
         <hr/>
         <div>
-          {this.props.renderList()}
+          {this.props.renderList(this.props.widgetInstances)}
         </div>
       </div>
     )
@@ -163,51 +177,47 @@ class DefaultListWrapper extends Component {
 }
 
 class DefaultWidgetWrapper extends Component {
-  state = {
-    first: this.props.widgetInstance.props.position === 0,
-    id: this.props.widgetInstance.id,
-    last: this.props.widgetInstance.props.position === this.props.listLength - 1,
-    position: this.props.widgetInstance.props.position,
-  }
-
   deleteWidget = () => {
     /**
      * Make request to server to delete widget
      */
-    fetchJsonData(apiPath('delete_widget', this.props.widgetListId, this.state.id), this.onChange)
+    fetchJsonData(apiPath('delete_widget', this.props.widgetListId, this.props.id), this.props.onChange)
   }
 
   moveWidget = (position) => {
     /**
      * Make request to server to move widget up
      */
-    fetchJsonData(apiPath('move_widget', this.props.widgetListId, this.state.id, {position: position}), this.onChange)
+    fetchJsonData(apiPath('move_widget', this.props.widgetListId, this.props.id, {position: position}),
+                  this.props.onChange)
   }
 
   render() {
     return (
-      <div className={'widget card mb-3 bg-light'} id={'widget-' + this.state.id}>
+      <div className={'widget card mb-3 bg-light'} id={'widget-' + this.props.id}>
         <div className={'edit-widget-bar btn-group card-header'}>
-          <button className={'btn btn-info col' + (this.props.first ? ' disabled' : '')}
-                  onClick={() => this.state.first ? null : this.moveWidget(this.state.position - 1)}
+          <button className={'btn btn-info col'}
+                  disabled={this.props.position === 0}
+                  onClick={() => this.moveWidget(this.props.position - 1)}
                   title={'Move widget up'}>
             <Octicon name={'chevron-up'}/>
           </button>
-          <button className={'btn btn-info col' + (this.props.last ? ' disabled' : '')}
-                  onClick={() => this.state.last ? null : this.moveWidget(this.state.position + 1)}
+          <button className={'btn btn-info col'}
+                  disabled={this.props.position === this.props.listLength - 1}
+                  onClick={() => this.moveWidget(this.props.position + 1)}
                   title={'Move widget down'}>
             <Octicon name={'chevron-down'}/>
           </button>
-          <button className={'btn btn-info col'} onClick={() => this.props.editWidget(this.state.id)}
+          <button className={'btn btn-info col'} onClick={() => this.props.editWidget(this.props.id)}
                   title={'Update widget'}>
             <Octicon name={'pencil'}/>
           </button>
-          <button className={'btn btn-danger col'} onClick={() => this.deleteWidget(this.state.id)}
+          <button className={'btn btn-danger col'} onClick={() => this.deleteWidget(this.props.id)}
                   title={'Delete widget'}>
             <Octicon name={'x'}/>
           </button>
         </div>
-        {this.props.renderWidget(this.props.widgetInstance)}
+        {this.props.renderWidget(this.props.widgetProps)}
       </div>
     )
   }

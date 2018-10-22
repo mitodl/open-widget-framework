@@ -14,6 +14,17 @@ class WidgetList(models.Model):
         auth = settings.WIDGET_AUTHENTICATION_BACKEND()
         return auth.can_access_widget_list(self, user)
 
+    def remove_widget(self, widget_id):
+        widget_to_remove = WidgetInstance.objects.get(id=widget_id)
+        widgets_to_move = WidgetInstance.objects.filter(widget_list_id=self.id,
+                                                        position__gt=widget_to_remove.position)
+        for widget in widgets_to_move:
+            widget.position = widget.position - 1
+            widget.save()
+
+        widget_to_remove.delete()
+
+
 
 class WidgetInstance(models.Model):
     """WidgetInstance contains data for a single widget instance, regardless of what class of widget it is"""
