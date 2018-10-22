@@ -21,7 +21,7 @@ function fetchJsonData(url, resolve, request, reject) {
 
   fetch(url, request)
     .then(data => data.json())
-    .then((data) => { resolve(data) })
+    .then((data) => resolve(data))
     .catch((data) => reject(data))
 }
 

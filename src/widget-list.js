@@ -1,4 +1,3 @@
-import {hot} from 'react-hot-loader'
 import React, {Component} from 'react'
 import RENDERERS from './myRenderers'
 import Octicon from 'react-component-octicons'
@@ -33,6 +32,7 @@ class WidgetList extends Component {
      */
     if (prevProps.widgetListId !== this.props.widgetListId) {
       fetchJsonData(apiPath('get_list', this.props.widgetListId), this.updateWidgetList)
+      this.setState({editModeActive: false})
     }
   }
 
@@ -48,9 +48,18 @@ class WidgetList extends Component {
     this.closeForm()
   }
 
-  editWidget = (widgetId) => {null}
+  editWidget = (widgetId) => {
+    this.closeForm()
+    this.setState({
+      retrieveFormRoute: apiPath('get_widget', this.props.widgetListId, widgetId),
+      submitFormRoute: apiPath('update_widget', this.props.widgetListId, widgetId),
+    })
+  }
 
-  toggleEditMode = () => this.setState({editModeActive: !this.state.editModeActive})
+  toggleEditMode = () => {
+    this.setState({editModeActive: !this.state.editModeActive})
+    this.closeForm()
+  }
 
   addWidget = () => this.setState({
     retrieveFormRoute: apiPath('get_configurations'),
@@ -97,6 +106,7 @@ class WidgetList extends Component {
     } else {
       WidgetWrapper = DefaultWidgetWrapper
       widgetWrapperProps = {
+        editModeActive: this.state.editModeActive,
         editWidget: this.editWidget,
         onChange: this.updateWidgetList,
         widgetListId: this.props.widgetListId,
@@ -154,6 +164,11 @@ class WidgetList extends Component {
 }
 
 class DefaultListWrapper extends Component {
+  renderAddWidgetButton = () => (
+    <button className={'btn btn-info'} onClick={this.props.addWidget}>
+      <Octicon name={'plus'}/>
+    </button>
+  )
   render() {
     return (
       <div>
@@ -162,10 +177,7 @@ class DefaultListWrapper extends Component {
                   onClick={this.props.toggleEditMode}>
             <Octicon name={'pencil'}/>
           </button>
-          {this.props.editModeActive ? null : (
-            <button className={'btn btn-info'} onClick={this.props.addWidget}>
-              <Octicon name={'plus'}/>
-            </button>)}
+          {this.props.editModeActive ? this.renderAddWidgetButton() : null}
         </div>
         <hr/>
         <div>
@@ -192,31 +204,35 @@ class DefaultWidgetWrapper extends Component {
                   this.props.onChange)
   }
 
+  renderEditBar = () => (
+    <div className={'edit-widget-bar btn-group card-header'}>
+      <button className={'btn btn-info col'}
+              disabled={this.props.position === 0}
+              onClick={() => this.moveWidget(this.props.position - 1)}
+              title={'Move widget up'}>
+        <Octicon name={'chevron-up'}/>
+      </button>
+      <button className={'btn btn-info col'}
+              disabled={this.props.position === this.props.listLength - 1}
+              onClick={() => this.moveWidget(this.props.position + 1)}
+              title={'Move widget down'}>
+        <Octicon name={'chevron-down'}/>
+      </button>
+      <button className={'btn btn-info col'} onClick={() => this.props.editWidget(this.props.id)}
+              title={'Update widget'}>
+        <Octicon name={'pencil'}/>
+      </button>
+      <button className={'btn btn-danger col'} onClick={() => this.deleteWidget(this.props.id)}
+              title={'Delete widget'}>
+        <Octicon name={'x'}/>
+      </button>
+    </div>
+  )
+
   render() {
     return (
       <div className={'widget card mb-3 bg-light'} id={'widget-' + this.props.id}>
-        <div className={'edit-widget-bar btn-group card-header'}>
-          <button className={'btn btn-info col'}
-                  disabled={this.props.position === 0}
-                  onClick={() => this.moveWidget(this.props.position - 1)}
-                  title={'Move widget up'}>
-            <Octicon name={'chevron-up'}/>
-          </button>
-          <button className={'btn btn-info col'}
-                  disabled={this.props.position === this.props.listLength - 1}
-                  onClick={() => this.moveWidget(this.props.position + 1)}
-                  title={'Move widget down'}>
-            <Octicon name={'chevron-down'}/>
-          </button>
-          <button className={'btn btn-info col'} onClick={() => this.props.editWidget(this.props.id)}
-                  title={'Update widget'}>
-            <Octicon name={'pencil'}/>
-          </button>
-          <button className={'btn btn-danger col'} onClick={() => this.deleteWidget(this.props.id)}
-                  title={'Delete widget'}>
-            <Octicon name={'x'}/>
-          </button>
-        </div>
+        {this.props.editModeActive ? this.renderEditBar() : null}
         {this.props.renderWidget(this.props.widgetProps)}
       </div>
     )

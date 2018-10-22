@@ -94,7 +94,7 @@ def create_widget(request, widget_list_id):
         return JsonResponse('', status=400)
 
 
-def get_widget(request, widget_id):
+def get_widget(request, widget_list_id, widget_id):
     """
     API endpoint to get data for a single widget
 

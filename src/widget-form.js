@@ -1,7 +1,5 @@
 import React, {Component} from 'react'
-import {hot} from 'react-hot-loader'
 import Select from 'react-select'
-import {Link} from 'react-router-dom'
 
 import {makeOptions} from './utils'
 import {fetchJsonData} from './helpers'
@@ -31,23 +29,29 @@ class WidgetForm extends Component {
     /**
      * Fetch available widget classes and configurations after component mount
      */
-    fetch(this.props.fetchRoute)
-      .then(data => {
-        return data.json()
-      })
-      .then(jsonData => {
-        this.setState({
-          editWidget: 'widgetData' in jsonData,
-          formData: 'widgetData' in jsonData ? jsonData.widgetData
-            : {
-              widget_class: '',
-              widget_list: this.props.widgetList,
-            },
-          widgetClassConfigurations: jsonData.widgetClassConfigurations,
-          widgetClasses: Object.keys(jsonData.widgetClassConfigurations),
-        })
-      })
-      .catch(error => console.error(error))
+    fetchJsonData(this.props.fetchRoute, this.updateForm)
+  }
+
+  componentDidUpdate(prevProps) {
+    /**
+     * Fetch new form data if the fetchRoute changes
+     */
+    if (prevProps.fetchRoute !== this.props.fetchRoute) {
+      fetchJsonData(this.props.fetchRoute, this.updateForm)
+    }
+  }
+
+  updateForm = (data) => {
+    this.setState({
+      editWidget: 'widgetData' in data,
+      formData: 'widgetData' in data ? data.widgetData
+        : {
+          widget_class: '',
+          widget_list: this.props.widgetList,
+        },
+      widgetClassConfigurations: data.widgetClassConfigurations,
+      widgetClasses: Object.keys(data.widgetClassConfigurations),
+    })
   }
 
   onChange = (key, value) => {
