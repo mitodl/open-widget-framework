@@ -3,12 +3,12 @@ WidgetApp views
 """
 from json import loads
 
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.http import JsonResponse, HttpResponse
 
-from widget_app.models import WidgetInstance, WidgetList
-from widget_app.widget_classes import get_widget_class_dict, get_widget_class_configurations
-from widget_app.helpers import get_widget_data, get_widget_list_data
+from open_widget_framework.models import WidgetInstance, WidgetList
+from open_widget_framework.widget_classes import get_widget_class_dict, get_widget_class_configurations
+from open_widget_framework.helpers import get_widget_data, get_widget_list_data
 
 
 def get_widget_lists(request):
@@ -197,10 +197,3 @@ def move_widget(request, widget_list_id, widget_id):
     target_widget.position = target_position
     target_widget.save()
     return get_widget_list(request, widget_list_id)
-
-
-def home(request):
-    """
-    Renders the home page which enables the single page sample react app
-    """
-    return render(request, 'widget_app/home.html')

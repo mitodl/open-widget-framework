@@ -1,7 +1,7 @@
 """
 WidgetApp helper functions
 """
-from widget_app.models import WidgetInstance
+from open_widget_framework.models import WidgetInstance
 
 
 def get_widget_list_data(widget_list_id, fields=None):

@@ -23,6 +23,11 @@ class WidgetForm extends Component {
       widgetClassConfigurations: null,
       widgetClasses: null,
     }
+    this.updateForm = this.updateForm.bind(this)
+    this.onChange = this.onChange.bind(this)
+    this.onSubmit = this.onSubmit.bind(this)
+    this.makeWidgetClassSelect = this.makeWidgetClassSelect.bind(this)
+    this.renderForm = this.renderForm.bind(this)
   }
 
   componentDidMount() {

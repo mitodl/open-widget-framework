@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('widget_app', '0001_initial'),
+        ('open_widget_framework', '0001_initial'),
     ]
 
     operations = [

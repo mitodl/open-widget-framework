@@ -2,7 +2,7 @@
 WidgetApp urls
 """
 from django.conf.urls import url
-from . import views
+from open_widget_framework import views
 
 urlpatterns = [
     url(r'^api/v1/lists$', views.get_widget_lists, name='get_lists'),
@@ -19,6 +19,4 @@ urlpatterns = [
     url(r'^api/v1/list/(?P<widget_list_id>\d+)/widget/(?P<widget_id>\d+)/update$',
         views.update_widget, name='update_widget'),
     url(r'^api/v1/list/(?P<widget_list_id>\d+)/widget/(?P<widget_id>\d+)/move$', views.move_widget, name='move_widget'),
-
-    url(r'^.*$', views.home, name='index'),
 ]

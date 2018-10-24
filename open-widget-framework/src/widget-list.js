@@ -21,13 +21,13 @@ class WidgetList extends Component {
       widgetInstances: null,
     }
     this.updateWidgetList = this.updateWidgetList.bind(this)
-    this.closeForm= this.closeForm.bind(this)
+    this.closeForm = this.closeForm.bind(this)
     this.submitWidgetForm = this.submitWidgetForm.bind(this)
-    this.editWidget= this.editWidget.bind(this)
+    this.editWidget = this.editWidget.bind(this)
     this.toggleEditMode = this.toggleEditMode.bind(this)
     this.addWidget = this.addWidget.bind(this)
     this.renderWidgetList = this.renderWidgetList.bind(this)
-    this.renderListBody= this.renderListBody.bind(this)
+    this.renderListBody = this.renderListBody.bind(this)
     this.renderWidget = this.renderWidget.bind(this)
     this.renderWidgetBody = this.renderWidgetBody.bind(this)
     this.renderWidgetForm = this.renderWidgetForm.bind(this)

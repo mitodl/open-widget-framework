@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.utils.html import format_html
 from rest_framework import serializers
 
-from widget_app.react_fields import ReactCharField, ReactURLField, ReactMultipleChoiceField, ReactFileField
+from open_widget_framework.react_fields import ReactCharField, ReactURLField, ReactMultipleChoiceField, ReactFileField
 
 
 class WidgetBase(serializers.Serializer):

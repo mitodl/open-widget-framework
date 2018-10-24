@@ -32,6 +32,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='widgetinstance',
             name='widget_list',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='widgets', to='widget_app.WidgetList'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='widgets', to='open_widget_framework.WidgetList'),
         ),
     ]

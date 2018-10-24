@@ -2,7 +2,7 @@
 ignore = manage.py, migrations,  # Auto-generated and not required to pass linting
          .git, pylintrc, requirements.in, requirements.txt,  # Configuration
          CONTRIBUTING.md, README.md,  # Documentation
-         node_modules, nwb.config.js, package.json, public, tests, webpack-stats.json  # JavaScript/nwb
+         node_modules, package.json, public, tests, webpack-stats.json  # JavaScript/nwb
 load-plugins = pylint_django
 
 [BASIC]
