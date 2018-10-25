@@ -30,7 +30,7 @@ if sys.version < '3':
 
 setup(
     name="open_widget_framework",
-    version="1.0.0",
+    version="1.0.1",
     packages=find_packages(),
     license='MIT',
     author="Zagaran, Inc.",
