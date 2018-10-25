@@ -1,4 +1,4 @@
-import {apiBase} from './config'
+const apiBase = window.apiBase
 
 function fetchJsonData(url, resolve, request, reject) {
   if (reject === undefined) {
