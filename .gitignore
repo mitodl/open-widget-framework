@@ -51,10 +51,19 @@ coverage.xml
 *.mo
 *.pot
 
+# webpack
+webpack-stats.json
+static/bundles
+node_modules
+
+# JS directories
+!static/js/lib
+
 # Django stuff:
 *.log
 local_settings.py
 db.sqlite3
+staticfiles/
 
 # Flask stuff:
 instance/
@@ -78,6 +87,7 @@ target/
 # celery beat schedule file
 celerybeat-schedule
 
+
 # SageMath parsed files
 *.sage.py
 
@@ -90,9 +100,16 @@ ENV/
 env.bak/
 venv.bak/
 
-# Spyder project settings
+# Spyder, Pycharm project and editor settings
 .spyderproject
 .spyproject
+.project
+.pydevproject
+*.swp
+*.orig
+
+# filesystem metadata files
+*.DS_Store
 
 # Rope project settings
 .ropeproject
@@ -102,3 +119,4 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
