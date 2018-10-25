@@ -95,7 +95,6 @@ class URLWidget(WidgetBase):
     Renderer: default
     """
     name = 'URL'
-    react_renderer = 'SpecialRenderer'
     url = ReactURLField(props={'placeholder': 'Enter URL'})
 
     def render(self, request, configuration):
