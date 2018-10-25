@@ -5,6 +5,7 @@ from json import loads
 
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 
 from open_widget_framework.models import WidgetInstance, WidgetList
 from open_widget_framework.widget_classes import get_widget_class_dict, get_widget_class_configurations
@@ -67,6 +68,7 @@ def delete_widget_list(request, widget_list_id):
     return get_widget_lists(request)
 
 
+@csrf_exempt
 def create_widget(request, widget_list_id):
     """
     API endpoint to create a widget instance on a list after validating the data with a serializer
@@ -129,6 +131,7 @@ def delete_widget(request, widget_list_id, widget_id):
     return get_widget_list(request, widget_list_id)
 
 
+@csrf_exempt
 def update_widget(request, widget_list_id, widget_id):
     """
     API endpoint to update the data for a widget instance
