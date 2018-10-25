@@ -32,9 +32,9 @@ setup(
     name="open_widget_framework",
     version="1.0.3",
     packages=find_packages(),
-    install_requires = [
-            "Django>=2.1.2"
-            "django-rest-framework>=0.1.0"
+    install_requires=[
+            "Django>=2.1.2",
+            "django-rest-framework>=0.1.0",
     ],
     license='MIT',
     author="Zagaran, Inc.",
