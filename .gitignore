@@ -2,28 +2,28 @@
 __pycache__/
 *.py[cod]
 *$py.class
-.pytest_cache/
 
 # C extensions
 *.so
 
 # Distribution / packaging
 .Python
-env/
 build/
 develop-eggs/
 dist/
 downloads/
 eggs/
 .eggs/
-./lib/
-./lib64/
+lib/
+lib64/
 parts/
 sdist/
 var/
+wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -43,18 +43,34 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
-*,cover
+*.cover
 .hypothesis/
-coverage/
-.nyc_output/
+.pytest_cache/
 
 # Translations
 *.mo
 *.pot
 
+# webpack
+webpack-stats.json
+static/bundles
+node_modules
+
+# JS directories
+!static/js/lib
+
 # Django stuff:
 *.log
-celerybeat-schedule.db
+local_settings.py
+db.sqlite3
+staticfiles/
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
 
 # Sphinx documentation
 docs/_build/
@@ -62,43 +78,44 @@ docs/_build/
 # PyBuilder
 target/
 
-#Ipython/Jupyter Notebook
+# Jupyter Notebook
 .ipynb_checkpoints
-*.ipynb
 
-# Heroku/Foreman
+# pyenv
+.python-version
+
+# celery beat schedule file
+celerybeat-schedule
+
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
 .env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
 
-# webpack
-static/bundles
-node_modules
-
-# JS directories
-!static/js/lib
-
-# Editor stuff
+# Spyder, Pycharm project and editor settings
+.spyderproject
+.spyproject
+.project
+.pydevproject
 *.swp
 *.orig
 
-/nbproject
-.idea/
-.redcar/
-codekit-config.json
-.pycharm_helpers/
-
-.project
-.pydevproject
-
+# filesystem metadata files
 *.DS_Store
 
-# Django static
-staticfiles/
+# Rope project settings
+.ropeproject
 
-.venv
-release-notes-checklist
+# mkdocs documentation
+/site
 
-# Webpack
-webpack-stats.json
-
-# Celery Beat
-celerybeat-schedule
+# mypy
+.mypy_cache/

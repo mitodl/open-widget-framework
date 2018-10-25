@@ -1,6 +1,6 @@
 pip-tools
 django-extensions
-Django==2.1
+Django==2.1.2
 django-webpack-loader
 ipython
 psycopg2
