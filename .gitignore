@@ -113,6 +113,7 @@ venv.bak/
 
 # Rope project settings
 .ropeproject
+<<<<<<< Updated upstream
 
 # mkdocs documentation
 /site
@@ -120,3 +121,11 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+=======
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+>>>>>>> Stashed changes
