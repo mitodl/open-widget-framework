@@ -1,8 +1,7 @@
 import React, {Component} from 'react'
 import Select from 'react-select'
 
-import {makeOptions} from './utils'
-import {fetchJsonData} from './helpers'
+import {makeOptions, fetchJsonData} from './utils'
 
 
 /**

@@ -1,8 +1,8 @@
 {
   "name": "@zagaran/open-widget-framework",
-  "version": "1.0.0",
-  "description": "Describe open-widget-framework here",
-  "main": "index.js",
+  "version": "0.0.2",
+  "description": "React components to display widgets served by the open-wdiget-framework django app",
+  "main": "src/index.js",
   "private": false,
   "scripts": {
     "build": "nwb build-react-app",

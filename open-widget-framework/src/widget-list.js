@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import RENDERERS from './myRenderers'
 import Octicon from 'react-component-octicons'
-import {fetchJsonData, apiPath} from './helpers'
+import {fetchJsonData, apiPath} from './utils'
 import WidgetForm from './widget-form'
 
 
