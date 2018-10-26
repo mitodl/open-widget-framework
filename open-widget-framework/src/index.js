@@ -1,1 +1,1 @@
-module.exports = require('./src/widget-list')
+module.exports = require('widget-list')
