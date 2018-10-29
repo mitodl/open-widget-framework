@@ -17,6 +17,7 @@ class WidgetList extends Component {
     this.state = {
       editModeActive: false,
       retrieveFormRoute: null,
+      submitFormMethod: null,
       submitFormRoute: null,
       widgetInstances: null,
     }
@@ -37,7 +38,7 @@ class WidgetList extends Component {
     /**
      * Fetch data on widget instances in list from fetchRoute
      */
-    fetchJsonData(apiPath('get_list', this.props.widgetListId), this.updateWidgetList)
+    fetchJsonData(apiPath('widget_list', this.props.widgetListId), this.updateWidgetList)
   }
 
   componentDidUpdate(prevProps) {
@@ -45,7 +46,7 @@ class WidgetList extends Component {
      * Fetch new widgets when url changes
      */
     if (prevProps.widgetListId !== this.props.widgetListId) {
-      fetchJsonData(apiPath('get_list', this.props.widgetListId), this.updateWidgetList)
+      fetchJsonData(apiPath('widget_list', this.props.widgetListId), this.updateWidgetList)
       this.setState({editModeActive: false})
     }
   }
@@ -57,6 +58,7 @@ class WidgetList extends Component {
   closeForm() {
     this.setState({
       retrieveFormRoute: null,
+      submitFormMethod: null,
       submitFormRoute: null,
     })
   }
@@ -69,8 +71,9 @@ class WidgetList extends Component {
   editWidget(widgetId) {
     this.closeForm()
     this.setState({
-      retrieveFormRoute: apiPath('get_widget', this.props.widgetListId, widgetId),
-      submitFormRoute: apiPath('update_widget', this.props.widgetListId, widgetId),
+      retrieveFormRoute: apiPath('widget', this.props.widgetListId, widgetId),
+      submitFormMethod: 'PUT',
+      submitFormRoute: apiPath('widget', this.props.widgetListId, widgetId),
     })
   }
 
@@ -82,6 +85,7 @@ class WidgetList extends Component {
   addWidget() {
     this.setState({
       retrieveFormRoute: apiPath('get_configurations'),
+      submitFormMethod: 'POST',
       submitFormRoute: apiPath('create_widget', this.props.widgetListId),
     })
   }
@@ -159,6 +163,7 @@ class WidgetList extends Component {
                     onCancel={this.closeForm}
                     onSubmit={this.submitWidgetForm}
                     submitUrl={this.state.submitFormRoute}
+                    submitMethod={this.state.submitFormMethod}
                     widgetList={this.props.widgetListId}
         />
       )
@@ -215,15 +220,15 @@ class DefaultWidgetWrapper extends Component {
     /**
      * Make request to server to delete widget
      */
-    fetchJsonData(apiPath('delete_widget', this.props.widgetListId, this.props.id), this.props.onChange)
+    fetchJsonData(apiPath('widget', this.props.widgetListId, this.props.id), this.props.onChange, {method: 'DELETE'})
   }
 
   moveWidget(position) {
     /**
      * Make request to server to move widget up
      */
-    fetchJsonData(apiPath('move_widget', this.props.widgetListId, this.props.id, {position: position}),
-                  this.props.onChange)
+    fetchJsonData(apiPath('widget', this.props.widgetListId, this.props.id, {position: position}),
+                  this.props.onChange, {method: 'PATCH'})
   }
 
   renderEditBar() {

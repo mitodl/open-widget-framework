@@ -9,9 +9,6 @@ function fetchJsonData(url, resolve, request, reject) {
   if (request === undefined) {
     request = {method: 'GET'}
   } else {
-    if ('method' in request === false) {
-      request.method = 'POST'
-    }
     if ('headers' in request === false) {
       request.headers = {
         'Content-Type': 'application/json',
@@ -34,29 +31,13 @@ function apiPath(name, listId, widgetId, args) {
     case 'get_configurations':
       return apiBase + 'configurations'
 
-    case 'create_list':
-      return apiBase + 'list/create'
+    case 'widget_list':
+      return apiBase + 'list/' + (listId || '')
 
-    case 'get_list':
-      return apiBase + 'list/' + listId
+    case 'widget':
+      return apiBase + 'list/' + listId + '/widget/' + (widgetId || '') + (args ? '?position=' + args.position : '')
 
-    case 'delete_list':
-      return apiBase + 'list/' + listId + '/delete'
 
-    case 'create_widget':
-      return apiBase + 'list/' + listId + '/widget/create'
-
-    case 'get_widget':
-      return apiBase + 'list/' + listId + '/widget/' + widgetId
-
-    case 'delete_widget':
-      return apiBase + 'list/' + listId + '/widget/' + widgetId + '/delete'
-
-    case 'update_widget':
-      return apiBase + 'list/' + listId + '/widget/' + widgetId + '/update'
-
-    case 'move_widget':
-      return apiBase + 'list/' + listId + '/widget/' + widgetId + '/move' + '?position=' + args.position
   }
 }
 

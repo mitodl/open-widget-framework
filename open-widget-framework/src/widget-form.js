@@ -75,7 +75,8 @@ class WidgetForm extends Component {
      * Submit widget configuration from this.state.formData to the server
      */
     event.preventDefault()
-    fetchJsonData(this.props.submitUrl, this.props.onSubmit, {body: JSON.stringify(this.state.formData)})
+    fetchJsonData(this.props.submitUrl, this.props.onSubmit,
+                  {body: JSON.stringify(this.state.formData), method: this.props.submitFormMethod})
   }
 
   makeWidgetClassSelect() {

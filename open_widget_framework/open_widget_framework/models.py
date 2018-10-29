@@ -24,6 +24,9 @@ class WidgetList(models.Model):
 
         widget_to_remove.delete()
 
+    def clear_list(self):
+        for widget in WidgetInstance.objects.filter(widget_list_id=self.id):
+            widget.delete()
 
 
 class WidgetInstance(models.Model):
