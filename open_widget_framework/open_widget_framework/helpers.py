@@ -22,6 +22,7 @@ def get_widget_list_data(widget_list_id, fields=None):
     return list(WidgetInstance.objects.filter(widget_list_id=widget_list_id).order_by('position').values(*fields))
 
 
+#TODO: use widget_list_id for filter to validate
 def get_widget_data(widget_id, fields=None):
     """
     Get fields of WidgetInstance

@@ -7,6 +7,10 @@ from rest_framework import serializers
 
 from open_widget_framework.react_fields import ReactCharField, ReactURLField, ReactMultipleChoiceField, ReactFileField
 
+from open_widget_framework.open_widget_framework.default_settings import get_widget_classes
+
+#TODO: move widgetbase to its own file
+#TODO: Add make_widget method to widget_base
 
 class WidgetBase(serializers.Serializer):
     """
@@ -64,7 +68,6 @@ class WidgetBase(serializers.Serializer):
 
     def get_configuration_form_spec(self):
         """Returns the specifications for the configuration of a widget class"""
-        self.pre_configure()
         configuration = [self.fields[key].configure_form_spec() for key in self.fields]
         return configuration
 
@@ -141,9 +144,11 @@ class FileWidget(WidgetBase):
     def render(self, request, configuration):
         pass
 
-
+#TODO: Move to default settings file
 def get_widget_class_dict():
     """Return a dictionary of all widget classes referenced by their 'name' fields"""
+    return get_widget_classes()
+
     return {
         'Text': TextWidget,
         'URL': URLWidget,
@@ -152,7 +157,7 @@ def get_widget_class_dict():
         # 'File': FileWidget,
     }
 
-
+#TODO: Move to class method on base
 def get_widget_class_configurations():
     """Return a dictionary of widget class configurations references by their name field"""
     widget_class_dict = get_widget_class_dict()

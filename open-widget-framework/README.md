@@ -1,12 +1,21 @@
 # open-widget-framework
 
+## Installation
+
+[![Travis][build-badge]][build]
+[![npm package][npm-badge]][npm]
+[![Coveralls][coveralls-badge]][coveralls]
+
+
 The react components half of `open-widget-framework`, a django + react library for managing user-configurable widgets
 
 For more information, please see https://github.com/mitodl/open-widget-framework
 
-## Installation
+[build-badge]: https://img.shields.io/travis/user/repo/master.png?style=flat-square
+[build]: https://travis-ci.org/user/repo
 
-npm install the `open-widget-framework` npm module: 
-```bash
-npm install open-widget-framework
-```  
+[npm-badge]: https://img.shields.io/npm/v/npm-package.png?style=flat-square
+[npm]: https://www.npmjs.org/package/npm-package
+
+[coveralls-badge]: https://img.shields.io/coveralls/user/repo/master.png?style=flat-square
+[coveralls]: https://coveralls.io/github/user/repo

@@ -5,12 +5,14 @@ from json import loads
 
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse, HttpResponse
-from django.views.decorators.csrf import csrf_exempt
 
 from open_widget_framework.models import WidgetInstance, WidgetList
 from open_widget_framework.widget_classes import get_widget_class_dict, get_widget_class_configurations
 from open_widget_framework.helpers import get_widget_data, get_widget_list_data
 
+#TODO: Add error messages to json body
+#TODO: validate with widget list
+#TODO: change to class based views
 
 def get_widget_lists(request):
     """
@@ -51,7 +53,8 @@ def get_widget_list(request, widget_list_id):
             'position': widget['position'],
             'widgetProps': widget_class_dict[widget.pop('widget_class')]().render_with_title(request, widget)
         }
-        for widget in get_widget_list_data(widget_list_id)]
+        for widget in get_widget_list_data(widget_list_id)
+    ]
 
     return JsonResponse(widget_list, safe=False)
 
@@ -68,7 +71,6 @@ def delete_widget_list(request, widget_list_id):
     return get_widget_lists(request)
 
 
-@csrf_exempt
 def create_widget(request, widget_list_id):
     """
     API endpoint to create a widget instance on a list after validating the data with a serializer
@@ -86,6 +88,7 @@ def create_widget(request, widget_list_id):
     serializer = widget_class_dict[widget_class](data=data)
     if serializer.is_valid():
         position = WidgetInstance.objects.filter(widget_list=widget_list).count()
+        #TODO: pull out into Base Widget with post_configure
         WidgetInstance.objects.create(widget_list=widget_list,
                                       widget_class=widget_class,
                                       position=position,
@@ -131,7 +134,6 @@ def delete_widget(request, widget_list_id, widget_id):
     return get_widget_list(request, widget_list_id)
 
 
-@csrf_exempt
 def update_widget(request, widget_list_id, widget_id):
     """
     API endpoint to update the data for a widget instance
@@ -167,13 +169,14 @@ def move_widget(request, widget_list_id, widget_id):
     try:
         target_position = int(request.GET.get('position'))
     except TypeError:
-        return HttpResponse(status=400)
+        return JsonResponse('', 400)
 
     target_widget = get_object_or_404(WidgetInstance, id=widget_id)
 
     # Handle out of range moves
-    if target_position >= len(WidgetInstance.objects.filter(widget_list_id=widget_list_id)):
-        target_position = len(WidgetInstance.objects.filter(widget_list_id=widget_list_id)) - 1
+    widget_list = WidgetInstance.objects.filter(widget_list_id=widget_list_id)
+    if target_position >= widget_list.count():
+        target_position = widget_list.count() - 1
     if target_position <= 0:
         target_position = 0
 
@@ -190,8 +193,8 @@ def move_widget(request, widget_list_id, widget_id):
         range_to_shift = range(target_widget.position + 1, target_position + 1)
 
     # make a list of widget in between the target widget and it's target position and shift them
-    widgets_in_between = [widget for widget in WidgetInstance.objects.filter(widget_list_id=widget_list_id)
-                          .exclude(id=target_widget.id) if widget.position in range_to_shift]
+    widgets_in_between = [widget for widget in widget_list if widget.position in range_to_shift
+                          and widget.id != target_widget.id]
     for widget in widgets_in_between:
         widget.position = widget.position + shift
         widget.save()

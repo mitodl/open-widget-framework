@@ -4,6 +4,8 @@ WidgetApp urls
 from django.conf.urls import url
 from open_widget_framework import views
 
+#TODO: Rest methods
+
 urlpatterns = [
     url(r'^api/v1/lists$', views.get_widget_lists, name='get_lists'),
     url(r'^api/v1/configurations$', views.get_widget_configurations, name='get_configurations'),
