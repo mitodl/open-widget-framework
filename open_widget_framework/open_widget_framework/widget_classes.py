@@ -7,7 +7,7 @@ from rest_framework import serializers
 
 from open_widget_framework.react_fields import ReactCharField, ReactURLField, ReactMultipleChoiceField, ReactFileField
 
-from open_widget_framework.open_widget_framework.default_settings import get_widget_classes
+from open_widget_framework.default_settings import get_widget_classes
 
 #TODO: move widgetbase to its own file
 #TODO: Add make_widget method to widget_base
