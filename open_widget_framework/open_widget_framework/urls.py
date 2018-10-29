@@ -2,7 +2,7 @@
 WidgetApp urls
 """
 from django.conf.urls import url
-from open_widget_framework.open_widget_framework.views import WidgetListView, WidgetView, \
+from open_widget_framework.views import WidgetListView, WidgetView, \
     get_widget_lists, get_widget_configurations
 
 #TODO: Rest methods
