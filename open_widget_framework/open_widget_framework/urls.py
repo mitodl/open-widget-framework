@@ -5,7 +5,6 @@ from django.conf.urls import url
 from open_widget_framework.views import WidgetListView, WidgetView, \
     get_widget_lists, get_widget_configurations
 
-#TODO: Rest methods
 
 urlpatterns = [
     url(r'^api/v1/lists$', get_widget_lists, name='get_lists'),

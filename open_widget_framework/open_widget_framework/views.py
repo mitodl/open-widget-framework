@@ -4,16 +4,14 @@ WidgetApp views
 from json import loads
 
 from django.shortcuts import get_object_or_404
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.views import View
 
 from open_widget_framework.models import WidgetInstance, WidgetList
-from open_widget_framework.widget_classes import get_widget_class_dict, get_widget_class_configurations
 from open_widget_framework.helpers import get_widget_data, get_widget_list_data
+from open_widget_framework.default_settings import get_widget_class_configurations
 
-#TODO: Add error messages to json body
 #TODO: validate with widget list
-#TODO: change to class based views
 
 def get_widget_lists(request):
     """
@@ -31,8 +29,6 @@ def get_widget_configurations(request):
 
 
 class WidgetListView(View):
-    widget_list_id = None
-
     def get(self, request, widget_list_id):
         """
         API endpoint for getting the widgets in a single list
@@ -40,19 +36,19 @@ class WidgetListView(View):
         Args:
             widget_list_id (int): id of desired WidgetList
         """
-        widget_class_dict = get_widget_class_dict()
-
+        widget_list = get_object_or_404(WidgetList, id=widget_list_id)
+        # TODO: widget_list.can_access
         # Construct a dictionary with id and configuration props to be consumed and rendered by React components
-        widget_list = [
+        widget_instances = [
             {
                 'id': widget.pop('id'),
                 'position': widget['position'],
-                'widgetProps': widget_class_dict[widget.pop('widget_class')]().render_with_title(request, widget)
+                'widgetProps': WidgetInstance.get_widget_class(widget.widget_class).render_with_title(request, widget)
             }
             for widget in get_widget_list_data(widget_list_id)
         ]
 
-        return JsonResponse(widget_list, safe=False)
+        return JsonResponse(widget_instances, safe=False)
 
     def post(self, request):
         """
@@ -69,15 +65,13 @@ class WidgetListView(View):
             widget_list_id (int): id of WidgetList to delete
         """
         widget_list = get_object_or_404(WidgetList, id=widget_list_id)
+        # TODO: widget_list.can_access
         widget_list.clear_list()
         widget_list.delete()
         return get_widget_lists(request)
 
 
 class WidgetView(View):
-    widget_list_id = None
-    widget_id = None
-
     def get(self, request, widget_list_id, widget_id):
         """
         API endpoint to get data for a single widget
@@ -85,6 +79,9 @@ class WidgetView(View):
         Args:
             widget_id: id of desired Widget
         """
+        widget_list = get_object_or_404(WidgetList, id=widget_list_id)
+        # TODO: widget_list.can_access
+
         widget_data = get_widget_data(widget_id, fields=('configuration', 'title', 'widget_class'))
         widget_class = widget_data['widget_class']
         widget_class_configuration = {widget_class: get_widget_class_configurations()[widget_class]}
@@ -107,25 +104,19 @@ class WidgetView(View):
         Args:
             widget_list_id: id of WidgetList to add widget to
         """
-        widget_class_dict = get_widget_class_dict()
         widget_list = get_object_or_404(WidgetList, id=widget_list_id)
+        # TODO: widget_list.can_access
         data = loads(request.body.decode())
-        widget_class = data.pop('widget_class')
 
         # Create a serializer to validate the data
-        serializer = widget_class_dict[widget_class](data=data)
+        serializer = WidgetInstance.get_widget_class(data.pop('widget_class'))
         if serializer.is_valid():
-            position = WidgetInstance.objects.filter(widget_list=widget_list).count()
-            # TODO: pull out into Base Widget with post_configure
-            WidgetInstance.objects.create(widget_list=widget_list,
-                                          widget_class=widget_class,
-                                          position=position,
-                                          title=data.pop('title'),
-                                          configuration=data)
+            serializer.create_widget(widget_list)
+
             request.method = 'GET'
             return WidgetListView.as_view(request, widget_list_id=widget_list_id)
         else:
-            return JsonResponse('', status=400)
+            return JsonResponse({'error': 'invalid widget data'}, status=400)
 
     def delete(self, request, widget_list_id, widget_id):
         """
@@ -136,6 +127,7 @@ class WidgetView(View):
             widget_id (int): id of Widget to delete
         """
         widget_list = get_object_or_404(WidgetList, id=widget_list_id)
+        # TODO: widget_list.can_access
         widget_list.remove_widget(widget_id)
         request.method = 'GET'
         return WidgetListView.as_view(request, widget_list_id=widget_list_id)
@@ -148,12 +140,14 @@ class WidgetView(View):
             widget_list_id (int): id of WidgetList containing the Widget
             widget_id (int): id of Widget to update
         """
-        widget_class_dict = get_widget_class_dict()
+        widget_list = get_object_or_404(WidgetList, id=widget_list_id)
+        # TODO: widget_list.can_access
+
         widget = get_object_or_404(WidgetInstance, id=widget_id)
         update_data = loads(request.body.decode())
 
         # validate the data using the widget serializer class and then update
-        serializer = widget_class_dict[widget.widget_class](data=update_data)
+        serializer = WidgetInstance.get_widget_class(widget.widget_class)
         if serializer.is_valid():
             widget.title = update_data.pop('title')
             widget.configuration = update_data
@@ -161,7 +155,7 @@ class WidgetView(View):
             request.method = 'GET'
             return WidgetListView.as_view(request, widget_list_id=widget_list_id)
         else:
-            return JsonResponse('', 400)
+            return JsonResponse({'error': 'invalid update data'}, 400)
 
     def patch(self, request, widget_list_id, widget_id):
         """
@@ -175,14 +169,17 @@ class WidgetView(View):
         try:
             target_position = int(request.GET.get('position'))
         except TypeError:
-            return JsonResponse('', 400)
+            return JsonResponse({'error': 'invalid position'}, 400)
+
+        widget_list = get_object_or_404(WidgetList, id=widget_list_id)
+        # TODO: widget_list.can_access
 
         target_widget = get_object_or_404(WidgetInstance, id=widget_id)
 
         # Handle out of range moves
-        widget_list = WidgetInstance.objects.filter(widget_list_id=widget_list_id)
-        if target_position >= widget_list.count():
-            target_position = widget_list.count() - 1
+        widget_list_length = widget_list.get_length()
+        if target_position >= widget_list_length:
+            target_position = widget_list_length - 1
         if target_position <= 0:
             target_position = 0
 
@@ -191,20 +188,11 @@ class WidgetView(View):
             request.method = 'GET'
             return WidgetListView.as_view(request, widget_list_id=widget_list_id)
 
-        # Determine the direction to shift the line and the range of positions that need to shift
+        # Shift widget in between the start and end position
         if target_position < target_widget.position:
-            shift = 1
-            range_to_shift = range(target_position, target_widget.position)
+            widget_list.shift_range(start=target_position, end=target_widget.position, shift=1)
         else:
-            shift = -1
-            range_to_shift = range(target_widget.position + 1, target_position + 1)
-
-        # make a list of widget in between the target widget and it's target position and shift them
-        widgets_in_between = [widget for widget in widget_list if widget.position in range_to_shift
-                              and widget.id != target_widget.id]
-        for widget in widgets_in_between:
-            widget.position = widget.position + shift
-            widget.save()
+            widget_list.shift_range(start=target_position + 1, end=target_widget.position + 1, shift=-1)
 
         # Update target widget
         target_widget.position = target_position

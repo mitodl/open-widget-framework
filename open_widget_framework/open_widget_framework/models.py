@@ -6,6 +6,8 @@ from django.contrib.postgres.fields import JSONField
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
+from open_widget_framework.default_settings import get_widget_class_dict
+
 
 class WidgetList(models.Model):
     """WidgetList handles authentication and is linked to a set of WidgetInstances"""
@@ -13,6 +15,17 @@ class WidgetList(models.Model):
         """Return True if user has access to this WidgetList"""
         auth = settings.WIDGET_AUTHENTICATION_BACKEND()
         return auth.can_access_widget_list(self, user)
+
+    def add_widget(self, widget_class, data, position=None):
+        if position:
+            self.shift_range(start=position, shift=1)
+        else:
+            position = WidgetInstance.objects.filter(widget_list=self).count()
+        WidgetInstance.objects.create(widget_list=self,
+                                      widget_class=widget_class,
+                                      position=position,
+                                      title=data.pop('title'),
+                                      configuration=data)
 
     def remove_widget(self, widget_id):
         widget_to_remove = WidgetInstance.objects.get(id=widget_id)
@@ -23,6 +36,22 @@ class WidgetList(models.Model):
             widget.save()
 
         widget_to_remove.delete()
+
+    def shift_range(self, start=0, end=None, shift=1):
+        if not end:
+            end = WidgetInstance.objects.filter(widget_list=self).count()
+        if start == end:
+            return
+
+        widgets_to_shift = [widget for widget in WidgetInstance.objects.filter(widget_list=self)
+                            if start <= widget.position < end]
+
+        for widget in widgets_to_shift:
+            widget.position = widget.position + shift
+            widget.save()
+
+    def get_length(self):
+        return WidgetInstance.objects.filter(widget_list=self).count()
 
     def clear_list(self):
         for widget in WidgetInstance.objects.filter(widget_list_id=self.id):
@@ -37,10 +66,10 @@ class WidgetInstance(models.Model):
     position = models.IntegerField()
     title = models.CharField(max_length=200)
 
-    def get_widget_class(self):
+    @classmethod
+    def get_widget_class(cls, widget_class_name):
         """Return the class of serializer that can properly validate and render this widget instance"""
-        #TODO: this function is not being used right now
-        for widget_class in settings.WIDGET_CLASSES:
-            if widget_class.name == self.widget_class:
-                return widget_class(widget_instance=self)
+        for key, widget_class in get_widget_class_dict():
+            if key == widget_class_name:
+                return widget_class()
         raise ImproperlyConfigured("no widget of type %s found" % self.widget_class)

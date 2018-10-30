@@ -7,8 +7,6 @@ from rest_framework import serializers
 
 from open_widget_framework.react_fields import ReactCharField, ReactURLField, ReactMultipleChoiceField, ReactFileField
 
-from open_widget_framework.default_settings import get_widget_classes
-
 #TODO: move widgetbase to its own file
 #TODO: Add make_widget method to widget_base
 
@@ -28,6 +26,9 @@ class WidgetBase(serializers.Serializer):
     title = ReactCharField(max_length=200, props={'placeholder': 'Enter widget title', 'autoFocus': True})
 
     def __init__(self, **kwargs):
+        widget_instance = kwargs.pop('widget_instance', None)
+        if widget_instance:
+            data = {'title': widget_instance}
         self.pre_configure()
         super().__init__(**kwargs)
 
@@ -70,6 +71,10 @@ class WidgetBase(serializers.Serializer):
         """Returns the specifications for the configuration of a widget class"""
         configuration = [self.fields[key].configure_form_spec() for key in self.fields]
         return configuration
+
+    def create_widget(self, widget_list):
+        self.post_configure()
+        widget_list.add_widget(self.name, self.data)
 
 
 class TextWidget(WidgetBase):
@@ -143,22 +148,3 @@ class FileWidget(WidgetBase):
 
     def render(self, request, configuration):
         pass
-
-#TODO: Move to default settings file
-def get_widget_class_dict():
-    """Return a dictionary of all widget classes referenced by their 'name' fields"""
-    return get_widget_classes()
-
-    return {
-        'Text': TextWidget,
-        'URL': URLWidget,
-        # 'One User': OneUserWidget,
-        'Many Users': ManyUserWidget,
-        # 'File': FileWidget,
-    }
-
-#TODO: Move to class method on base
-def get_widget_class_configurations():
-    """Return a dictionary of widget class configurations references by their name field"""
-    widget_class_dict = get_widget_class_dict()
-    return {key: value().get_configuration_form_spec() for (key, value) in widget_class_dict.items()}
