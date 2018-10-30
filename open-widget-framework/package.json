@@ -34,7 +34,8 @@
     "@babel/preset-env": "^7.1.0",
     "nwb": "0.23.x",
     "react": "^16.6.0",
-    "react-dom": "^16.6.0"
+    "react-dom": "^16.6.0",
+    "react-hot-loader": "4.3.11"
   },
   "author": "",
   "homepage": "",
