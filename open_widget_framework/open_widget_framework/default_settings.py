@@ -1,11 +1,10 @@
 from django.conf import settings
 from django.utils.module_loading import import_string
-from open_widget_framework import widget_classes
 
-WIDGET_CLASSES: [
-    'widget_classes.TextWidget',
-    'widget_classes.URLWidget',
-    'widget_classes.ManyUserWidget',
+WIDGET_CLASSES = [
+    'open_widget_framework.widget_classes.TextWidget',
+    'open_widget_framework.widget_classes.URLWidget',
+    'open_widget_framework.widget_classes.ManyUserWidget',
 ]
 
 
