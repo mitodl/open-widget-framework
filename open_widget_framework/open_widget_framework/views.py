@@ -109,7 +109,7 @@ class WidgetView(APIView):
             serializer.create_widget(widget_list)
 
             request.method = 'GET'
-            return WidgetListView.as_view(request, widget_list_id=widget_list_id)
+            return WidgetListView.as_view(widget_list_id=widget_list_id)(request)
         else:
             return JsonResponse({'error': 'invalid widget data'}, status=400)
 
@@ -125,7 +125,7 @@ class WidgetView(APIView):
         # TODO: widget_list.can_access
         widget_list.remove_widget(widget_id)
         request.method = 'GET'
-        return WidgetListView.as_view(request, widget_list_id=widget_list_id)
+        return WidgetListView.as_view(widget_list_id=widget_list_id)(request)
 
     def put(self, request, widget_list_id, widget_id):
         """
@@ -148,7 +148,7 @@ class WidgetView(APIView):
             widget.configuration = update_data
             widget.save()
             request.method = 'GET'
-            return WidgetListView.as_view(request, widget_list_id=widget_list_id)
+            return WidgetListView.as_view(widget_list_id=widget_list_id)(request)
         else:
             return JsonResponse({'error': 'invalid update data'}, 400)
 
@@ -182,7 +182,7 @@ class WidgetView(APIView):
         # return on in-place moves
         if target_widget.position == target_position:
             request.method = 'GET'
-            return WidgetListView.as_view(request, widget_list_id=widget_list_id)
+            return WidgetListView.as_view(widget_list_id=widget_list_id)(request)
 
         # Shift widget in between the start and end position
         if target_position < target_widget.position:
@@ -194,4 +194,4 @@ class WidgetView(APIView):
         target_widget.position = target_position
         target_widget.save()
         request.method = 'GET'
-        return WidgetListView.as_view(request, widget_list_id=widget_list_id)
+        return WidgetListView.as_view(widget_list_id=widget_list_id)(request)
