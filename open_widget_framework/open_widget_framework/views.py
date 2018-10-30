@@ -41,11 +41,11 @@ class WidgetListView(View):
         # Construct a dictionary with id and configuration props to be consumed and rendered by React components
         widget_instances = [
             {
-                'id': widget.pop('id'),
-                'position': widget['position'],
-                'widgetProps': WidgetInstance.get_widget_class(widget.widget_class).render_with_title(request, widget)
+                'id': widget.id,
+                'position': widget.position,
+                'widgetProps': widget.make_render_props()
             }
-            for widget in get_widget_list_data(widget_list_id)
+            for widget in widget_list.get_widgets()
         ]
 
         return JsonResponse(widget_instances, safe=False)
@@ -82,17 +82,12 @@ class WidgetView(View):
         widget_list = get_object_or_404(WidgetList, id=widget_list_id)
         # TODO: widget_list.can_access
 
-        widget_data = get_widget_data(widget_id, fields=('configuration', 'title', 'widget_class'))
-        widget_class = widget_data['widget_class']
-        widget_class_configuration = {widget_class: get_widget_class_configurations()[widget_class]}
-
-        # Flatten the configuration dictionary into the widget data for react
-        widget_data.update(widget_data.pop('configuration'))
+        widget = get_object_or_404(WidgetInstance, id=widget_id)
 
         # Construct a response dictionary with the widget data as well as the appropriate widget class configuration
         response = {
-            'widgetData': widget_data,
-            'widgetClassConfigurations': widget_class_configuration,
+            'widgetData': widget.get_serializer().data,
+            'widgetClassConfigurations': {widget.widget_class: widget.get_configuration},
         }
         return JsonResponse(response)
 
@@ -109,7 +104,7 @@ class WidgetView(View):
         data = loads(request.body.decode())
 
         # Create a serializer to validate the data
-        serializer = WidgetInstance.get_widget_class(data.pop('widget_class'))
+        serializer = WidgetInstance.get_widget_class(data.pop('widget_class'))(data=data)
         if serializer.is_valid():
             serializer.create_widget(widget_list)
 
@@ -147,7 +142,7 @@ class WidgetView(View):
         update_data = loads(request.body.decode())
 
         # validate the data using the widget serializer class and then update
-        serializer = WidgetInstance.get_widget_class(widget.widget_class)
+        serializer = WidgetInstance.get_widget_class(widget.widget_class)(data=update_data)
         if serializer.is_valid():
             widget.title = update_data.pop('title')
             widget.configuration = update_data

@@ -37,6 +37,16 @@ class WidgetList(models.Model):
 
         widget_to_remove.delete()
 
+    def get_length(self):
+        return WidgetInstance.objects.filter(widget_list=self).count()
+
+    def get_widgets(self):
+        return WidgetInstance.objects.filter(widget_list=self).order_by('position')
+
+    def clear_list(self):
+        for widget in WidgetInstance.objects.filter(widget_list_id=self.id):
+            widget.delete()
+
     def shift_range(self, start=0, end=None, shift=1):
         if not end:
             end = WidgetInstance.objects.filter(widget_list=self).count()
@@ -50,12 +60,6 @@ class WidgetList(models.Model):
             widget.position = widget.position + shift
             widget.save()
 
-    def get_length(self):
-        return WidgetInstance.objects.filter(widget_list=self).count()
-
-    def clear_list(self):
-        for widget in WidgetInstance.objects.filter(widget_list_id=self.id):
-            widget.delete()
 
 
 class WidgetInstance(models.Model):
@@ -66,10 +70,20 @@ class WidgetInstance(models.Model):
     position = models.IntegerField()
     title = models.CharField(max_length=200)
 
+    def get_serializer(self):
+        return WidgetInstance.get_widget_class(self.widget_class)(widget_instance=self)
+
+    def make_render_props(self):
+        serializer = self.get_serializer()
+        return serializer.render_with_title(self)
+
+    def get_configuration(self):
+        return self.get_serializer().get_configuration_form_spec()
+
     @classmethod
     def get_widget_class(cls, widget_class_name):
         """Return the class of serializer that can properly validate and render this widget instance"""
         for key, widget_class in get_widget_class_dict():
             if key == widget_class_name:
-                return widget_class()
+                return widget_class
         raise ImproperlyConfigured("no widget of type %s found" % self.widget_class)

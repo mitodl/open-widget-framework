@@ -12,7 +12,6 @@ import {makeOptions, fetchJsonData} from './utils'
  *    fetchRoute: where to fetch widget configurations from
  *    formDidSubmit: what to do after successful form submission, usually update widget list
  *    submitUrl: where to send fetch post request with this.state.formData
- *    widgetList: widget list to add widget to
  */
 class WidgetForm extends Component {
   constructor(props) {
@@ -48,11 +47,7 @@ class WidgetForm extends Component {
   updateForm(data) {
     this.setState({
       editWidget: 'widgetData' in data,
-      formData: 'widgetData' in data ? data.widgetData
-        : {
-          widget_class: '',
-          widget_list: this.props.widgetList,
-        },
+      formData: 'widgetData' in data ? data.widgetData : {widget_class: ''},
       widgetClassConfigurations: data.widgetClassConfigurations,
       widgetClasses: Object.keys(data.widgetClassConfigurations),
     })

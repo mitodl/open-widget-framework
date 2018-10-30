@@ -27,8 +27,10 @@ class WidgetBase(serializers.Serializer):
 
     def __init__(self, **kwargs):
         widget_instance = kwargs.pop('widget_instance', None)
-        if widget_instance:
-            data = {'title': widget_instance}
+        if widget_instancte and 'data' not in kwargs:
+            data = widget_instance.configuration
+            data['title'] = widget_instance.title
+            kwargs['data'] = data
         self.pre_configure()
         super().__init__(**kwargs)
 
@@ -46,23 +48,23 @@ class WidgetBase(serializers.Serializer):
         # Can be overridden by child class
         pass
 
-    def render_with_title(self, request, widget_instance):
+    def render_with_title(self, widget_instance, request=None):
         """
         Runs the class's render function and adds on the title. If the render function returns a string, that string
         will be set to the inner HTML of the default renderer. If it returns a dict, that dict will be passed as a
         configuration to a react_renderer which must be specified.
         """
         self.post_configure()
-        rendered_body = self.render(request, widget_instance['configuration'])
+        rendered_body = self.render(request, widget_instance.configuration)
         if isinstance(rendered_body, dict):
-            rendered_body.update({'title': widget_instance['title'],
-                                  'position': widget_instance['position'],
+            rendered_body.update({'title': widget_instance.title,
+                                  'position': widget_instance.position,
                                   'reactRenderer': self.react_renderer})
             return rendered_body
         else:
             return {
-                'title': widget_instance['title'],
-                'position': widget_instance['position'],
+                'title': widget_instance.title,
+                'position': widget_instance.position,
                 'html': rendered_body,
                 'reactRenderer': self.react_renderer,
             }
