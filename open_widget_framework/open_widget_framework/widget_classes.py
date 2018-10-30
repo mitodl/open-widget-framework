@@ -27,7 +27,7 @@ class WidgetBase(serializers.Serializer):
 
     def __init__(self, **kwargs):
         widget_instance = kwargs.pop('widget_instance', None)
-        if widget_instancte and 'data' not in kwargs:
+        if widget_instance and 'data' not in kwargs:
             data = widget_instance.configuration
             data['title'] = widget_instance.title
             kwargs['data'] = data
