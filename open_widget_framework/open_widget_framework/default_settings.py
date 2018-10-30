@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.utils.module_loading import import_string
 
-WIDGET_CLASSES: [
+WIDGET_CLASSES = [
     'open_widget_framework.widget_classes.TextWidget',
     'open_widget_framework.widget_classes.URLWidget',
     'open_widget_framework.widget_classes.ManyUserWidget',
