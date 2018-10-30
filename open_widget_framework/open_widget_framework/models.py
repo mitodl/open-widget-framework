@@ -83,7 +83,7 @@ class WidgetInstance(models.Model):
     @classmethod
     def get_widget_class(cls, widget_class_name):
         """Return the class of serializer that can properly validate and render this widget instance"""
-        for key, widget_class in get_widget_class_dict():
+        for (key, widget_class) in get_widget_class_dict().items():
             if key == widget_class_name:
                 return widget_class
         raise ImproperlyConfigured("no widget of type %s found" % self.widget_class)
