@@ -18,10 +18,11 @@ class WidgetForm extends Component {
     super(props)
     this.state = {
       formData: null,
+      widgetClass: null,
       widgetClassConfigurations: null,
       widgetClasses: null,
     }
-    this.updateForm = this.updateForm.bind(this)
+    this.resetForm = this.resetForm.bind(this)
     this.onChange = this.onChange.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
     this.makeWidgetClassSelect = this.makeWidgetClassSelect.bind(this)
@@ -32,7 +33,7 @@ class WidgetForm extends Component {
     /**
      * Fetch available widget classes and configurations after component mount
      */
-    fetchJsonData(this.props.fetchRoute, this.updateForm)
+    fetchJsonData(this.props.fetchRoute, this.resetForm)
   }
 
   componentDidUpdate(prevProps) {
@@ -40,17 +41,21 @@ class WidgetForm extends Component {
      * Fetch new form data if the fetchRoute changes
      */
     if (prevProps.fetchRoute !== this.props.fetchRoute) {
-      fetchJsonData(this.props.fetchRoute, this.updateForm)
+      fetchJsonData(this.props.fetchRoute, this.resetForm)
     }
   }
 
-  updateForm(data) {
+  resetForm(data) {
     this.setState({
       editWidget: 'widgetData' in data,
-      formData: 'widgetData' in data ? data.widgetData : {widget_class: ''},
+      formData: 'widgetData' in data ? data.widgetData : {},
+      widgetClass: '',
       widgetClassConfigurations: data.widgetClassConfigurations,
       widgetClasses: Object.keys(data.widgetClassConfigurations),
     })
+    if (this.state.widgetClasses.length === 1) {
+      this.setState({widgetClass: this.state.widgetClasses[0]})
+    }
   }
 
   onChange(key, value) {
@@ -70,6 +75,8 @@ class WidgetForm extends Component {
      * Submit widget configuration from this.state.formData to the server
      */
     event.preventDefault()
+    let data = this.state.formData
+    data['widget_class'] = this.state.widgetClass
     fetchJsonData(this.props.submitUrl, this.props.onSubmit,
                   {body: JSON.stringify(this.state.formData), method: this.props.submitMethod})
   }
@@ -99,7 +106,7 @@ class WidgetForm extends Component {
         <form className={'card'} onSubmit={this.onSubmit}>
           <div className={'form-group card-header'}>
             <label className='widget-class-select-label' htmlFor={'widget-class-select'}>
-              {'Configure ' + this.state.formData['widget_class'] + ' Widget'}
+              {'Configure ' + this.state.widgetClass + ' Widget'}
             </label>
             {this.makeWidgetClassSelect()}
           </div>
