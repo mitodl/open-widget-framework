@@ -61,7 +61,6 @@ class WidgetList(models.Model):
             widget.save()
 
 
-
 class WidgetInstance(models.Model):
     """WidgetInstance contains data for a single widget instance, regardless of what class of widget it is"""
     widget_list = models.ForeignKey(WidgetList, related_name="widgets", on_delete=models.CASCADE)
@@ -71,7 +70,7 @@ class WidgetInstance(models.Model):
     title = models.CharField(max_length=200)
 
     def get_widget_serializer(self):
-        return WidgetInstance.get_widget_serializer(self.widget_class)(widget_instance=self)
+        return WidgetInstance.get_widget_class_serializer(self.widget_class)(widget_instance=self)
 
     def get_serialized_data(self):
         serializer = self.get_widget_serializer()
