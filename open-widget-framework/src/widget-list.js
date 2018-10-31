@@ -86,7 +86,7 @@ class WidgetList extends Component {
     this.setState({
       retrieveFormRoute: apiPath('get_configurations'),
       submitFormMethod: 'POST',
-      submitFormRoute: apiPath('create_widget', this.props.widgetListId),
+      submitFormRoute: apiPath('widget', this.props.widgetListId),
     })
   }
 

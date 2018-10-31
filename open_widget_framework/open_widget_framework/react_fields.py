@@ -33,6 +33,11 @@ class ReactField(serializers.Field):
         }
 
     @staticmethod
+    def serialize(value):
+        """Serialize data in the field for the configuration JSONField on the widget"""
+        return value
+
+    @staticmethod
     def make_choices_dict(choices):
         """Force choices into a format that react-select component prefers"""
         if choices and isinstance(choices, list) and not isinstance(choices[0], tuple):
@@ -52,21 +57,21 @@ class ReactCharField(serializers.CharField, ReactField):
         super().__init__(max_length=max_length, input_type=input_type, **kwargs)
 
     def configure_form_spec(self):
-        dump = super().configure_form_spec()
-        dump['props'].update({'maxLength': '' if self.max_length is None else self.max_length,
-                              'minLength': '' if self.min_length is None else self.min_length,
-                             })
-        return dump
+        configuration = super().configure_form_spec()
+        configuration['props'].update({'maxLength': '' if self.max_length is None else self.max_length,
+                                       'minLength': '' if self.min_length is None else self.min_length,
+                                       })
+        return configuration
 
 
 class ReactURLField(serializers.URLField, ReactField):
     """ReactField extension of DRF UrlField"""
     def configure_form_spec(self):
-        dump = super().configure_form_spec()
-        dump['props'].update({'maxLength': '' if self.max_length is None else self.max_length,
-                              'minLength': '' if self.min_length is None else self.min_length,
-                             })
-        return dump
+        configuration = super().configure_form_spec()
+        configuration['props'].update({'maxLength': '' if self.max_length is None else self.max_length,
+                                       'minLength': '' if self.min_length is None else self.min_length,
+                                       })
+        return configuration
 
 
 class ReactChoiceField(serializers.ChoiceField, ReactField):
@@ -78,9 +83,9 @@ class ReactChoiceField(serializers.ChoiceField, ReactField):
         self.props['isMulti'] = False
 
     def configure_form_spec(self):
-        dump = super().configure_form_spec()
-        dump.update({'choices': dict(self.choices)})
-        return dump
+        configuration = super().configure_form_spec()
+        configuration.update({'choices': dict(self.choices)})
+        return configuration
 
 
 class ReactMultipleChoiceField(serializers.MultipleChoiceField, ReactField):
@@ -91,9 +96,13 @@ class ReactMultipleChoiceField(serializers.MultipleChoiceField, ReactField):
         self.props['isMulti'] = True
 
     def configure_form_spec(self):
-        dump = super().configure_form_spec()
-        dump.update({'choices': dict(self.choices)})
-        return dump
+        configuration = super().configure_form_spec()
+        configuration.update({'choices': dict(self.choices)})
+        return configuration
+
+    @staticmethod
+    def serialize(value):
+        return list(value)
 
 
 class ReactFileField(serializers.FileField, ReactField):

@@ -54,7 +54,6 @@ class WidgetBase(serializers.Serializer):
         will be set to the inner HTML of the default renderer. If it returns a dict, that dict will be passed as a
         configuration to a react_renderer which must be specified.
         """
-        self.post_configure()
         rendered_body = self.render(request, widget_instance.configuration)
         if isinstance(rendered_body, dict):
             rendered_body.update({'title': widget_instance.title,
@@ -76,8 +75,10 @@ class WidgetBase(serializers.Serializer):
 
     def create_widget(self, widget_list):
         self.post_configure()
-        widget_list.add_widget(self.name, self.data)
+        widget_list.add_widget(self.name, self.serialize_data())
 
+    def serialize_data(self):
+        return {key: self.fields[key].serialize(self.data[key]) for key in self.fields}
 
 class TextWidget(WidgetBase):
     """

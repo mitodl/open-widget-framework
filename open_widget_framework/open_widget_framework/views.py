@@ -5,7 +5,7 @@ from json import loads
 
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
-from rest_framework.views import APIView
+from django.views import View
 
 from open_widget_framework.models import WidgetInstance, WidgetList
 from open_widget_framework.default_settings import get_widget_class_configurations
@@ -27,7 +27,7 @@ def get_widget_configurations(request):
     return JsonResponse({'widgetClassConfigurations': get_widget_class_configurations()})
 
 
-class WidgetListView(APIView):
+class WidgetListView(View):
     def get(self, request, widget_list_id):
         """
         API endpoint for getting the widgets in a single list
@@ -49,11 +49,10 @@ class WidgetListView(APIView):
 
         return JsonResponse(widget_instances, safe=False)
 
-    def post(self, request):
+    def post(self, request, widget_list_id):
         """
         API endpoint to make a new widget list
         """
-        print('post')
         WidgetList.objects.create()
         return get_widget_lists(request)
 
@@ -71,7 +70,7 @@ class WidgetListView(APIView):
         return get_widget_lists(request)
 
 
-class WidgetView(APIView):
+class WidgetView(View):
     def get(self, request, widget_list_id, widget_id):
         """
         API endpoint to get data for a single widget
@@ -91,7 +90,7 @@ class WidgetView(APIView):
         }
         return JsonResponse(response)
 
-    def post(self, request, widget_list_id):
+    def post(self, request, widget_list_id, widget_id):
         """
         API endpoint to create a widget instance on a list after validating the data with a serializer
         class
@@ -109,7 +108,7 @@ class WidgetView(APIView):
             serializer.create_widget(widget_list)
 
             request.method = 'GET'
-            return WidgetListView.as_view(widget_list_id=widget_list_id)(request)
+            return WidgetListView.as_view()(request, widget_list_id)
         else:
             return JsonResponse({'error': 'invalid widget data'}, status=400)
 
@@ -125,7 +124,7 @@ class WidgetView(APIView):
         # TODO: widget_list.can_access
         widget_list.remove_widget(widget_id)
         request.method = 'GET'
-        return WidgetListView.as_view(widget_list_id=widget_list_id)(request)
+        return WidgetListView.as_view()(request, widget_list_id)
 
     def put(self, request, widget_list_id, widget_id):
         """
@@ -148,12 +147,11 @@ class WidgetView(APIView):
             widget.configuration = update_data
             widget.save()
             request.method = 'GET'
-            return WidgetListView.as_view(widget_list_id=widget_list_id)(request)
+            return WidgetListView.as_view()(request, widget_list_id)
         else:
             return JsonResponse({'error': 'invalid update data'}, 400)
 
     def patch(self, request, widget_list_id, widget_id):
-        print()
         """
         API endpoint to reposition a widget within a widget list. It takes the desired position as a
         query parameter
@@ -182,16 +180,16 @@ class WidgetView(APIView):
         # return on in-place moves
         if target_widget.position == target_position:
             request.method = 'GET'
-            return WidgetListView.as_view(widget_list_id=widget_list_id)(request)
+            return WidgetListView.as_view()(request, widget_list_id)
 
         # Shift widget in between the start and end position
         if target_position < target_widget.position:
             widget_list.shift_range(start=target_position, end=target_widget.position, shift=1)
         else:
-            widget_list.shift_range(start=target_position + 1, end=target_widget.position + 1, shift=-1)
+            widget_list.shift_range(start=target_widget.position + 1, end=target_position + 1, shift=-1)
 
         # Update target widget
         target_widget.position = target_position
         target_widget.save()
         request.method = 'GET'
-        return WidgetListView.as_view(widget_list_id=widget_list_id)(request)
+        return WidgetListView.as_view()(request, widget_list_id)
