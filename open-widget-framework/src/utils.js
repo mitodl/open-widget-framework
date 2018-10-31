@@ -41,20 +41,12 @@ function apiPath(name, listId, widgetId, args) {
   }
 }
 
-function makeOptions(values, labels) {
-  if (labels === undefined) {
-    labels = values
-  }
-
-  if (labels.length !== values.length) {
-    return undefined
-  }
-
-  return range(labels.length).map(
-    index => ({
-      key: labels[index],
-      label: labels[index],
-      value: values[index],
+function makeOptions(choicesDict) {
+  return Object.keys(choicesDict).map(
+    key => ({
+      key: key,
+      label: key,
+      value: choicesDict[key],
     })
   )
 }

@@ -151,8 +151,7 @@ class WidgetForm extends Component {
 
       // Create options for select parameters and set defaultValue
       if (inputType === 'select') {
-        let keys = Object.keys(field.choices)
-        inputProps.options = makeOptions(keys, keys.map(key => field.choices[key]))
+        inputProps.options = makeOptions(field.choices)
         if (this.state.editWidget) {
           for (let option of inputProps.options) {
             if (this.state.formData[fieldKey].includes(option.value)) {
