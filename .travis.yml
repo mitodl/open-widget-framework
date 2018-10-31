@@ -8,7 +8,7 @@ matrix:
       python:
         - "3.6"
       install:
-        - pip install -r open_widget_framework/test_requirements.txt
+        - pip install -r open_widget_framework/requirements.txt -r open_widget_framework/test_requirements.txt
       script: ./travis/py_tests.sh
     - name: JavaScript
       language: javascript
