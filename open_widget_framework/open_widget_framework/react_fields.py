@@ -97,7 +97,10 @@ class ReactMultipleChoiceField(serializers.MultipleChoiceField, ReactField):
 
     def configure_form_spec(self):
         configuration = super().configure_form_spec()
-        configuration.update({'choices': dict(self.choices)})
+        configuration.update({
+            'choice_keys': list(self.choices.keys()),
+            'choice_values': list(self.choices.values()),
+        })
         return configuration
 
     @staticmethod
