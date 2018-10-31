@@ -77,7 +77,7 @@ class WidgetInstance(models.Model):
         if not serializer.is_valid():
             raise ImproperlyConfigured("%s widget (%s, id: %s) contains invalid information" %
                                        (self.widget_class, self.title, self.id))
-        return serializer.data
+        return serializer.serialize_data()
 
     def make_render_props(self):
         serializer = self.get_widget_serializer()
