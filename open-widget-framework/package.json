@@ -1,6 +1,6 @@
 {
   "name": "@zagaran/open-widget-framework",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "description": "open widget framework React component",
   "main": "lib/index.js",
   "module": "es/index.js",

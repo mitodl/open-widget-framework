@@ -126,7 +126,7 @@ class ManyUserWidget(WidgetBase):
 
     def pre_configure(self):
         # Dynamically set users to choose from
-        self.fields['user_ids'].choices = [(user.username, user.id) for user in User.objects.all()]
+        self.fields['user_ids'].choices = [(user.id, user.username) for user in User.objects.all()]
 
     def render(self, request, configuration):
         users = {User.objects.get(id=user_id) for user_id in configuration['user_ids']}
