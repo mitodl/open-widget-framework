@@ -86,7 +86,7 @@ class WidgetForm extends Component {
       return (
         <Select className={'widget-form-select'}
                 id={'widget-class-select'}
-                onChange={(option) => this.onChange('widget_class', option.value)}
+                onChange={(option) => this.setState({widgetClass: option.value})}
                 options={makeOptions(this.state.widgetClasses)}
                 placeholder={'Choose a widget class'}/>
       )
