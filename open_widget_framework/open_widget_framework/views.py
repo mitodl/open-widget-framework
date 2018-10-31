@@ -85,7 +85,7 @@ class WidgetView(View):
 
         # Construct a response dictionary with the widget data as well as the appropriate widget class configuration
         response = {
-            'widgetData': widget.get_serializer().data,
+            'widgetData': widget.get_serialized_data(),
             'widgetClassConfigurations': {widget.widget_class: widget.get_configuration},
         }
         return JsonResponse(response)
@@ -103,7 +103,7 @@ class WidgetView(View):
         data = loads(request.body.decode())
 
         # Create a serializer to validate the data
-        serializer = WidgetInstance.get_widget_class(data.pop('widget_class'))(data=data)
+        serializer = WidgetInstance.get_widget_class_serializer(data.pop('widget_class'))(data=data)
         if serializer.is_valid():
             serializer.create_widget(widget_list)
 
@@ -141,7 +141,7 @@ class WidgetView(View):
         update_data = loads(request.body.decode())
 
         # validate the data using the widget serializer class and then update
-        serializer = WidgetInstance.get_widget_class(widget.widget_class)(data=update_data)
+        serializer = WidgetInstance.get_widget_class_serializer(widget.widget_class)(data=update_data)
         if serializer.is_valid():
             widget.title = update_data.pop('title')
             widget.configuration = update_data

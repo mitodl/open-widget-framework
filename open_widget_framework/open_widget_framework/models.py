@@ -70,18 +70,25 @@ class WidgetInstance(models.Model):
     position = models.IntegerField()
     title = models.CharField(max_length=200)
 
-    def get_serializer(self):
-        return WidgetInstance.get_widget_class(self.widget_class)(widget_instance=self)
+    def get_widget_serializer(self):
+        return WidgetInstance.get_widget_serializer(self.widget_class)(widget_instance=self)
+
+    def get_serialized_data(self):
+        serializer = self.get_widget_serializer()
+        if not serializer.is_valid():
+            raise ImproperlyConfigured("%s widget (%s, id: %s) contains invalid information" %
+                                       (self.widget_class, self.title, self.id))
+        return serializer.data
 
     def make_render_props(self):
-        serializer = self.get_serializer()
+        serializer = self.get_widget_serializer()
         return serializer.render_with_title(self)
 
     def get_configuration(self):
-        return self.get_serializer().get_configuration_form_spec()
+        return self.get_widget_serializer().get_configuration_form_spec()
 
     @classmethod
-    def get_widget_class(cls, widget_class_name):
+    def get_widget_class_serializer(cls, widget_class_name):
         """Return the class of serializer that can properly validate and render this widget instance"""
         for (key, widget_class) in get_widget_class_dict().items():
             if key == widget_class_name:
