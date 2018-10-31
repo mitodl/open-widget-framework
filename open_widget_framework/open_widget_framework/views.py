@@ -86,7 +86,7 @@ class WidgetView(View):
         # Construct a response dictionary with the widget data as well as the appropriate widget class configuration
         response = {
             'widgetData': widget.get_serialized_data(),
-            'widgetClassConfigurations': {widget.widget_class: widget.get_configuration},
+            'widgetClassConfigurations': {widget.widget_class: widget.get_configuration()},
         }
         return JsonResponse(response)
 
