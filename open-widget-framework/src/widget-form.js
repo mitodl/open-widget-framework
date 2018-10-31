@@ -110,7 +110,7 @@ class WidgetForm extends Component {
             </label>
             {this.makeWidgetClassSelect()}
           </div>
-          {this.renderForm(this.state.widgetClassConfigurations[this.state.formData['widget_class']])}
+          {this.renderForm(this.state.widgetClassConfigurations[this.state.widgetClass])}
           <button className={'btn btn-danger'} onClick={this.props.onCancel}>Cancel</button>
         </form>
       )
