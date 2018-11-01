@@ -12,18 +12,17 @@ django-webpack-loader==0.6.0
 django==2.1.2
 djangorestframework==3.9.0
 ipython-genutils==0.2.0   # via traitlets
-ipython==7.0.1
+ipython==7.1.1
 jedi==0.13.1              # via ipython
 parso==0.3.1              # via jedi
 pexpect==4.6.0            # via ipython
 pickleshare==0.7.5        # via ipython
 pip-tools==3.1.0
-prompt-toolkit==2.0.6     # via ipython
-psycopg2>=2.7
+prompt-toolkit==2.0.7     # via ipython
+psycopg2==2.7.5
 ptyprocess==0.6.0         # via pexpect
 pygments==2.2.0           # via ipython
-pytz==2018.5              # via django
-simplegeneric==0.8.1      # via ipython
+pytz==2018.7              # via django
 six==1.11.0               # via django-extensions, pip-tools, prompt-toolkit, traitlets
 traitlets==4.3.2          # via ipython
 wcwidth==0.1.7            # via prompt-toolkit

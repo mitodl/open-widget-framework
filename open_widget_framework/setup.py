@@ -30,12 +30,12 @@ if sys.version < '3':
 
 setup(
     name="open_widget_framework",
-    version="0.1.2",
+    version="0.1.4",
     packages=find_packages(),
     install_requires=[
-            "Django==2.1.2",
-            "django-rest-framework==0.1.0",
-            "psycopg2==2.7.5",
+            "Django>=2",
+            "djangorestframework>=3",
+            "psycopg2>=2.7",
     ],
     license='MIT',
     author="Zagaran, Inc.",
