@@ -5,7 +5,7 @@ from json import loads
 
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
-from django.views import View
+from rest_framework.views import APIView
 
 from open_widget_framework.models import WidgetInstance, WidgetList
 from open_widget_framework.default_settings import get_widget_class_configurations
@@ -27,7 +27,7 @@ def get_widget_configurations(request):
     return JsonResponse({'widgetClassConfigurations': get_widget_class_configurations()})
 
 
-class WidgetListView(View):
+class WidgetListView(APIView):
     def get(self, request, widget_list_id):
         """
         API endpoint for getting the widgets in a single list
@@ -70,7 +70,7 @@ class WidgetListView(View):
         return get_widget_lists(request)
 
 
-class WidgetView(View):
+class WidgetView(APIView):
     def get(self, request, widget_list_id, widget_id):
         """
         API endpoint to get data for a single widget
