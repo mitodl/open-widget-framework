@@ -28,7 +28,8 @@ def get_widget_configurations(request):
 
 
 class WidgetListView(APIView):
-    def get(self, request, widget_list_id):
+    @staticmethod
+    def get(request, widget_list_id):
         """
         API endpoint for getting the widgets in a single list
 
@@ -98,6 +99,7 @@ class WidgetView(APIView):
         Args:
             widget_list_id: id of WidgetList to add widget to
         """
+        print(request)
         widget_list = get_object_or_404(WidgetList, id=widget_list_id)
         # TODO: widget_list.can_access
         data = loads(request.body.decode())
@@ -107,8 +109,7 @@ class WidgetView(APIView):
         if serializer.is_valid():
             serializer.create_widget(widget_list)
 
-            request.method = 'GET'
-            return WidgetListView.as_view()(request, widget_list_id)
+            return WidgetListView.get(request._request, widget_list_id)
         else:
             return JsonResponse({'error': 'invalid widget data'}, status=400)
 
@@ -123,8 +124,7 @@ class WidgetView(APIView):
         widget_list = get_object_or_404(WidgetList, id=widget_list_id)
         # TODO: widget_list.can_access
         widget_list.remove_widget(widget_id)
-        request.method = 'GET'
-        return WidgetListView.as_view()(request, widget_list_id)
+        return WidgetListView.get(request._request, widget_list_id)
 
     def put(self, request, widget_list_id, widget_id):
         """
@@ -146,8 +146,7 @@ class WidgetView(APIView):
             widget.title = update_data.pop('title')
             widget.configuration = update_data
             widget.save()
-            request.method = 'GET'
-            return WidgetListView.as_view()(request, widget_list_id)
+            return WidgetListView.get(request._request, widget_list_id)
         else:
             return JsonResponse({'error': 'invalid update data'}, 400)
 
@@ -179,8 +178,7 @@ class WidgetView(APIView):
 
         # return on in-place moves
         if target_widget.position == target_position:
-            request.method = 'GET'
-            return WidgetListView.as_view()(request, widget_list_id)
+            return WidgetListView.get(request._request, widget_list_id)
 
         # Shift widget in between the start and end position
         if target_position < target_widget.position:
@@ -191,5 +189,4 @@ class WidgetView(APIView):
         # Update target widget
         target_widget.position = target_position
         target_widget.save()
-        request.method = 'GET'
-        return WidgetListView.as_view()(request, widget_list_id)
+        return WidgetListView.get(request._request, widget_list_id)
