@@ -19,7 +19,7 @@ pexpect==4.6.0            # via ipython
 pickleshare==0.7.5        # via ipython
 pip-tools==3.1.0
 prompt-toolkit==2.0.6     # via ipython
-psycopg2==2.7.5
+psycopg2>=2.7
 ptyprocess==0.6.0         # via pexpect
 pygments==2.2.0           # via ipython
 pytz==2018.5              # via django
