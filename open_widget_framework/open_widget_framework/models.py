@@ -92,4 +92,4 @@ class WidgetInstance(models.Model):
         for (key, widget_class) in get_widget_class_dict().items():
             if key == widget_class_name:
                 return widget_class
-        raise ImproperlyConfigured("no widget of type %s found" % self.widget_class)
+        raise ImproperlyConfigured("no widget of type %s found" % widget_class_name)

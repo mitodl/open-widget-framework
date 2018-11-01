@@ -30,7 +30,7 @@ if sys.version < '3':
 
 setup(
     name="open_widget_framework",
-    version="0.1.4",
+    version="0.1.6",
     packages=find_packages(),
     install_requires=[
             "Django>=2",
