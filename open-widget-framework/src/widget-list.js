@@ -134,7 +134,7 @@ class WidgetList extends Component {
   }
 
   renderWidgetList() {
-    let ListWrapper, listWrapperProps
+    let ListWrapper
     if ('listWrapper' in this.props) {
       ListWrapper = this.props.listWrapper
     } else {
@@ -176,7 +176,7 @@ class WidgetList extends Component {
     )
   }
 
-  renderWidgetForm() {
+  renderWidgetForm(postSubmit) {
     if (this.state.retrieveFormRoute === null) {
       return null
     } else {
@@ -184,7 +184,7 @@ class WidgetList extends Component {
         <WidgetForm csrfToken={window.csrfToken}
                     fetchRoute={this.state.retrieveFormRoute}
                     onCancel={this.closeForm}
-                    onSubmit={this.submitWidgetForm}
+                    onSubmit={(data) => { this.submitWidgetForm(data); postSubmit() }}
                     submitMethod={this.state.submitFormMethod}
                     submitUrl={this.state.submitFormRoute}
                     widgetList={this.props.widgetListId}
