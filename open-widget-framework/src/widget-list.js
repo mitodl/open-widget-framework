@@ -26,6 +26,8 @@ class WidgetList extends Component {
     this.submitWidgetForm = this.submitWidgetForm.bind(this)
     this.openEditWidgetForm = this.openEditWidgetForm.bind(this)
     this.toggleEditMode = this.toggleEditMode.bind(this)
+    this.moveWidget = this.moveWidget.bind(this)
+    this.deleteWidget = this.deleteWidget.bind(this)
     this.openNewWidgetForm = this.openNewWidgetForm.bind(this)
     this.renderWidgetList = this.renderWidgetList.bind(this)
     this.renderListBody = this.renderListBody.bind(this)
@@ -90,26 +92,38 @@ class WidgetList extends Component {
     })
   }
 
+  deleteWidget(widgetId) {
+    /**
+     * Make request to server to delete widget
+     */
+    fetchJsonData(apiPath('widget', this.props.widgetListId, widgetId), this.updateWidgetList, {method: 'DELETE'})
+  }
+
+  moveWidget(widgetId, position) {
+    /**
+     * Make request to server to move widget up
+     */
+    fetchJsonData(apiPath('widget', this.props.widgetListId, widgetId, {position: position}),
+                  this.updateWidgetList, {method: 'PATCH'})
+  }
+
   renderWidgetList() {
     let ListWrapper, listWrapperProps
     if ('listWrapper' in this.props) {
       ListWrapper = this.props.listWrapper
-      if ('listWrapperProps' in this.props) {
-        listWrapperProps = this.props.listWrapperProps
-      }
     } else {
       ListWrapper = DefaultListWrapper
-      listWrapperProps = {
-        openNewWidgetForm: this.openNewWidgetForm,
-        editModeActive: this.state.editModeActive,
-        toggleEditMode: this.toggleEditMode,
-      }
     }
-
+    listWrapperProps = {
+      editModeActive: this.state.editModeActive,
+      openNewWidgetForm: this.openNewWidgetForm,
+      renderList: this.renderListBody,
+      toggleEditMode: this.toggleEditMode,
+      widgetListId: this.props.widgetListId,
+    }
     return (
-      <ListWrapper renderList={this.renderListBody}
-                   widgetListId={this.props.widgetListId}
-                   {...listWrapperProps}
+      <ListWrapper {...listWrapperProps}
+                   {...this.props.listWrapperProps}
       />
     )
   }
@@ -124,24 +138,23 @@ class WidgetList extends Component {
     let WidgetWrapper, widgetWrapperProps
     if ('widgetWrapper' in this.props) {
       WidgetWrapper = this.props.widgetWrapper
-      if ('widgetWrapperProps' in this.props) {
-        widgetWrapperProps = this.props.widgetWrapperProps
-      }
     } else {
       WidgetWrapper = DefaultWidgetWrapper
-      widgetWrapperProps = {
-        editModeActive: this.state.editModeActive,
-        openEditWidgetForm: this.openEditWidgetForm,
-        onChange: this.updateWidgetList,
-        widgetListId: this.props.widgetListId,
-      }
+    }
+    widgetWrapperProps = {
+      deleteWidget: this.deleteWidget,
+      editModeActive: this.state.editModeActive,
+      listLength: this.state.widgetInstances.length,
+      moveWidget: this.moveWidget,
+      openEditWidgetForm: this.openEditWidgetForm,
+      renderWidget: () => this.renderWidgetBody(widgetInstance.widgetProps),
+      widgetListId: this.props.widgetListId,
     }
     return (
       <WidgetWrapper key={widgetInstance.id}
-                     listLength={this.state.widgetInstances.length}
-                     renderWidget={this.renderWidgetBody}
                      {...widgetInstance}
                      {...widgetWrapperProps}
+                     {...this.props.widgetWrapperProps}
       />
     )
   }
@@ -162,8 +175,8 @@ class WidgetList extends Component {
                     fetchRoute={this.state.retrieveFormRoute}
                     onCancel={this.closeForm}
                     onSubmit={this.submitWidgetForm}
-                    submitUrl={this.state.submitFormRoute}
                     submitMethod={this.state.submitFormMethod}
+                    submitUrl={this.state.submitFormRoute}
                     widgetList={this.props.widgetListId}
         />
       )
@@ -208,7 +221,7 @@ class DefaultListWrapper extends Component {
         </div>
         <hr/>
         <div>
-          {this.props.renderList(this.props.widgetInstances)}
+          {this.props.renderList()}
         </div>
       </div>
     )
@@ -216,33 +229,18 @@ class DefaultListWrapper extends Component {
 }
 
 class DefaultWidgetWrapper extends Component {
-  deleteWidget() {
-    /**
-     * Make request to server to delete widget
-     */
-    fetchJsonData(apiPath('widget', this.props.widgetListId, this.props.id), this.props.onChange, {method: 'DELETE'})
-  }
-
-  moveWidget(position) {
-    /**
-     * Make request to server to move widget up
-     */
-    fetchJsonData(apiPath('widget', this.props.widgetListId, this.props.id, {position: position}),
-                  this.props.onChange, {method: 'PATCH'})
-  }
-
   renderEditBar() {
     return (
       <div className={'edit-widget-bar btn-group card-header'}>
         <button className={'btn btn-info col'}
                 disabled={this.props.position === 0}
-                onClick={() => this.moveWidget(this.props.position - 1)}
+                onClick={() => this.props.moveWidget(this.props.id, this.props.position - 1)}
                 title={'Move widget up'}>
           <Octicon name={'chevron-up'}/>
         </button>
         <button className={'btn btn-info col'}
                 disabled={this.props.position === this.props.listLength - 1}
-                onClick={() => this.moveWidget(this.props.position + 1)}
+                onClick={() => this.props.moveWidget(this.props.id, this.props.position + 1)}
                 title={'Move widget down'}>
           <Octicon name={'chevron-down'}/>
         </button>
@@ -250,7 +248,7 @@ class DefaultWidgetWrapper extends Component {
                 title={'Update widget'}>
           <Octicon name={'pencil'}/>
         </button>
-        <button className={'btn btn-danger col'} onClick={() => this.deleteWidget(this.props.id)}
+        <button className={'btn btn-danger col'} onClick={() => this.props.deleteWidget(this.props.id)}
                 title={'Delete widget'}>
           <Octicon name={'x'}/>
         </button>
@@ -262,7 +260,7 @@ class DefaultWidgetWrapper extends Component {
     return (
       <div className={'widget card mb-3 bg-light'} id={'widget-' + this.props.id}>
         {this.props.editModeActive ? this.renderEditBar() : null}
-        {this.props.renderWidget(this.props.widgetProps)}
+        {this.props.renderWidget()}
       </div>
     )
   }
