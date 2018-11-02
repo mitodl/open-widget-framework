@@ -24,9 +24,9 @@ class WidgetList extends Component {
     this.updateWidgetList = this.updateWidgetList.bind(this)
     this.closeForm = this.closeForm.bind(this)
     this.submitWidgetForm = this.submitWidgetForm.bind(this)
-    this.editWidget = this.editWidget.bind(this)
+    this.openEditWidgetForm = this.openEditWidgetForm.bind(this)
     this.toggleEditMode = this.toggleEditMode.bind(this)
-    this.addWidget = this.addWidget.bind(this)
+    this.openNewWidgetForm = this.openNewWidgetForm.bind(this)
     this.renderWidgetList = this.renderWidgetList.bind(this)
     this.renderListBody = this.renderListBody.bind(this)
     this.renderWidget = this.renderWidget.bind(this)
@@ -68,7 +68,7 @@ class WidgetList extends Component {
     this.closeForm()
   }
 
-  editWidget(widgetId) {
+  openEditWidgetForm(widgetId) {
     this.closeForm()
     this.setState({
       retrieveFormRoute: apiPath('widget', this.props.widgetListId, widgetId),
@@ -82,7 +82,7 @@ class WidgetList extends Component {
     this.closeForm()
   }
 
-  addWidget() {
+  openNewWidgetForm() {
     this.setState({
       retrieveFormRoute: apiPath('get_configurations'),
       submitFormMethod: 'POST',
@@ -100,7 +100,7 @@ class WidgetList extends Component {
     } else {
       ListWrapper = DefaultListWrapper
       listWrapperProps = {
-        addWidget: this.addWidget,
+        openNewWidgetForm: this.openNewWidgetForm,
         editModeActive: this.state.editModeActive,
         toggleEditMode: this.toggleEditMode,
       }
@@ -131,7 +131,7 @@ class WidgetList extends Component {
       WidgetWrapper = DefaultWidgetWrapper
       widgetWrapperProps = {
         editModeActive: this.state.editModeActive,
-        editWidget: this.editWidget,
+        openEditWidgetForm: this.openEditWidgetForm,
         onChange: this.updateWidgetList,
         widgetListId: this.props.widgetListId,
       }
@@ -191,7 +191,7 @@ class WidgetList extends Component {
 class DefaultListWrapper extends Component {
   renderAddWidgetButton() {
     return (
-      <button className={'btn btn-info'} onClick={this.props.addWidget}>
+      <button className={'btn btn-info'} onClick={this.props.openNewWidgetForm}>
         <Octicon name={'plus'}/>
       </button>
     )
@@ -246,7 +246,7 @@ class DefaultWidgetWrapper extends Component {
                 title={'Move widget down'}>
           <Octicon name={'chevron-down'}/>
         </button>
-        <button className={'btn btn-info col'} onClick={() => this.props.editWidget(this.props.id)}
+        <button className={'btn btn-info col'} onClick={() => this.props.openEditWidgetForm(this.props.id)}
                 title={'Update widget'}>
           <Octicon name={'pencil'}/>
         </button>
