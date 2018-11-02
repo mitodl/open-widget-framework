@@ -107,6 +107,31 @@ class WidgetList extends Component {
                   this.updateWidgetList, {method: 'PATCH'})
   }
 
+  makePassThroughProps(widgetInstance) {
+    let passThroughProps = {
+      deleteWidget: this.deleteWidget,
+      editModeActive: this.state.editModeActive,
+      listLength: this.state.widgetInstances.length,
+      moveWidget: this.moveWidget,
+      openEditWidgetForm: this.openEditWidgetForm,
+      openNewWidgetForm: this.openNewWidgetForm,
+      renderList: this.renderListBody,
+      renderWidget: this.renderWidgetBody,
+      renderWidgetForm: this.renderWidgetForm,
+      toggleEditMode: this.toggleEditMode,
+      widgetListId: this.props.widgetListId,
+    }
+    if (widgetInstance !== undefined) {
+      passThroughProps = Object.assign(passThroughProps, {
+        deleteWidget: () => this.deleteWidget(widgetInstance),
+        moveWidget: (position) => this.moveWidget(widgetInstance, position),
+        renderWidget: () => this.renderWidgetBody(widgetInstance.widgetProps),
+      })
+    }
+
+    return passThroughProps
+  }
+
   renderWidgetList() {
     let ListWrapper, listWrapperProps
     if ('listWrapper' in this.props) {
@@ -114,15 +139,8 @@ class WidgetList extends Component {
     } else {
       ListWrapper = DefaultListWrapper
     }
-    listWrapperProps = {
-      editModeActive: this.state.editModeActive,
-      openNewWidgetForm: this.openNewWidgetForm,
-      renderList: this.renderListBody,
-      toggleEditMode: this.toggleEditMode,
-      widgetListId: this.props.widgetListId,
-    }
     return (
-      <ListWrapper {...listWrapperProps}
+      <ListWrapper {...this.makePassThroughProps()}
                    {...this.props.listWrapperProps}
       />
     )
@@ -135,25 +153,16 @@ class WidgetList extends Component {
   }
 
   renderWidget(widgetInstance) {
-    let WidgetWrapper, widgetWrapperProps
+    let WidgetWrapper
     if ('widgetWrapper' in this.props) {
       WidgetWrapper = this.props.widgetWrapper
     } else {
       WidgetWrapper = DefaultWidgetWrapper
     }
-    widgetWrapperProps = {
-      deleteWidget: this.deleteWidget,
-      editModeActive: this.state.editModeActive,
-      listLength: this.state.widgetInstances.length,
-      moveWidget: this.moveWidget,
-      openEditWidgetForm: this.openEditWidgetForm,
-      renderWidget: () => this.renderWidgetBody(widgetInstance.widgetProps),
-      widgetListId: this.props.widgetListId,
-    }
     return (
       <WidgetWrapper key={widgetInstance.id}
                      {...widgetInstance}
-                     {...widgetWrapperProps}
+                     {...this.makePassThroughProps(widgetInstance)}
                      {...this.props.widgetWrapperProps}
       />
     )
@@ -192,8 +201,6 @@ class WidgetList extends Component {
     } else {
       return (
         <div className={'widget-sidebar container bg-secondary rounded'}>
-          {this.renderWidgetForm()}
-          <hr/>
           {this.renderWidgetList()}
         </div>
       )
@@ -212,6 +219,7 @@ class DefaultListWrapper extends Component {
   render() {
     return (
       <div>
+        {this.props.renderWidgetForm()}
         <div className={'edit-widget-list-bar btn-group'} role={'group'}>
           <button className={'btn btn-info' + (this.props.editModeActive ? ' active' : '') }
                   onClick={this.props.toggleEditMode}>
