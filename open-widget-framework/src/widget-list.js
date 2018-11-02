@@ -123,8 +123,9 @@ class WidgetList extends Component {
     }
     if (widgetInstance !== undefined) {
       passThroughProps = Object.assign(passThroughProps, {
-        deleteWidget: () => this.deleteWidget(widgetInstance),
-        moveWidget: (position) => this.moveWidget(widgetInstance, position),
+        deleteWidget: () => this.deleteWidget(widgetInstance.id),
+        moveWidget: (position) => this.moveWidget(widgetInstance.id, position),
+        openEditWidgetForm: () => this.openEditWidgetForm(widgetInstance.id),
         renderWidget: () => this.renderWidgetBody(widgetInstance.widgetProps),
       })
     }
