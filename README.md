@@ -49,28 +49,28 @@ configureWidgetFrameworkSettings({
 ```
 
 The settings that you can currently customize are:
-###`disableWidgetFramework:`
+#### `disableWidgetFramework:`
 If set to true, WidgetLists will not render on any page
 
-###`siteBaseUrl:` 
+#### `siteBaseUrl:` 
 The url base for your app so that the frontend can make fetch requests to the backend. Defaults to `https://localhost:8000/`
 
-###`csrfToken:` 
+#### `csrfToken:` 
 The django generated cross site request forgery token that can be passed in through the template. If this isn't defined, you will not be able to create, adit, or delete widgets. For more, see the django documentation:  https://docs.djangoproject.com/en/2.1/ref/csrf/
 
-###`renderers:`
+#### `renderers:`
 An object that maps names of custom renderers to their corresponding react components. The name should match the `react_renderer` field on the widget class defined in your custom classes. See the section below on react renderers
 
-###`errorHandler:`
+#### `errorHandler:`
 A function that takes an error message and does something with it. Use this to define your own error handling. Defaults to `console.error`
 
-###`loader:` 
+#### `loader:` 
 A component that displays when data is being fetched. Note that this is not a class. It is an instance of a class.
 
-###`defaultRenderer:`
+#### `defaultRenderer:`
 This setting defines what renderer is used in the default case. Note that unless otherwise specified in the class, widget's will only have two props available to the renderer: title and innerHtml 
 
-###`defaultWrappers`
+#### `defaultWrappers`
 
 `defaultFormWrapper:`
 
@@ -92,7 +92,7 @@ and then include the component in your app, specifying which widget list to incl
 
 ### Creating your own widgets
 
-###Defining a widget class
+#### Defining a widget class
 ```
 class myWidget(WidgetBase):
     name = 'MyWidget'
@@ -101,7 +101,7 @@ class myWidget(WidgetBase):
     def render(self, request, configuration):
         return {'myWidgetField': configuration['myWidgetField']}
 ```
-###Defining a renderer
+#### Defining a renderer
 ```javascript
 class myRenderer extends Component {
   render() {
