@@ -107,6 +107,7 @@ venv.bak/
 .pydevproject
 *.swp
 *.orig
+.idea
 
 # filesystem metadata files
 *.DS_Store
