@@ -1,15 +1,15 @@
 # open-widget-framework
 
+This provides the React Component section of the open widget framework
+
 ## Installation
+
+Install the package from npm or yarn
 
 [![Travis][build-badge]][build]
 [![npm package][npm-badge]][npm]
 [![Coveralls][coveralls-badge]][coveralls]
 
-
-The react components half of `open-widget-framework`, a django + react library for managing user-configurable widgets
-
-For more information, please see https://github.com/mitodl/open-widget-framework
 
 [build-badge]: https://img.shields.io/travis/user/repo/master.png?style=flat-square
 [build]: https://travis-ci.org/user/repo

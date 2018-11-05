@@ -6,7 +6,7 @@ from django.contrib.postgres.fields import JSONField
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
-from open_widget_framework.default_settings import get_widget_class_dict
+from open_widget_framework.utils import get_widget_class_dict
 
 
 class WidgetList(models.Model):

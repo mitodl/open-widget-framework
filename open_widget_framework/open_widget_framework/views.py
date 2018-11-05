@@ -8,7 +8,7 @@ from django.http import JsonResponse
 from django.views import View
 
 from open_widget_framework.models import WidgetInstance, WidgetList
-from open_widget_framework.default_settings import get_widget_class_configurations
+from open_widget_framework.utils import get_widget_class_configurations
 
 #TODO: validate with widget list
 

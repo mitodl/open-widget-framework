@@ -100,7 +100,7 @@ class WidgetForm extends Component {
      * Render a wrapper which handles form title and choosing which class of widget to configure
      */
     if (this.state.widgetClasses === null || this.state.widgetClassConfigurations === null) {
-      return (<p>Loading</p>)
+      return (window.widgetFrameworkSettings.loader)
     } else {
       return (
         <form className={'card'} onSubmit={this.onSubmit}>

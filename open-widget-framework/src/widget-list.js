@@ -1,17 +1,16 @@
 import React, {Component} from 'react'
-import RENDERERS from './myRenderers'
-import Octicon from 'react-component-octicons'
 import {fetchJsonData, apiPath} from './utils'
 import WidgetForm from './widget-form'
 
 
-/**
- * WidgetList is a list of rendered widgets
- *
- * Props:
- *    fetchRoute: where to fetch widgets in list from
- */
 class WidgetList extends Component {
+  /**
+  * WidgetList is a list of rendered widgets
+  *
+  * Props:
+  *    fetchRoute: where to fetch widgets in list from
+  */
+  // TODO: why do we need to use constructor
   constructor(props) {
     super(props)
     this.state = {
@@ -29,6 +28,7 @@ class WidgetList extends Component {
     this.moveWidget = this.moveWidget.bind(this)
     this.deleteWidget = this.deleteWidget.bind(this)
     this.openNewWidgetForm = this.openNewWidgetForm.bind(this)
+    this.makePassThroughProps = this.makePassThroughProps.bind(this)
     this.renderWidgetList = this.renderWidgetList.bind(this)
     this.renderListBody = this.renderListBody.bind(this)
     this.renderWidget = this.renderWidget.bind(this)
@@ -70,6 +70,7 @@ class WidgetList extends Component {
     this.closeForm()
   }
 
+  // TODO: Make a separate component
   openEditWidgetForm(widgetId) {
     this.closeForm()
     this.setState({
@@ -84,6 +85,7 @@ class WidgetList extends Component {
     this.closeForm()
   }
 
+  // TODO: Make a separate component
   openNewWidgetForm() {
     this.setState({
       retrieveFormRoute: apiPath('get_configurations'),
@@ -138,7 +140,7 @@ class WidgetList extends Component {
     if ('listWrapper' in this.props) {
       ListWrapper = this.props.listWrapper
     } else {
-      ListWrapper = DefaultListWrapper
+      ListWrapper = window.widgetFrameworkSettings.defaultListWrapper
     }
     return (
       <ListWrapper {...this.makePassThroughProps()}
@@ -158,7 +160,7 @@ class WidgetList extends Component {
     if ('widgetWrapper' in this.props) {
       WidgetWrapper = this.props.widgetWrapper
     } else {
-      WidgetWrapper = DefaultWidgetWrapper
+      WidgetWrapper = window.widgetFrameworkSettings.defaultWidgetWrapper
     }
     return (
       <WidgetWrapper key={widgetInstance.id}
@@ -170,7 +172,8 @@ class WidgetList extends Component {
   }
 
   renderWidgetBody(widgetProps) {
-    const Renderer = RENDERERS[widgetProps.reactRenderer]
+    const Renderer = window.widgetFrameworkSettings.renderers[widgetProps.reactRenderer]
+      || window.widgetFrameworkSettings.defaultRenderer
     return (
       <Renderer {...widgetProps}/>
     )
@@ -197,8 +200,10 @@ class WidgetList extends Component {
     /**
      * Render list of WidgetDisplays with overhead buttons enabling editing and WidgetForm generation
      */
-    if (this.state.widgetInstances === null) {
-      return (<p>Loading</p>)
+    if (window.widgetFrameworkSettings.disableWidgetFramework) {
+      return null
+    } else if (this.state.widgetInstances === null) {
+      return (window.widgetFrameworkSettings.loader)
     } else {
       return (
         <div className={'widget-sidebar container bg-secondary rounded'}>
@@ -206,72 +211,6 @@ class WidgetList extends Component {
         </div>
       )
     }
-  }
-}
-
-class DefaultListWrapper extends Component {
-  renderAddWidgetButton() {
-    return (
-      <button className={'btn btn-info'} onClick={this.props.openNewWidgetForm}>
-        <Octicon name={'plus'}/>
-      </button>
-    )
-  }
-  render() {
-    return (
-      <div>
-        {this.props.renderWidgetForm()}
-        <div className={'edit-widget-list-bar btn-group'} role={'group'}>
-          <button className={'btn btn-info' + (this.props.editModeActive ? ' active' : '') }
-                  onClick={this.props.toggleEditMode}>
-            <Octicon name={'pencil'}/>
-          </button>
-          {this.props.editModeActive ? this.renderAddWidgetButton() : null}
-        </div>
-        <hr/>
-        <div>
-          {this.props.renderList()}
-        </div>
-      </div>
-    )
-  }
-}
-
-class DefaultWidgetWrapper extends Component {
-  renderEditBar() {
-    return (
-      <div className={'edit-widget-bar btn-group card-header'}>
-        <button className={'btn btn-info col'}
-                disabled={this.props.position === 0}
-                onClick={() => this.props.moveWidget(this.props.id, this.props.position - 1)}
-                title={'Move widget up'}>
-          <Octicon name={'chevron-up'}/>
-        </button>
-        <button className={'btn btn-info col'}
-                disabled={this.props.position === this.props.listLength - 1}
-                onClick={() => this.props.moveWidget(this.props.id, this.props.position + 1)}
-                title={'Move widget down'}>
-          <Octicon name={'chevron-down'}/>
-        </button>
-        <button className={'btn btn-info col'} onClick={() => this.props.openEditWidgetForm(this.props.id)}
-                title={'Update widget'}>
-          <Octicon name={'pencil'}/>
-        </button>
-        <button className={'btn btn-danger col'} onClick={() => this.props.deleteWidget(this.props.id)}
-                title={'Delete widget'}>
-          <Octicon name={'x'}/>
-        </button>
-      </div>
-    )
-  }
-
-  render() {
-    return (
-      <div className={'widget card mb-3 bg-light'} id={'widget-' + this.props.id}>
-        {this.props.editModeActive ? this.renderEditBar() : null}
-        {this.props.renderWidget()}
-      </div>
-    )
   }
 }
 

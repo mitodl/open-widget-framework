@@ -1,9 +1,8 @@
-var range = require('lodash.range')
-const apiBase = window.apiBase
+import range from 'lodash.range'
 
 function fetchJsonData(url, resolve, request, reject) {
   if (reject === undefined) {
-    reject = (error) => console.error(error)
+    reject = window.widgetFrameworkSettings.errorHandler
   }
 
   if (request === undefined) {
@@ -12,7 +11,7 @@ function fetchJsonData(url, resolve, request, reject) {
     if ('headers' in request === false) {
       request.headers = {
         'Content-Type': 'application/json',
-        'X-CSRFToken': window.csrfToken,
+        'X-CSRFToken': window.widgetFrameworkSettings.csrfToken,
       }
     }
   }
@@ -24,6 +23,7 @@ function fetchJsonData(url, resolve, request, reject) {
 }
 
 function apiPath(name, listId, widgetId, args) {
+  let apiBase = window.widgetFrameworkSettings.siteBaseUrl + 'api/v1/'
   switch (name) {
     case 'get_lists':
       return apiBase + 'lists'
@@ -36,18 +36,17 @@ function apiPath(name, listId, widgetId, args) {
 
     case 'widget':
       return apiBase + 'list/' + listId + '/widget/' + (widgetId || '') + (args ? '?position=' + args.position : '')
-
-
   }
 }
 
+// TODO: split into two functions
 function makeOptions(values, keys) {
   if (keys === undefined) {
     keys = values
   }
 
   if (keys.length !== values.length) {
-    return undefined
+    return []
   }
 
   return range(keys.length).map(
