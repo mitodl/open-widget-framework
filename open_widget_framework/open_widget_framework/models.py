@@ -17,7 +17,7 @@ class WidgetList(models.Model):
         return auth.can_access_widget_list(self, user)
 
     def add_widget(self, widget_class, data, position=None):
-        if position:
+        if position is not None:
             self.shift_range(start=position, shift=1)
         else:
             position = WidgetInstance.objects.filter(widget_list=self).count()
@@ -48,7 +48,7 @@ class WidgetList(models.Model):
             widget.delete()
 
     def shift_range(self, start=0, end=None, shift=1):
-        if not end:
+        if end is None:
             end = WidgetInstance.objects.filter(widget_list=self).count()
         if start == end:
             return

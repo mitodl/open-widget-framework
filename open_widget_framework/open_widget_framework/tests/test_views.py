@@ -3,9 +3,7 @@ from urllib.parse import urlencode
 from django.urls import reverse
 from django.test import TestCase
 from rest_framework import status
-from json import loads, dumps
-from random import randint
-
+from json import loads
 
 from open_widget_framework.models import WidgetList, WidgetInstance
 from open_widget_framework.utils import get_widget_class_dict
@@ -20,21 +18,6 @@ class TestViews(TestCase):
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, status.HTTP_200_OK, msg='get_lists returned a bad status')
         self.assertEqual(resp.content, b'[]', msg='get_lists returned bad data when list was empty')
-
-    # def test_make_and_get_widget_lists(self):
-    #     """ Create a random number of widget lists and make sure that they all are returned by get_lists """
-    #     url = reverse("get_lists")
-    #     num_lists = randint(0, 50)
-    #     for x in range(num_lists):
-    #         WidgetList.objects.create()
-    #
-    #     resp = self.client.get(url)
-    #     self.assertEqual(resp.status_code, status.HTTP_200_OK, msg='get_lists returned a bad status')
-    #     data = loads(resp.content)
-    #     self.assertEqual(num_lists, len(data), msg='get_lists returned the wrong number of ids')
-    #     for item in data:
-    #         self.assertEqual(1, len(WidgetList.objects.filter(id=item['id'])),
-    #                          msg='get_lists returned a bad widget list id: %s' % item['id'])
 
     def test_get_widget_configurations(self):
         """ Test get_configurations api endpoint """
@@ -67,7 +50,7 @@ class TestViews(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK, msg='POST widget_list_view returned a bad status: %s' % resp.status_code)
         data = loads(resp.content)
         self.assertEqual(1, len(data), msg='POST widget_list_view should have returned 1 widget list but instead returned %s' % len(data))
-        self.assertEqual(1, len(WidgetList.objects.filter(id=data[0]['id'])), msg='POST widget_list_view returned a bad widget list: %s' % data[0]['id'])
+        self.assertEqual(1, WidgetList.objects.filter(id=data[0]['id']).count(), msg='POST widget_list_view returned a bad widget list: %s' % data[0]['id'])
 
     def test_delete_widget_list(self):
         """ Test DELETE widget_list_view api endpoint """
@@ -76,7 +59,7 @@ class TestViews(TestCase):
         resp = self.client.delete(url, content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_200_OK, msg='DELETE widget_list_view returned a bad status: %s' % resp.status_code)
         self.assertEqual(resp.content, b'[]', msg='DELETE widget_list_view returned bad data')
-        self.assertEqual(0, len(WidgetList.objects.filter(id=widget_list.id)), msg='DELETE widget_list_view did not delete widget list')
+        self.assertEqual(0, WidgetList.objects.filter(id=widget_list.id).count(), msg='DELETE widget_list_view did not delete widget list')
 
     def test_get_widget(self):
         """ Test GET widget_view api endpoint """
@@ -117,7 +100,7 @@ class TestViews(TestCase):
                          msg='POST widget_view returned a bad status: %s' % resp.status_code)
         data = loads(resp.content)
         self.assertEqual(1, len(data), msg='POST widget_view returned the wrong number of widget instances')
-        self.assertEqual(1, len(WidgetInstance.objects.filter(widget_list=widget_list)), msg='POST widget_view did not create the widget instance properly')
+        self.assertEqual(1, WidgetInstance.objects.filter(widget_list=widget_list).count(), msg='POST widget_view did not create the widget instance properly')
         widget = WidgetInstance.objects.get(widget_list=widget_list)
         self.assertEqual(widget.id, data[0]['id'], msg='POST widget_view did not return the correct widget instance')
         self.assertEqual(widget_class, widget.widget_class, msg='POST widget_view created the wrong class widget')
@@ -136,7 +119,7 @@ class TestViews(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK,
                          msg='DELETE widget_view returned a bad status: %s' % resp.status_code)
         self.assertEqual(resp.content, b'[]', msg='DELETE widget_view returned bad data')
-        self.assertEqual(0, len(WidgetInstance.objects.filter(id=widget.id)), msg='DELETE widget_view did not delete widget')
+        self.assertEqual(0, WidgetInstance.objects.filter(id=widget.id).count(), msg='DELETE widget_view did not delete widget')
 
     def test_put_widget(self):
         """ Test PUT widget_view api endpoint """
@@ -153,9 +136,9 @@ class TestViews(TestCase):
                          msg='PUT widget_view returned a bad status: %s' % resp.status_code)
         data = loads(resp.content)
         self.assertEqual(1, len(data), msg='PUT widget_view returned the wrong number of widget instances')
-        self.assertEqual(1, len(WidgetInstance.objects.filter(widget_list=widget_list)),
+        self.assertEqual(1, WidgetInstance.objects.filter(widget_list=widget_list).count(),
                          msg='PUT widget_view altered the length of the widget list')
-        self.assertEqual(1, len(WidgetInstance.objects.filter(id=widget.id)),
+        self.assertEqual(1, WidgetInstance.objects.filter(id=widget.id).count(),
                          msg='PUT widget_view altered widget id')
         widget = WidgetInstance.objects.get(id=widget.id)
         self.assertEqual(widget_class, widget.widget_class, msg='PUT widget_view changed widget class')
@@ -200,3 +183,57 @@ class TestViews(TestCase):
         self.assertEqual(widget1.id, data[0]['id'], msg="PATCH widget_view did not shift widget 1 backward")
         self.assertEqual(widget2.id, data[1]['id'], msg="PATCH widget_view did not shift widget 2 backward")
         self.assertEqual(widget3.id, data[2]['id'], msg="PATCH widget_view did not move widget 3 to the last position")
+
+    def test_patch_widget_out_of_bounds(self):
+        """ Test PATCH widget_view with widget positions out of bounds """
+        widget_list = WidgetList.objects.create()
+        widget1_data = {"title": "example1", "body": "example1"}
+        widget1_class = "Text"
+        widget_list.add_widget(widget1_class, dict(widget1_data))
+        widget1 = WidgetInstance.objects.get(title=widget1_data['title'])
+
+        widget2_data = {"title": "example2", "body": "example2"}
+        widget2_class = "Text"
+        widget_list.add_widget(widget2_class, dict(widget2_data))
+        widget2 = WidgetInstance.objects.get(title=widget2_data['title'])
+
+        widget3_data = {"title": "example3", "body": "example3"}
+        widget3_class = "Text"
+        widget_list.add_widget(widget3_class, dict(widget3_data))
+        widget3 = WidgetInstance.objects.get(title=widget3_data['title'])
+
+        url = reverse("widget_view",
+                      kwargs={"widget_list_id": widget_list.id, "widget_id": widget3.id}) + "?" + urlencode(
+            {"position": -100})
+        resp = self.client.patch(url, content_type="application/json")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK,
+                         msg='PATCH widget_view returned a bad status: %s' % resp.status_code)
+        data = loads(resp.content)
+        data.sort(key=lambda x: x['position'])
+        self.assertEqual(widget3.id, data[0]['id'], msg="PATCH widget_view did not move widget 3 to the first position")
+        self.assertEqual(widget1.id, data[1]['id'], msg="PATCH widget_view did not shift widget 1 forward")
+        self.assertEqual(widget2.id, data[2]['id'], msg="PATCH widget_view did not shift widget 2 forward")
+
+        url = reverse("widget_view",
+                      kwargs={"widget_list_id": widget_list.id, "widget_id": widget3.id}) + "?" + urlencode(
+            {"position": 100})
+        resp = self.client.patch(url, content_type="application/json")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK,
+                         msg='PATCH widget_view returned a bad status: %s' % resp.status_code)
+        data = loads(resp.content)
+        data.sort(key=lambda x: x['position'])
+        self.assertEqual(widget1.id, data[0]['id'], msg="PATCH widget_view did not shift widget 1 backward")
+        self.assertEqual(widget2.id, data[1]['id'], msg="PATCH widget_view did not shift widget 2 backward")
+        self.assertEqual(widget3.id, data[2]['id'], msg="PATCH widget_view did not move widget 3 to the last position")
+
+        url = reverse("widget_view",
+                      kwargs={"widget_list_id": widget_list.id, "widget_id": widget3.id}) + "?" + urlencode(
+            {"position": 2})
+        resp = self.client.patch(url, content_type="application/json")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK,
+                         msg='PATCH widget_view returned a bad status: %s' % resp.status_code)
+        data = loads(resp.content)
+        data.sort(key=lambda x: x['position'])
+        self.assertEqual(widget1.id, data[0]['id'], msg="PATCH widget_view moved widget1 unnecessarily")
+        self.assertEqual(widget2.id, data[1]['id'], msg="PATCH widget_view moved widget2 unnecessarily")
+        self.assertEqual(widget3.id, data[2]['id'], msg="PATCH widget_view moved widget3 unnecessarily")

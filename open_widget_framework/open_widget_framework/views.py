@@ -172,7 +172,7 @@ class WidgetView(View):
         widget_list_length = widget_list.get_length()
         if target_position >= widget_list_length:
             target_position = widget_list_length - 1
-        if target_position <= 0:
+        if target_position < 0:
             target_position = 0
 
         # return on in-place moves
