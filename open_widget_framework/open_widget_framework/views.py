@@ -99,7 +99,6 @@ class WidgetView(View):
         Args:
             widget_list_id: id of WidgetList to add widget to
         """
-        print(request)
         widget_list = get_object_or_404(WidgetList, id=widget_list_id)
         # TODO: widget_list.can_access
         data = loads(request.body.decode())
