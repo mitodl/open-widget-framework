@@ -9,29 +9,48 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='WidgetInstance',
+            name="WidgetInstance",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('widget_type', models.CharField(max_length=200)),
-                ('configuration', django.contrib.postgres.fields.jsonb.JSONField()),
-                ('position', models.IntegerField()),
-                ('title', models.CharField(max_length=200)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("widget_type", models.CharField(max_length=200)),
+                ("configuration", django.contrib.postgres.fields.jsonb.JSONField()),
+                ("position", models.IntegerField()),
+                ("title", models.CharField(max_length=200)),
             ],
         ),
         migrations.CreateModel(
-            name='WidgetList',
+            name="WidgetList",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                )
             ],
         ),
         migrations.AddField(
-            model_name='widgetinstance',
-            name='widget_list',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='widgets', to='open_widget_framework.WidgetList'),
+            model_name="widgetinstance",
+            name="widget_list",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="widgets",
+                to="open_widget_framework.WidgetList",
+            ),
         ),
     ]

@@ -5,11 +5,12 @@ from hypothesis.extra.django.models import models
 from hypothesis import given, strategies
 from hypothesis.strategies import text
 
+
 class TestModels(TestCase):
     """ Tests models """
 
     @given(models(WidgetList))
     def test_widget_list_add(self, widgetlist):
         widget_list_count = widgetlist.get_length()
-        widgetlist.add_widget('Text', {"title": "example", "body": "example"})
+        widgetlist.add_widget("Text", {"title": "example", "body": "example"})
         self.assertEqual(widgetlist.get_length(), widget_list_count + 1)

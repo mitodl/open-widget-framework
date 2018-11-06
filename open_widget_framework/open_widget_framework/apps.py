@@ -8,4 +8,5 @@ class OpenWidgetFrameworkConfig(AppConfig):
     """
     AppConfig for widget_app
     """
-    name = 'open_widget_framework'
+
+    name = "open_widget_framework"

@@ -14,16 +14,19 @@ class WidgetBase(serializers.Serializer):
         widget rendering. Widget classes should specify input fields using the React input fields in react_fields
         in order to get proper form generation on the frontend
     """
+
     name = None
     react_renderer = None
-    title = ReactCharField(max_length=200, props={'placeholder': 'Enter widget title', 'autoFocus': True})
+    title = ReactCharField(
+        max_length=200, props={"placeholder": "Enter widget title", "autoFocus": True}
+    )
 
     def __init__(self, **kwargs):
-        widget_instance = kwargs.pop('widget_instance', None)
-        if widget_instance and 'data' not in kwargs:
+        widget_instance = kwargs.pop("widget_instance", None)
+        if widget_instance and "data" not in kwargs:
             data = widget_instance.configuration
-            data['title'] = widget_instance.title
-            kwargs['data'] = data
+            data["title"] = widget_instance.title
+            kwargs["data"] = data
         self.pre_configure()
         super().__init__(**kwargs)
 
@@ -49,16 +52,20 @@ class WidgetBase(serializers.Serializer):
         """
         rendered_body = self.render(request, widget_instance.configuration)
         if isinstance(rendered_body, dict):
-            rendered_body.update({'title': widget_instance.title,
-                                  'position': widget_instance.position,
-                                  'reactRenderer': self.react_renderer})
+            rendered_body.update(
+                {
+                    "title": widget_instance.title,
+                    "position": widget_instance.position,
+                    "reactRenderer": self.react_renderer,
+                }
+            )
             return rendered_body
         else:
             return {
-                'title': widget_instance.title,
-                'position': widget_instance.position,
-                'html': rendered_body,
-                'reactRenderer': self.react_renderer,
+                "title": widget_instance.title,
+                "position": widget_instance.position,
+                "html": rendered_body,
+                "reactRenderer": self.react_renderer,
             }
 
     def get_configuration_form_spec(self):

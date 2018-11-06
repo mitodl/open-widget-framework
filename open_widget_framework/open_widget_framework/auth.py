@@ -2,7 +2,6 @@ from django.contrib.auth.models import User
 
 
 class WidgetFrameworkAuthenticationBackend:
-
     def authenticate(self, request):
         return True
 
