@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
-import {fetchJsonData, apiPath} from './utils'
+import {apiPath} from './utils'
 import WidgetForm from './widget-form'
+import configureWidgetFrameworkSettings from './config'
 
 
 class WidgetList extends Component {
@@ -18,6 +19,7 @@ class WidgetList extends Component {
       retrieveFormRoute: null,
       submitFormMethod: null,
       submitFormRoute: null,
+      widgetFrameworkSettings: configureWidgetFrameworkSettings(this.props.widgetFrameworkSettings),
       widgetInstances: null,
     }
     this.updateWidgetList = this.updateWidgetList.bind(this)
@@ -40,7 +42,9 @@ class WidgetList extends Component {
     /**
      * Fetch data on widget instances in list from fetchRoute
      */
-    fetchJsonData(apiPath('widget_list', this.props.widgetListId), this.updateWidgetList)
+    this.state.widgetFrameworkSettings.fetchData(
+      this.state.widgetFrameworkSettings.siteBaseUrl + apiPath('widget_list', this.props.widgetListId),
+      {resolve: this.updateWidgetList})
   }
 
   componentDidUpdate(prevProps) {
@@ -48,7 +52,9 @@ class WidgetList extends Component {
      * Fetch new widgets when url changes
      */
     if (prevProps.widgetListId !== this.props.widgetListId) {
-      fetchJsonData(apiPath('widget_list', this.props.widgetListId), this.updateWidgetList)
+      this.state.widgetFrameworkSettings.fetchData(
+        this.state.widgetFrameworkSettings.siteBaseUrl + apiPath('widget_list', this.props.widgetListId),
+        {resolve: this.updateWidgetList})
       this.setState({editModeActive: false})
     }
   }
@@ -74,9 +80,11 @@ class WidgetList extends Component {
   openEditWidgetForm(widgetId) {
     this.closeForm()
     this.setState({
-      retrieveFormRoute: apiPath('widget', this.props.widgetListId, widgetId),
+      retrieveFormRoute:
+        this.state.widgetFrameworkSettings.siteBaseUrl + apiPath('widget', this.props.widgetListId, widgetId),
       submitFormMethod: 'PUT',
-      submitFormRoute: apiPath('widget', this.props.widgetListId, widgetId),
+      submitFormRoute:
+        this.state.widgetFrameworkSettings.siteBaseUrl + apiPath('widget', this.props.widgetListId, widgetId),
     })
   }
 
@@ -88,9 +96,11 @@ class WidgetList extends Component {
   // TODO: Make a separate component
   openNewWidgetForm() {
     this.setState({
-      retrieveFormRoute: apiPath('get_configurations'),
+      retrieveFormRoute:
+        this.state.widgetFrameworkSettings.siteBaseUrl + apiPath('get_configurations'),
       submitFormMethod: 'POST',
-      submitFormRoute: apiPath('widget', this.props.widgetListId),
+      submitFormRoute:
+        this.state.widgetFrameworkSettings.siteBaseUrl + apiPath('widget', this.props.widgetListId),
     })
   }
 
@@ -98,15 +108,20 @@ class WidgetList extends Component {
     /**
      * Make request to server to delete widget
      */
-    fetchJsonData(apiPath('widget', this.props.widgetListId, widgetId), this.updateWidgetList, {method: 'DELETE'})
+    this.state.widgetFrameworkSettings.fetchData(
+      this.state.widgetFrameworkSettings.siteBaseUrl + apiPath('widget', this.props.widgetListId, widgetId),
+      {request: {method: 'DELETE'}, resolve: this.updateWidgetList})
   }
 
   moveWidget(widgetId, position) {
     /**
      * Make request to server to move widget up
      */
-    fetchJsonData(apiPath('widget', this.props.widgetListId, widgetId, {position: position}),
-                  this.updateWidgetList, {method: 'PATCH'})
+    this.state.widgetFrameworkSettings.fetchData(
+      this.state.widgetFrameworkSettings.siteBaseUrl
+      + apiPath('widget', this.props.widgetListId, widgetId, {position: position}),
+      {request: {method: 'PATCH'}, resolve: this.updateWidgetList}
+    )
   }
 
   makePassThroughProps(widgetInstance) {
@@ -140,7 +155,7 @@ class WidgetList extends Component {
     if ('listWrapper' in this.props) {
       ListWrapper = this.props.listWrapper
     } else {
-      ListWrapper = window.widgetFrameworkSettings.defaultListWrapper
+      ListWrapper = this.state.widgetFrameworkSettings.defaultListWrapper
     }
     return (
       <ListWrapper {...this.makePassThroughProps()}
@@ -160,7 +175,7 @@ class WidgetList extends Component {
     if ('widgetWrapper' in this.props) {
       WidgetWrapper = this.props.widgetWrapper
     } else {
-      WidgetWrapper = window.widgetFrameworkSettings.defaultWidgetWrapper
+      WidgetWrapper = this.state.widgetFrameworkSettings.defaultWidgetWrapper
     }
     return (
       <WidgetWrapper key={widgetInstance.id}
@@ -172,8 +187,8 @@ class WidgetList extends Component {
   }
 
   renderWidgetBody(widgetProps) {
-    const Renderer = window.widgetFrameworkSettings.renderers[widgetProps.reactRenderer]
-      || window.widgetFrameworkSettings.defaultRenderer
+    const Renderer = this.state.widgetFrameworkSettings.renderers[widgetProps.reactRenderer]
+      || this.state.widgetFrameworkSettings.defaultRenderer
     return (
       <Renderer {...widgetProps}/>
     )
@@ -184,12 +199,13 @@ class WidgetList extends Component {
       return null
     } else {
       return (
-        <WidgetForm csrfToken={window.csrfToken}
+        <WidgetForm csrfToken={this.state.csrfToken}
                     fetchRoute={this.state.retrieveFormRoute}
                     onCancel={this.closeForm}
                     onSubmit={(data) => { this.submitWidgetForm(data); postSubmit() }}
                     submitMethod={this.state.submitFormMethod}
                     submitUrl={this.state.submitFormRoute}
+                    widgetFrameworkSettings={this.state.widgetFrameworkSettings}
                     widgetList={this.props.widgetListId}
         />
       )
@@ -200,10 +216,10 @@ class WidgetList extends Component {
     /**
      * Render list of WidgetDisplays with overhead buttons enabling editing and WidgetForm generation
      */
-    if (window.widgetFrameworkSettings.disableWidgetFramework) {
+    if (this.state.widgetFrameworkSettings.disableWidgetFramework) {
       return null
     } else if (this.state.widgetInstances === null) {
-      return (window.widgetFrameworkSettings.loader)
+      return (this.state.widgetFrameworkSettings.loader)
     } else {
       return (
         <div className={'widget-sidebar container bg-secondary rounded'}>

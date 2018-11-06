@@ -61,6 +61,9 @@ The django generated cross site request forgery token that can be passed in thro
 #### `renderers:`
 An object that maps names of custom renderers to their corresponding react components. The name should match the `react_renderer` field on the widget class defined in your custom classes. See the section below on react renderers
 
+#### `fetchData:` 
+A custom fetch function that takes a url and an object of options similar to fetch
+
 #### `errorHandler:`
 A function that takes an error message and does something with it. Use this to define your own error handling. Defaults to `console.error`
 

@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import Select from 'react-select'
 
-import {makeOptions, fetchJsonData} from './utils'
+import {makeOptions} from './utils'
 
 
 /**
@@ -33,7 +33,7 @@ class WidgetForm extends Component {
     /**
      * Fetch available widget classes and configurations after component mount
      */
-    fetchJsonData(this.props.fetchRoute, this.resetForm)
+    this.props.widgetFrameworkSettings.fetchData(this.props.fetchRoute, {resolve: this.resetForm})
   }
 
   componentDidUpdate(prevProps) {
@@ -41,7 +41,7 @@ class WidgetForm extends Component {
      * Fetch new form data if the fetchRoute changes
      */
     if (prevProps.fetchRoute !== this.props.fetchRoute) {
-      fetchJsonData(this.props.fetchRoute, this.resetForm)
+      this.props.widgetFrameworkSettings.fetchData(this.props.fetchRoute, {resolve: this.resetForm})
     }
   }
 
@@ -77,8 +77,13 @@ class WidgetForm extends Component {
     event.preventDefault()
     let data = this.state.formData
     data['widget_class'] = this.state.widgetClass
-    fetchJsonData(this.props.submitUrl, this.props.onSubmit,
-                  {body: JSON.stringify(this.state.formData), method: this.props.submitMethod})
+    this.props.widgetFrameworkSettings.fetchData(this.props.submitUrl, {
+      request: {
+        body: JSON.stringify(this.state.formData),
+        method: this.props.submitMethod,
+      },
+      resolve: this.props.onSubmit,
+    })
   }
 
   makeWidgetClassSelect() {
@@ -100,7 +105,7 @@ class WidgetForm extends Component {
      * Render a wrapper which handles form title and choosing which class of widget to configure
      */
     if (this.state.widgetClasses === null || this.state.widgetClassConfigurations === null) {
-      return (window.widgetFrameworkSettings.loader)
+      return (this.props.widgetFrameworkSettings.loader)
     } else {
       return (
         <form className={'card'} onSubmit={this.onSubmit}>

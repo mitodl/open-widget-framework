@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
 import Octicon from 'react-component-octicons'
-import Loader from 'react-loader'
 
 class _defaultRenderer extends Component {
   /**
@@ -99,4 +98,23 @@ class _defaultFormWrapper extends Component {
 
 const _defaultLoader = <p>Loading</p>
 
-export {_defaultRenderer, _defaultListWrapper, _defaultWidgetWrapper, _defaultFormWrapper, _defaultLoader}
+function _defaultFetchJsonData(url, options) {
+  let resolve = options.resolve || console.log
+  let reject = options.reject || console.error
+  let request = options.request || {method: 'GET'}
+
+  if (reject === undefined) {
+    reject = console.error
+  }
+
+  if (request.method !== 'GET' && 'headers' in request === false) {
+    request.headers = {'Content-Type': 'application/json'}
+  }
+
+  fetch(url, request)
+    .then(data => data.json())
+    .then((data) => resolve(data))
+    .catch((data) => reject(data))
+}
+
+export {_defaultRenderer, _defaultListWrapper, _defaultWidgetWrapper, _defaultFormWrapper, _defaultLoader, _defaultFetchJsonData}

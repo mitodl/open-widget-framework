@@ -1,29 +1,7 @@
 import range from 'lodash.range'
 
-function fetchJsonData(url, resolve, request, reject) {
-  if (reject === undefined) {
-    reject = window.widgetFrameworkSettings.errorHandler
-  }
-
-  if (request === undefined) {
-    request = {method: 'GET'}
-  } else {
-    if ('headers' in request === false) {
-      request.headers = {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': window.widgetFrameworkSettings.csrfToken,
-      }
-    }
-  }
-
-  fetch(url, request)
-    .then(data => data.json())
-    .then((data) => resolve(data))
-    .catch((data) => reject(data))
-}
-
 function apiPath(name, listId, widgetId, args) {
-  let apiBase = window.widgetFrameworkSettings.siteBaseUrl + 'api/v1/'
+  let apiBase = 'api/v1/'
   switch (name) {
     case 'get_lists':
       return apiBase + 'lists'
@@ -58,4 +36,4 @@ function makeOptions(values, keys) {
   )
 }
 
-export {makeOptions, fetchJsonData, apiPath}
+export {makeOptions, apiPath}
