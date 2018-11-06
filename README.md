@@ -120,8 +120,10 @@ renderers: {
   myRenderer: myRenderer
 }
 ```
+### Database
+The `open_widget_framework` django package makes use of PostgreSQL and `django.contrib.postgres.fields.JSONField` to store JSON.
 
-### Running Tests
+## Running Tests
 For the `open_widget_framework` django package, the following will use the Django's built-in test runner to discover tests:
 ```bash
 python runtests.py
