@@ -17,7 +17,7 @@ npm install @zagaran/open-widget-framework
 ## Configuration
 
 ### Django
-To configure the django app, add `"open_widget_framework"` to the installed apps in your django `settings.py`
+To configure the django app, add `"open_widget_framework"` to the `INSTALLED_APPS` in your django `settings.py`
 
 If you have self-defined widget classes, they can be added to settings as 
 ```python
@@ -83,9 +83,9 @@ These three settings are react components that wrap the various types of compone
 ### Using the components
 To include a widget list on the page, simply import the widget list component:
 ```javascript
-import WidgetList from '@zagaran/open-widget-framework/es/widget-list`
+import WidgetList from '@zagaran/open-widget-framework/es/widget-list'
 ```
-and then include the component in your app, specifying which widget list to include by it's id. Make sure that you have a widget list in the database before you do so.
+and then include the component in your app, specifying which widget list to include by its id. Make sure that you have a widget list in the database before you do so.
 ```javascript
 <WidgetList widgetListId={id}/>
 ```
@@ -94,7 +94,7 @@ and then include the component in your app, specifying which widget list to incl
 
 #### Defining a widget class
 ```
-class myWidget(WidgetBase):
+class MyWidget(WidgetBase):
     name = 'MyWidget'
     myWidgetField = ReactCharField(props={'placeholder': 'This is my widget's only field!})
 

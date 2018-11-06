@@ -1,16 +1,15 @@
 sudo: false
+language: generic
 
-language: node_js
-node_js:
-  - 8
-
-before_install:
-  - npm install codecov.io coveralls
-
-after_success:
-  - cat ./coverage/lcov.info | ./node_modules/codecov.io/bin/codecov.io.js
-  - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
-
-branches:
-  only:
-    - master
+matrix:
+  include:
+    - name: Python
+      language: python
+      python:
+        - "3.6"
+      install:
+        - pip install -r open_widget_framework/requirements.txt -r open_widget_framework/test_requirements.txt
+      script: ./travis/py_tests.sh
+    - name: JavaScript
+      language: javascript
+      script: bash ./travis/js_tests.sh
