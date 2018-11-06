@@ -1,6 +1,4 @@
 hypothesis
-Django
-psycopg2
 tox
 pytest>=3.6.0
 pytest-cov

@@ -3,6 +3,7 @@ from django.test import TestCase
 from open_widget_framework.models import WidgetList, WidgetInstance
 
 
+
 class TestModels(TestCase):
     """ Tests models """
 

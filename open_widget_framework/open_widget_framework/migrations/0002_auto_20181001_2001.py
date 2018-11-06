@@ -5,14 +5,10 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('open_widget_framework', '0001_initial'),
-    ]
+    dependencies = [("open_widget_framework", "0001_initial")]
 
     operations = [
         migrations.RenameField(
-            model_name='widgetinstance',
-            old_name='widget_type',
-            new_name='widget_class',
-        ),
+            model_name="widgetinstance", old_name="widget_type", new_name="widget_class"
+        )
     ]

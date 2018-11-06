@@ -24,7 +24,7 @@ import sys
 
 from setuptools import setup, find_packages
 
-if sys.version < '3':
+if sys.version < "3":
     print("ERROR: python version 3 or higher is required")
     sys.exit(1)
 
@@ -32,13 +32,9 @@ setup(
     name="open_widget_framework",
     version="0.1.8",
     packages=find_packages(),
-    install_requires=[
-            "Django>=2.1.2",
-            "djangorestframework>=3",
-            "psycopg2>=2.7",
-    ],
-    license='MIT',
+    install_requires=["Django>=2.1.2", "djangorestframework>=3", "psycopg2>=2.7"],
+    license="MIT",
     author="Zagaran, Inc.",
-    url = "https://github.com/mitodl/open-widget-framework",
-    description='an open django framework for widget customization and management',
+    url="https://github.com/mitodl/open-widget-framework",
+    description="an open django framework for widget customization and management",
 )
