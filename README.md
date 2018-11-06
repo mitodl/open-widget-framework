@@ -120,3 +120,13 @@ renderers: {
   myRenderer: myRenderer
 }
 ```
+
+### Running Tests
+For the `open_widget_framework` django package, the following will use the Django's built-in test runner to discover tests:
+```bash
+python runtests.py
+```
+To obtain a coverage report (include omit flag as needed):  
+```bash
+coverage run runtests.py; coverage report -m [--omit="*/.virtualenv/*"]
+```
