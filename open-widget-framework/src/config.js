@@ -13,7 +13,6 @@ function configureWidgetFrameworkSettings(userSettings) {
     fetchData: userSettings.fetchData || _defaultFetchJsonData,
     loader: userSettings.loader || _defaultLoader,
     renderers: userSettings.renderers || {},
-    siteBaseUrl: userSettings.siteBaseUrl || 'https://localhost:8000/',
   }
 
   return SETTINGS

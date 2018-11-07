@@ -42,8 +42,7 @@ class WidgetList extends Component {
     /**
      * Fetch data on widget instances in list from fetchRoute
      */
-    this.state.widgetFrameworkSettings.fetchData(
-      this.state.widgetFrameworkSettings.siteBaseUrl + apiPath('widget_list', this.props.widgetListId))
+    this.state.widgetFrameworkSettings.fetchData(apiPath('widget_list', this.props.widgetListId))
       .then(this.updateWidgetList)
       .catch(this.state.widgetFrameworkSettings.errorHandler)
   }
@@ -53,8 +52,7 @@ class WidgetList extends Component {
      * Fetch new widgets when url changes
      */
     if (prevProps.widgetListId !== this.props.widgetListId) {
-      this.state.widgetFrameworkSettings.fetchData(
-        this.state.widgetFrameworkSettings.siteBaseUrl + apiPath('widget_list', this.props.widgetListId))
+      this.state.widgetFrameworkSettings.fetchData(apiPath('widget_list', this.props.widgetListId))
         .then(this.updateWidgetList)
         .catch(this.state.widgetFrameworkSettings.errorHandler)
       this.setState({editModeActive: false})
@@ -82,11 +80,9 @@ class WidgetList extends Component {
   openEditWidgetForm(widgetId) {
     this.closeForm()
     this.setState({
-      retrieveFormRoute:
-        this.state.widgetFrameworkSettings.siteBaseUrl + apiPath('widget', this.props.widgetListId, widgetId),
+      retrieveFormRoute: apiPath('widget', this.props.widgetListId, widgetId),
       submitFormMethod: 'PUT',
-      submitFormRoute:
-        this.state.widgetFrameworkSettings.siteBaseUrl + apiPath('widget', this.props.widgetListId, widgetId),
+      submitFormRoute: apiPath('widget', this.props.widgetListId, widgetId),
     })
   }
 
@@ -98,11 +94,9 @@ class WidgetList extends Component {
   // TODO: Make a separate component
   openNewWidgetForm() {
     this.setState({
-      retrieveFormRoute:
-        this.state.widgetFrameworkSettings.siteBaseUrl + apiPath('get_configurations'),
+      retrieveFormRoute: apiPath('get_configurations'),
       submitFormMethod: 'POST',
-      submitFormRoute:
-        this.state.widgetFrameworkSettings.siteBaseUrl + apiPath('widget', this.props.widgetListId),
+      submitFormRoute: apiPath('widget', this.props.widgetListId),
     })
   }
 
@@ -111,7 +105,7 @@ class WidgetList extends Component {
      * Make request to server to delete widget
      */
     this.state.widgetFrameworkSettings.fetchData(
-      this.state.widgetFrameworkSettings.siteBaseUrl + apiPath('widget', this.props.widgetListId, widgetId),
+      apiPath('widget', this.props.widgetListId, widgetId),
       {method: 'DELETE'})
       .then(this.updateWidgetList)
       .catch(this.state.widgetFrameworkSettings.errorHandler)
@@ -122,8 +116,7 @@ class WidgetList extends Component {
      * Make request to server to move widget up
      */
     this.state.widgetFrameworkSettings.fetchData(
-      this.state.widgetFrameworkSettings.siteBaseUrl
-      + apiPath('widget', this.props.widgetListId, widgetId, {position: position}),
+      apiPath('widget', this.props.widgetListId, widgetId, {position: position}),
       {method: 'PATCH'})
       .then(this.updateWidgetList)
       .catch(this.state.widgetFrameworkSettings.errorHandler)

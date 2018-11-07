@@ -52,9 +52,6 @@ The settings that you can currently customize are:
 #### `disableWidgetFramework:`
 If set to true, WidgetLists will not render on any page
 
-#### `siteBaseUrl:` 
-The url base for your app so that the frontend can make fetch requests to the backend. Defaults to `https://localhost:8000/`
-
 #### `csrfToken:` 
 The django generated cross site request forgery token that can be passed in through the template. If this isn't defined, you will not be able to create, adit, or delete widgets. For more, see the django documentation:  https://docs.djangoproject.com/en/2.1/ref/csrf/
 
