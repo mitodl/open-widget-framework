@@ -53,13 +53,13 @@ class _defaultWidgetWrapper extends Component {
       <div className={'edit-widget-bar btn-group card-header'}>
         <button className={'btn btn-info col'}
                 disabled={this.props.position === 0}
-                onClick={() => this.props.moveWidget(this.props.id, this.props.position - 1)}
+                onClick={() => this.props.moveWidget(this.props.position - 1)}
                 title={'Move widget up'}>
           <Octicon name={'chevron-up'}/>
         </button>
         <button className={'btn btn-info col'}
                 disabled={this.props.position === this.props.listLength - 1}
-                onClick={() => this.props.moveWidget(this.props.id, this.props.position + 1)}
+                onClick={() => this.props.moveWidget(this.props.position + 1)}
                 title={'Move widget down'}>
           <Octicon name={'chevron-down'}/>
         </button>
@@ -98,23 +98,19 @@ class _defaultFormWrapper extends Component {
 
 const _defaultLoader = <p>Loading</p>
 
-function _defaultFetchJsonData(url, options) {
-  let resolve = options.resolve || console.log
-  let reject = options.reject || console.error
-  let request = options.request || {method: 'GET'}
-
-  if (reject === undefined) {
-    reject = console.error
+function _defaultFetchJsonData(url, init) {
+  if (init !== undefined && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(init.method) && 'headers' in init === false) {
+    if (window.csrfToken === undefined) {
+      console.error('No csrfToken found on window')
+    }
+    init.headers = {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': window.csrfToken,
+    }
   }
 
-  if (request.method !== 'GET' && 'headers' in request === false) {
-    request.headers = {'Content-Type': 'application/json'}
-  }
-
-  fetch(url, request)
+  return fetch(url, init)
     .then(data => data.json())
-    .then((data) => resolve(data))
-    .catch((data) => reject(data))
 }
 
 export {_defaultRenderer, _defaultListWrapper, _defaultWidgetWrapper, _defaultFormWrapper, _defaultLoader, _defaultFetchJsonData}

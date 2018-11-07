@@ -33,7 +33,9 @@ class WidgetForm extends Component {
     /**
      * Fetch available widget classes and configurations after component mount
      */
-    this.props.widgetFrameworkSettings.fetchData(this.props.fetchRoute, {resolve: this.resetForm})
+    this.props.widgetFrameworkSettings.fetchData(this.props.fetchRoute)
+      .then(this.resetForm)
+      .catch(this.props.widgetFrameworkSettings.errorHandler)
   }
 
   componentDidUpdate(prevProps) {
@@ -41,7 +43,9 @@ class WidgetForm extends Component {
      * Fetch new form data if the fetchRoute changes
      */
     if (prevProps.fetchRoute !== this.props.fetchRoute) {
-      this.props.widgetFrameworkSettings.fetchData(this.props.fetchRoute, {resolve: this.resetForm})
+      this.props.widgetFrameworkSettings.fetchData(this.props.fetchRoute)
+        .then(this.resetForm)
+        .catch(this.props.widgetFrameworkSettings.errorHandler)
     }
   }
 
@@ -78,12 +82,11 @@ class WidgetForm extends Component {
     let data = this.state.formData
     data['widget_class'] = this.state.widgetClass
     this.props.widgetFrameworkSettings.fetchData(this.props.submitUrl, {
-      request: {
-        body: JSON.stringify(this.state.formData),
-        method: this.props.submitMethod,
-      },
-      resolve: this.props.onSubmit,
+      body: JSON.stringify(this.state.formData),
+      method: this.props.submitMethod,
     })
+      .then(this.props.onSubmit)
+      .catch(this.props.widgetFrameworkSettings.errorHandler)
   }
 
   makeWidgetClassSelect() {

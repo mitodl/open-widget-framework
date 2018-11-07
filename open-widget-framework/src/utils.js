@@ -1,7 +1,7 @@
 import range from 'lodash.range'
 
 function apiPath(name, listId, widgetId, args) {
-  let apiBase = 'api/v1/'
+  let apiBase = '/api/v1/'
   switch (name) {
     case 'get_lists':
       return apiBase + 'lists'

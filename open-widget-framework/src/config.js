@@ -2,6 +2,10 @@ import {_defaultRenderer, _defaultWidgetWrapper, _defaultListWrapper,
   _defaultFormWrapper, _defaultLoader, _defaultFetchJsonData} from './defaults'
 
 function configureWidgetFrameworkSettings(userSettings) {
+  if (userSettings === undefined) {
+    userSettings = {}
+  }
+
   let SETTINGS = {
     csrfToken: userSettings.csrfToken || '',
     defaultFormWrapper: userSettings.defaultFormWrapper || _defaultFormWrapper,
@@ -13,7 +17,6 @@ function configureWidgetFrameworkSettings(userSettings) {
     fetchData: userSettings.fetchData || _defaultFetchJsonData,
     loader: userSettings.loader || _defaultLoader,
     renderers: userSettings.renderers || {},
-    siteBaseUrl: userSettings.siteBaseUrl || 'https://localhost:8000/',
   }
 
   return SETTINGS
