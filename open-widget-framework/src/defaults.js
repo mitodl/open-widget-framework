@@ -53,13 +53,13 @@ class _defaultWidgetWrapper extends Component {
       <div className={'edit-widget-bar btn-group card-header'}>
         <button className={'btn btn-info col'}
                 disabled={this.props.position === 0}
-                onClick={() => this.props.moveWidget(this.props.id, this.props.position - 1)}
+                onClick={() => this.props.moveWidget(this.props.position - 1)}
                 title={'Move widget up'}>
           <Octicon name={'chevron-up'}/>
         </button>
         <button className={'btn btn-info col'}
                 disabled={this.props.position === this.props.listLength - 1}
-                onClick={() => this.props.moveWidget(this.props.id, this.props.position + 1)}
+                onClick={() => this.props.moveWidget(this.props.position + 1)}
                 title={'Move widget down'}>
           <Octicon name={'chevron-down'}/>
         </button>
@@ -98,16 +98,16 @@ class _defaultFormWrapper extends Component {
 
 const _defaultLoader = <p>Loading</p>
 
-function _defaultFetchJsonData(url, request) {
-  if (request !== undefined && request.method in ['POST', 'PUT', 'PATCH', 'DELETE'] && 'headers' in request === false) {
-    request.headers = {
+function _defaultFetchJsonData(url, init) {
+  if (init !== undefined && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(init.method) && 'headers' in init === false) {
+    init.headers = {
       'Content-Type': 'application/json',
       'X-CSRFToken': window.csrfToken,
     }
   }
 
-  fetch(url, request)
-    .then(data => { return data.json() })
+  return fetch(url, init)
+    .then(data => data.json())
 }
 
 export {_defaultRenderer, _defaultListWrapper, _defaultWidgetWrapper, _defaultFormWrapper, _defaultLoader, _defaultFetchJsonData}
