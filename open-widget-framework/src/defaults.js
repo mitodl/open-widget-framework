@@ -100,6 +100,9 @@ const _defaultLoader = <p>Loading</p>
 
 function _defaultFetchJsonData(url, init) {
   if (init !== undefined && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(init.method) && 'headers' in init === false) {
+    if (window.csrfToken === undefined) {
+      console.error('No csrfToken found on window')
+    }
     init.headers = {
       'Content-Type': 'application/json',
       'X-CSRFToken': window.csrfToken,
