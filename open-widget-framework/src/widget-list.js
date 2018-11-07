@@ -43,8 +43,9 @@ class WidgetList extends Component {
      * Fetch data on widget instances in list from fetchRoute
      */
     this.state.widgetFrameworkSettings.fetchData(
-      this.state.widgetFrameworkSettings.siteBaseUrl + apiPath('widget_list', this.props.widgetListId),
-      {resolve: this.updateWidgetList})
+      this.state.widgetFrameworkSettings.siteBaseUrl + apiPath('widget_list', this.props.widgetListId))
+      .then(this.updateWidgetList)
+      .catch(this.state.widgetFrameworkSettings.errorHandler)
   }
 
   componentDidUpdate(prevProps) {
@@ -53,8 +54,9 @@ class WidgetList extends Component {
      */
     if (prevProps.widgetListId !== this.props.widgetListId) {
       this.state.widgetFrameworkSettings.fetchData(
-        this.state.widgetFrameworkSettings.siteBaseUrl + apiPath('widget_list', this.props.widgetListId),
-        {resolve: this.updateWidgetList})
+        this.state.widgetFrameworkSettings.siteBaseUrl + apiPath('widget_list', this.props.widgetListId))
+        .then(this.updateWidgetList)
+        .catch(this.state.widgetFrameworkSettings.errorHandler)
       this.setState({editModeActive: false})
     }
   }
@@ -110,7 +112,9 @@ class WidgetList extends Component {
      */
     this.state.widgetFrameworkSettings.fetchData(
       this.state.widgetFrameworkSettings.siteBaseUrl + apiPath('widget', this.props.widgetListId, widgetId),
-      {request: {method: 'DELETE'}, resolve: this.updateWidgetList})
+      {method: 'DELETE'})
+      .then(this.updateWidgetList)
+      .catch(this.state.widgetFrameworkSettings.errorHandler)
   }
 
   moveWidget(widgetId, position) {
@@ -120,8 +124,9 @@ class WidgetList extends Component {
     this.state.widgetFrameworkSettings.fetchData(
       this.state.widgetFrameworkSettings.siteBaseUrl
       + apiPath('widget', this.props.widgetListId, widgetId, {position: position}),
-      {request: {method: 'PATCH'}, resolve: this.updateWidgetList}
-    )
+      {method: 'PATCH'})
+      .then(this.updateWidgetList)
+      .catch(this.state.widgetFrameworkSettings.errorHandler)
   }
 
   makePassThroughProps(widgetInstance) {

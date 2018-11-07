@@ -98,23 +98,16 @@ class _defaultFormWrapper extends Component {
 
 const _defaultLoader = <p>Loading</p>
 
-function _defaultFetchJsonData(url, options) {
-  let resolve = options.resolve || console.log
-  let reject = options.reject || console.error
-  let request = options.request || {method: 'GET'}
-
-  if (reject === undefined) {
-    reject = console.error
-  }
-
-  if (request.method !== 'GET' && 'headers' in request === false) {
-    request.headers = {'Content-Type': 'application/json'}
+function _defaultFetchJsonData(url, request) {
+  if (request !== undefined && request.method in ['POST', 'PUT', 'PATCH', 'DELETE'] && 'headers' in request === false) {
+    request.headers = {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': window.csrfToken,
+    }
   }
 
   fetch(url, request)
-    .then(data => data.json())
-    .then((data) => resolve(data))
-    .catch((data) => reject(data))
+    .then(data => { return data.json() })
 }
 
 export {_defaultRenderer, _defaultListWrapper, _defaultWidgetWrapper, _defaultFormWrapper, _defaultLoader, _defaultFetchJsonData}
