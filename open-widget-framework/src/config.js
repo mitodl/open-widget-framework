@@ -20,7 +20,7 @@ function configureWidgetFrameworkSettings(userSettings) {
     defaultWidgetWrapper:
       userSettings.defaultWidgetWrapper || _defaultWidgetWrapper,
     disableWidgetFramework: userSettings.disableWidgetFramework || false,
-    errorHandler:           userSettings.errorHandler || console.error,
+    errorHandler:           userSettings.errorHandler || console.error, // eslint-disable-line no-console
     fetchData:              userSettings.fetchData || _defaultFetchJsonData,
     loader:                 userSettings.loader || _defaultLoader,
     renderers:              userSettings.renderers || {}

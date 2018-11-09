@@ -118,7 +118,7 @@ function _defaultFetchJsonData(url, init) {
     "headers" in init === false
   ) {
     if (window.csrfToken === undefined) {
-      console.error("No csrfToken found on window")
+      console.error("No csrfToken found on window") // eslint-disable-line no-console
     }
     init.headers = {
       "Content-Type": "application/json",
