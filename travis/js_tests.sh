@@ -6,3 +6,6 @@ npm install
 
 # TODO: "fetch" is missing
 # npm run-script test:coverage
+
+npm run fmt:check
+npm run lint
