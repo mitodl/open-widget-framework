@@ -1,5 +1,5 @@
-import React, {Component} from 'react'
-import Octicon from 'react-component-octicons'
+import React, { Component } from "react"
+import Octicon from "react-component-octicons"
 
 class _defaultRenderer extends Component {
   /**
@@ -11,9 +11,12 @@ class _defaultRenderer extends Component {
    */
   render() {
     return (
-      <div className={'widget-body card-body'}>
-        <h5 className={'widget-title card-title'}>{this.props.title}</h5>
-        <div className={'widget-text card-text text-truncate'} dangerouslySetInnerHTML={{__html: this.props.html}}/>
+      <div className={"widget-body card-body"}>
+        <h5 className={"widget-title card-title"}>{this.props.title}</h5>
+        <div
+          className={"widget-text card-text text-truncate"}
+          dangerouslySetInnerHTML={{ __html: this.props.html }}
+        />
       </div>
     )
   }
@@ -22,8 +25,8 @@ class _defaultRenderer extends Component {
 class _defaultListWrapper extends Component {
   renderAddWidgetButton() {
     return (
-      <button className={'btn btn-info'} onClick={this.props.openNewWidgetForm}>
-        <Octicon name={'plus'}/>
+      <button className={"btn btn-info"} onClick={this.props.openNewWidgetForm}>
+        <Octicon name={"plus"} />
       </button>
     )
   }
@@ -31,17 +34,19 @@ class _defaultListWrapper extends Component {
     return (
       <div>
         {this.props.renderWidgetForm()}
-        <div className={'edit-widget-list-bar btn-group'} role={'group'}>
-          <button className={'btn btn-info' + (this.props.editModeActive ? ' active' : '') }
-                  onClick={this.props.toggleEditMode}>
-            <Octicon name={'pencil'}/>
+        <div className={"edit-widget-list-bar btn-group"} role={"group"}>
+          <button
+            className={
+              `btn btn-info${  this.props.editModeActive ? " active" : ""}`
+            }
+            onClick={this.props.toggleEditMode}
+          >
+            <Octicon name={"pencil"} />
           </button>
           {this.props.editModeActive ? this.renderAddWidgetButton() : null}
         </div>
-        <hr/>
-        <div>
-          {this.props.renderList()}
-        </div>
+        <hr />
+        <div>{this.props.renderList()}</div>
       </div>
     )
   }
@@ -50,26 +55,36 @@ class _defaultListWrapper extends Component {
 class _defaultWidgetWrapper extends Component {
   renderEditBar() {
     return (
-      <div className={'edit-widget-bar btn-group card-header'}>
-        <button className={'btn btn-info col'}
-                disabled={this.props.position === 0}
-                onClick={() => this.props.moveWidget(this.props.position - 1)}
-                title={'Move widget up'}>
-          <Octicon name={'chevron-up'}/>
+      <div className={"edit-widget-bar btn-group card-header"}>
+        <button
+          className={"btn btn-info col"}
+          disabled={this.props.position === 0}
+          onClick={() => this.props.moveWidget(this.props.position - 1)}
+          title={"Move widget up"}
+        >
+          <Octicon name={"chevron-up"} />
         </button>
-        <button className={'btn btn-info col'}
-                disabled={this.props.position === this.props.listLength - 1}
-                onClick={() => this.props.moveWidget(this.props.position + 1)}
-                title={'Move widget down'}>
-          <Octicon name={'chevron-down'}/>
+        <button
+          className={"btn btn-info col"}
+          disabled={this.props.position === this.props.listLength - 1}
+          onClick={() => this.props.moveWidget(this.props.position + 1)}
+          title={"Move widget down"}
+        >
+          <Octicon name={"chevron-down"} />
         </button>
-        <button className={'btn btn-info col'} onClick={() => this.props.openEditWidgetForm(this.props.id)}
-                title={'Update widget'}>
-          <Octicon name={'pencil'}/>
+        <button
+          className={"btn btn-info col"}
+          onClick={() => this.props.openEditWidgetForm(this.props.id)}
+          title={"Update widget"}
+        >
+          <Octicon name={"pencil"} />
         </button>
-        <button className={'btn btn-danger col'} onClick={() => this.props.deleteWidget(this.props.id)}
-                title={'Delete widget'}>
-          <Octicon name={'x'}/>
+        <button
+          className={"btn btn-danger col"}
+          onClick={() => this.props.deleteWidget(this.props.id)}
+          title={"Delete widget"}
+        >
+          <Octicon name={"x"} />
         </button>
       </div>
     )
@@ -77,7 +92,10 @@ class _defaultWidgetWrapper extends Component {
 
   render() {
     return (
-      <div className={'widget card mb-3 bg-light'} id={'widget-' + this.props.id}>
+      <div
+        className={"widget card mb-3 bg-light"}
+        id={`widget-${  this.props.id}`}
+      >
         {this.props.editModeActive ? this.renderEditBar() : null}
         {this.props.renderWidget()}
       </div>
@@ -85,32 +103,37 @@ class _defaultWidgetWrapper extends Component {
   }
 }
 
-
 class _defaultFormWrapper extends Component {
   render() {
-    return (
-      <div className={'widget-form'}>
-        {this.props.renderWidgetForm()}
-      </div>
-    )
+    return <div className={"widget-form"}>{this.props.renderWidgetForm()}</div>
   }
 }
 
 const _defaultLoader = <p>Loading</p>
 
 function _defaultFetchJsonData(url, init) {
-  if (init !== undefined && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(init.method) && 'headers' in init === false) {
+  if (
+    init !== undefined &&
+    ["POST", "PUT", "PATCH", "DELETE"].includes(init.method) &&
+    "headers" in init === false
+  ) {
     if (window.csrfToken === undefined) {
-      console.error('No csrfToken found on window')
+      console.error("No csrfToken found on window")
     }
     init.headers = {
-      'Content-Type': 'application/json',
-      'X-CSRFToken': window.csrfToken,
+      "Content-Type": "application/json",
+      "X-CSRFToken":  window.csrfToken
     }
   }
 
-  return fetch(url, init)
-    .then(data => data.json())
+  return fetch(url, init).then(data => data.json())
 }
 
-export {_defaultRenderer, _defaultListWrapper, _defaultWidgetWrapper, _defaultFormWrapper, _defaultLoader, _defaultFetchJsonData}
+export {
+  _defaultRenderer,
+  _defaultListWrapper,
+  _defaultWidgetWrapper,
+  _defaultFormWrapper,
+  _defaultLoader,
+  _defaultFetchJsonData
+}

@@ -1,8 +1,7 @@
-import React, {Component} from 'react'
-import Select from 'react-select'
+import React, { Component } from "react"
+import Select from "react-select"
 
-import {makeOptions} from './utils'
-
+import { makeOptions } from "./utils"
 
 /**
  * WidgetForm is a dynamically generated form with input fields defined by a configuration JSON blob
@@ -17,10 +16,10 @@ class WidgetForm extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      formData: null,
-      widgetClass: null,
+      formData:                  null,
+      widgetClass:               null,
       widgetClassConfigurations: null,
-      widgetClasses: null,
+      widgetClasses:             null
     }
     this.resetForm = this.resetForm.bind(this)
     this.onChange = this.onChange.bind(this)
@@ -33,7 +32,8 @@ class WidgetForm extends Component {
     /**
      * Fetch available widget classes and configurations after component mount
      */
-    this.props.widgetFrameworkSettings.fetchData(this.props.fetchRoute)
+    this.props.widgetFrameworkSettings
+      .fetchData(this.props.fetchRoute)
       .then(this.resetForm)
       .catch(this.props.widgetFrameworkSettings.errorHandler)
   }
@@ -43,7 +43,8 @@ class WidgetForm extends Component {
      * Fetch new form data if the fetchRoute changes
      */
     if (prevProps.fetchRoute !== this.props.fetchRoute) {
-      this.props.widgetFrameworkSettings.fetchData(this.props.fetchRoute)
+      this.props.widgetFrameworkSettings
+        .fetchData(this.props.fetchRoute)
         .then(this.resetForm)
         .catch(this.props.widgetFrameworkSettings.errorHandler)
     }
@@ -51,14 +52,14 @@ class WidgetForm extends Component {
 
   resetForm(data) {
     this.setState({
-      editWidget: 'widgetData' in data,
-      formData: 'widgetData' in data ? data.widgetData : {},
-      widgetClass: '',
+      editWidget:                "widgetData" in data,
+      formData:                  "widgetData" in data ? data.widgetData : {},
+      widgetClass:               "",
       widgetClassConfigurations: data.widgetClassConfigurations,
-      widgetClasses: Object.keys(data.widgetClassConfigurations),
+      widgetClasses:             Object.keys(data.widgetClassConfigurations)
     })
     if (this.state.widgetClasses.length === 1) {
-      this.setState({widgetClass: this.state.widgetClasses[0]})
+      this.setState({ widgetClass: this.state.widgetClasses[0] })
     }
   }
 
@@ -69,8 +70,8 @@ class WidgetForm extends Component {
     this.setState({
       formData: {
         ...this.state.formData,
-        [key]: value,
-      },
+        [key]: value
+      }
     })
   }
 
@@ -79,12 +80,13 @@ class WidgetForm extends Component {
      * Submit widget configuration from this.state.formData to the server
      */
     event.preventDefault()
-    let data = this.state.formData
-    data['widget_class'] = this.state.widgetClass
-    this.props.widgetFrameworkSettings.fetchData(this.props.submitUrl, {
-      body: JSON.stringify(this.state.formData),
-      method: this.props.submitMethod,
-    })
+    const data = this.state.formData
+    data["widget_class"] = this.state.widgetClass
+    this.props.widgetFrameworkSettings
+      .fetchData(this.props.submitUrl, {
+        body:   JSON.stringify(this.state.formData),
+        method: this.props.submitMethod
+      })
       .then(this.props.onSubmit)
       .catch(this.props.widgetFrameworkSettings.errorHandler)
   }
@@ -92,11 +94,13 @@ class WidgetForm extends Component {
   makeWidgetClassSelect() {
     if (this.state.widgetClasses.length > 1) {
       return (
-        <Select className={'widget-form-select'}
-                id={'widget-class-select'}
-                onChange={(option) => this.setState({widgetClass: option.value})}
-                options={makeOptions(this.state.widgetClasses)}
-                placeholder={'Choose a widget class'}/>
+        <Select
+          className={"widget-form-select"}
+          id={"widget-class-select"}
+          onChange={option => this.setState({ widgetClass: option.value })}
+          options={makeOptions(this.state.widgetClasses)}
+          placeholder={"Choose a widget class"}
+        />
       )
     } else {
       return null
@@ -107,19 +111,29 @@ class WidgetForm extends Component {
     /**
      * Render a wrapper which handles form title and choosing which class of widget to configure
      */
-    if (this.state.widgetClasses === null || this.state.widgetClassConfigurations === null) {
-      return (this.props.widgetFrameworkSettings.loader)
+    if (
+      this.state.widgetClasses === null ||
+      this.state.widgetClassConfigurations === null
+    ) {
+      return this.props.widgetFrameworkSettings.loader
     } else {
       return (
-        <form className={'card'} onSubmit={this.onSubmit}>
-          <div className={'form-group card-header'}>
-            <label className='widget-class-select-label' htmlFor={'widget-class-select'}>
-              {'Configure ' + this.state.widgetClass + ' Widget'}
+        <form className={"card"} onSubmit={this.onSubmit}>
+          <div className={"form-group card-header"}>
+            <label
+              className="widget-class-select-label"
+              htmlFor={"widget-class-select"}
+            >
+              {`Configure ${  this.state.widgetClass  } Widget`}
             </label>
             {this.makeWidgetClassSelect()}
           </div>
-          {this.renderForm(this.state.widgetClassConfigurations[this.state.widgetClass])}
-          <button className={'btn btn-danger'} onClick={this.props.onCancel}>Cancel</button>
+          {this.renderForm(
+            this.state.widgetClassConfigurations[this.state.widgetClass]
+          )}
+          <button className={"btn btn-danger"} onClick={this.props.onCancel}>
+            Cancel
+          </button>
         </form>
       )
     }
@@ -132,25 +146,28 @@ class WidgetForm extends Component {
     if (model === undefined) {
       return
     }
-    let formUI = model.map((field) => {
-      let fieldKey = field.key
-      let inputType = field.input_type || 'text'
-      let props = field.props || {}
+    const formUI = model.map(field => {
+      const fieldKey = field.key
+      const inputType = field.input_type || "text"
+      const props = field.props || {}
 
-      let inputProps = {
-        className: (inputType !== 'select' ? 'form-control ' : '') + 'widget-form-' + inputType,
+      const inputProps = {
+        className:
+          `${inputType !== "select" ? "form-control " : "" 
+          }widget-form-${ 
+            inputType}`,
         defaultValue: null,
-        id: fieldKey,
-        key: fieldKey,
-        onChange: (event) => {
+        id:           fieldKey,
+        key:          fieldKey,
+        onChange:     event => {
           this.onChange(fieldKey, event.target.value)
         },
-        ...props,
+        ...props
       }
 
       // Set default values if they exist
       if (this.state.editWidget) {
-        if (inputType === 'select') {
+        if (inputType === "select") {
           inputProps.defaultValue = []
         } else {
           inputProps.defaultValue = this.state.formData[fieldKey]
@@ -158,10 +175,10 @@ class WidgetForm extends Component {
       }
 
       // Create options for select parameters and set defaultValue
-      if (inputType === 'select') {
+      if (inputType === "select") {
         inputProps.options = makeOptions(field.choice_keys, field.choice_values)
         if (this.state.editWidget) {
-          for (let option of inputProps.options) {
+          for (const option of inputProps.options) {
             if (this.state.formData[fieldKey].includes(option.value)) {
               inputProps.defaultValue.push(option)
             }
@@ -170,29 +187,30 @@ class WidgetForm extends Component {
       }
 
       let input
-      if (inputType === 'select') {
+      if (inputType === "select") {
         if (props.isMulti) {
-          inputProps.onChange = (selection) => {
-            this.onChange(fieldKey, selection.map((option) => option.value))
+          inputProps.onChange = selection => {
+            this.onChange(fieldKey, selection.map(option => option.value))
           }
         } else {
-          inputProps.onChange = (selection) => {
+          inputProps.onChange = selection => {
             this.onChange(fieldKey, selection.value)
           }
         }
-        input = <Select {...inputProps}/>
-      } else if (inputType === 'textarea') {
-        input = <textarea {...inputProps}/>
+        input = <Select {...inputProps} />
+      } else if (inputType === "textarea") {
+        input = <textarea {...inputProps} />
       } else {
-        input = <input {...inputProps}
-                       type={inputType}/>
+        input = <input {...inputProps} type={inputType} />
       }
 
       return (
-        <div className='widget-form-group form-group' key={fieldKey}>
-          <label className='widget-form-label'
-                 htmlFor={fieldKey}
-                 key={fieldKey + '-label'}>
+        <div className="widget-form-group form-group" key={fieldKey}>
+          <label
+            className="widget-form-label"
+            htmlFor={fieldKey}
+            key={`${fieldKey  }-label`}
+          >
             {field.label}
           </label>
           {input}
@@ -200,9 +218,11 @@ class WidgetForm extends Component {
       )
     })
     return (
-      <div className='widget-form-body card-body'>
+      <div className="widget-form-body card-body">
         {formUI}
-        <button className={'widget-form-submit btn btn-primary'} type='submit'>Submit</button>
+        <button className={"widget-form-submit btn btn-primary"} type="submit">
+          Submit
+        </button>
       </div>
     )
   }
