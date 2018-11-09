@@ -17,10 +17,11 @@
     "start": "nwb serve-react-demo",
     "test": "nwb test-react",
     "test:coverage": "nwb test-react --coverage",
-    "test:watch": "nwb test-react --server"
+    "test:watch": "nwb test-react --server",
+    "lint": "eslint ./src",
+    "fmt": "LOG_LEVEL= prettier-eslint --write --no-semi --ignore 'build' 'src/*.js'"
   },
   "dependencies": {
-    "eslint": "^5.8.0",
     "eslint-plugin-react": "^7.11.1",
     "lodash.range": "^3.2.0",
     "octicons": "^8.1.0",
@@ -32,7 +33,16 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.1.0",
+    "babel-eslint": "7.2.3",
+    "eslint": "4.2.0",
+    "eslint-config-google": "0.9.1",
+    "eslint-config-mitodl": "^0.0.4",
+    "eslint-plugin-babel": "4.1.1",
+    "eslint-plugin-flow-vars": "^0.5.0",
+    "eslint-plugin-flowtype": "2.35.0",
+    "eslint-plugin-mocha": "4.11.0",
     "nwb": "0.23.x",
+    "prettier-eslint-cli": "4.1.1",
     "react": "^16.6.0",
     "react-dom": "^16.6.0",
     "react-hot-loader": "4.3.11"
