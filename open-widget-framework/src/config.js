@@ -1,25 +1,24 @@
 import {_defaultRenderer, _defaultWidgetWrapper, _defaultListWrapper,
   _defaultFormWrapper, _defaultLoader, _defaultFetchJsonData} from './defaults'
 
-function configureWidgetFrameworkSettings(userSettings) {
-  if (userSettings === undefined) {
-    userSettings = {}
-  }
+export const defaultSettings = {
+  csrfToken: '',
+  formWrapper: _defaultFormWrapper,
+  listWrapper: _defaultListWrapper,
+  defaultRenderer: _defaultRenderer,
+  widgetWrapper: _defaultWidgetWrapper,
+  disableWidgetFramework: false,
+  errorHandler: console.error,
+  fetchData: _defaultFetchJsonData,
+  loader: _defaultLoader,
+  renderers: {},
+}
 
-  let SETTINGS = {
-    csrfToken: userSettings.csrfToken || '',
-    defaultFormWrapper: userSettings.defaultFormWrapper || _defaultFormWrapper,
-    defaultListWrapper: userSettings.defaultListWrapper || _defaultListWrapper,
-    defaultRenderer: userSettings.defaultRenderer || _defaultRenderer,
-    defaultWidgetWrapper: userSettings.defaultWidgetWrapper || _defaultWidgetWrapper,
-    disableWidgetFramework: userSettings.disableWidgetFramework || false,
-    errorHandler: userSettings.errorHandler || console.error,
-    fetchData: userSettings.fetchData || _defaultFetchJsonData,
-    loader: userSettings.loader || _defaultLoader,
-    renderers: userSettings.renderers || {},
+function configureWidgetFrameworkSettings(userSettings = {}) {
+  return {
+    ...defaultSettings
+    ...userSettings
   }
-
-  return SETTINGS
 }
 
 export default configureWidgetFrameworkSettings

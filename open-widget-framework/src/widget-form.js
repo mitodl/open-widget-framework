@@ -33,9 +33,7 @@ class WidgetForm extends Component {
     /**
      * Fetch available widget classes and configurations after component mount
      */
-    this.props.widgetFrameworkSettings.fetchData(this.props.fetchRoute)
-      .then(this.resetForm)
-      .catch(this.props.widgetFrameworkSettings.errorHandler)
+     loadData()
   }
 
   componentDidUpdate(prevProps) {
@@ -43,10 +41,15 @@ class WidgetForm extends Component {
      * Fetch new form data if the fetchRoute changes
      */
     if (prevProps.fetchRoute !== this.props.fetchRoute) {
-      this.props.widgetFrameworkSettings.fetchData(this.props.fetchRoute)
-        .then(this.resetForm)
-        .catch(this.props.widgetFrameworkSettings.errorHandler)
+      loadData()
     }
+  }
+
+  loadData() {
+   const { errorHandler, fetchData, fetchRoute } = this.props
+   fetchData(fetchRoute)
+     .then(this.resetForm)
+     .catch(errorHandler)
   }
 
   resetForm(data) {
@@ -78,25 +81,26 @@ class WidgetForm extends Component {
     /**
      * Submit widget configuration from this.state.formData to the server
      */
+    const { errorHandler, fetchData, submitUrl, submitMethod, onSubmit } = this.props
     event.preventDefault()
     let data = this.state.formData
     data['widget_class'] = this.state.widgetClass
-    this.props.widgetFrameworkSettings.fetchData(this.props.submitUrl, {
+    fetchData(submitUrl, {
       body: JSON.stringify(this.state.formData),
-      method: this.props.submitMethod,
+      method: submitMethod,
     })
-      .then(this.props.onSubmit)
-      .catch(this.props.widgetFrameworkSettings.errorHandler)
+      .then(onSubmit)
+      .catch(errorHandler)
   }
 
   makeWidgetClassSelect() {
     if (this.state.widgetClasses.length > 1) {
       return (
-        <Select className={'widget-form-select'}
-                id={'widget-class-select'}
+        <Select className="widget-form-select"
+                id="widget-class-select"
                 onChange={(option) => this.setState({widgetClass: option.value})}
                 options={makeOptions(this.state.widgetClasses)}
-                placeholder={'Choose a widget class'}/>
+                placeholder="Choose a widget class"/>
       )
     } else {
       return null
@@ -107,19 +111,20 @@ class WidgetForm extends Component {
     /**
      * Render a wrapper which handles form title and choosing which class of widget to configure
      */
+     const { loader, onCancel } = this.props
     if (this.state.widgetClasses === null || this.state.widgetClassConfigurations === null) {
-      return (this.props.widgetFrameworkSettings.loader)
+      return loader
     } else {
       return (
-        <form className={'card'} onSubmit={this.onSubmit}>
-          <div className={'form-group card-header'}>
-            <label className='widget-class-select-label' htmlFor={'widget-class-select'}>
+        <form className="card" onSubmit={this.onSubmit}>
+          <div className="form-group card-header">
+            <label className='widget-class-select-label' htmlFor="widget-class-select">
               {'Configure ' + this.state.widgetClass + ' Widget'}
             </label>
             {this.makeWidgetClassSelect()}
           </div>
           {this.renderForm(this.state.widgetClassConfigurations[this.state.widgetClass])}
-          <button className={'btn btn-danger'} onClick={this.props.onCancel}>Cancel</button>
+          <button className="btn btn-danger" onClick={onCancel}>Cancel</button>
         </form>
       )
     }
@@ -202,7 +207,7 @@ class WidgetForm extends Component {
     return (
       <div className='widget-form-body card-body'>
         {formUI}
-        <button className={'widget-form-submit btn btn-primary'} type='submit'>Submit</button>
+        <button className="widget-form-submit btn btn-primary" type='submit'>Submit</button>
       </div>
     )
   }
