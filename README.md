@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/mitodl/open-widget-framework.svg?branch=master)](https://travis-ci.org/mitodl/open-widget-framework)
+
 # open-widget-framework
 A django + react library for managing user-configurable widgets
 
@@ -118,7 +120,7 @@ renderers: {
 }
 ```
 ### Database
-The `open_widget_framework` django package makes use of PostgreSQL and `django.contrib.postgres.fields.JSONField` to store JSON.
+The `open_widget_framework` django package makes use of PostgreSQL>=9.4 and `django.contrib.postgres.fields.JSONField` to store JSON content.
 
 ## Running Tests
 For the `open_widget_framework` django package, the following will use the Django's built-in test runner to discover tests:
