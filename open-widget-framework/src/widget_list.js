@@ -1,7 +1,7 @@
-import React, {Component} from 'react'
-import {apiPath} from './utils'
-import {EditWidgetForm, NewWidgetForm} from './widget_form'
-import configureWidgetFrameworkSettings from './config'
+import React, { Component } from 'react'
+import { apiPath } from './utils'
+import { EditWidgetForm, NewWidgetForm } from './widget_form'
+import { defaultSettings } from './config'
 
 
 class WidgetList extends Component {
@@ -12,20 +12,18 @@ class WidgetList extends Component {
   *    fetchRoute: where to fetch widgets in list from
   */
   // TODO: why do we need to use constructor
+
+  static defaultProps = {...defaultSettings}
+
   constructor(props) {
     super(props)
-    this.state = {
-      editModeActive: false,
-      retrieveFormRoute: null,
-      submitFormMethod: null,
-      submitFormRoute: null,
-      widgetFrameworkSettings: configureWidgetFrameworkSettings(this.props.widgetFrameworkSettings),
-      widgetInstances: null,
-    }
+    this.state = {widgetInstances: null}
+    this.loadData = this.loadData.bind(this)
     this.updateWidgetList = this.updateWidgetList.bind(this)
     this.moveWidget = this.moveWidget.bind(this)
     this.deleteWidget = this.deleteWidget.bind(this)
     this.makePassThroughProps = this.makePassThroughProps.bind(this)
+    this.makeFormProps = this.makeFormProps.bind(this)
     this.renderWidgetList = this.renderWidgetList.bind(this)
     this.renderListBody = this.renderListBody.bind(this)
     this.renderWidget = this.renderWidget.bind(this)
@@ -40,9 +38,7 @@ class WidgetList extends Component {
     /**
      * Fetch data on widget instances in list from fetchRoute
      */
-    this.state.widgetFrameworkSettings.fetchData(apiPath('widget_list', this.props.widgetListId))
-      .then(this.updateWidgetList)
-      .catch(this.state.widgetFrameworkSettings.errorHandler)
+    this.loadData()
   }
 
   componentDidUpdate(prevProps) {
@@ -50,11 +46,15 @@ class WidgetList extends Component {
      * Fetch new widgets when url changes
      */
     if (prevProps.widgetListId !== this.props.widgetListId) {
-      this.state.widgetFrameworkSettings.fetchData(apiPath('widget_list', this.props.widgetListId))
-        .then(this.updateWidgetList)
-        .catch(this.state.widgetFrameworkSettings.errorHandler)
-      this.setState({editModeActive: false})
+      this.loadData()
     }
+  }
+
+  loadData() {
+    const { widgetListId, errorHandler, fetchData } = this.props
+    fetchData(apiPath('widget_list', widgetListId))
+      .then(this.updateWidgetList)
+      .catch(errorHandler)
   }
 
   updateWidgetList(data) {
@@ -65,38 +65,38 @@ class WidgetList extends Component {
     /**
      * Make request to server to delete widget
      */
-    this.state.widgetFrameworkSettings.fetchData(
-      apiPath('widget', this.props.widgetListId, widgetId),
-      {method: 'DELETE'})
+    const { widgetListId, errorHandler, fetchData } = this.props
+    fetchData(apiPath('widget', widgetListId, widgetId), {method: 'DELETE'})
       .then(this.updateWidgetList)
-      .catch(this.state.widgetFrameworkSettings.errorHandler)
+      .catch(errorHandler)
   }
 
   moveWidget(widgetId, position) {
     /**
      * Make request to server to move widget up
      */
-    this.state.widgetFrameworkSettings.fetchData(
-      apiPath('widget', this.props.widgetListId, widgetId),
-      {
+    const { widgetListId, errorHandler, fetchData } = this.props
+    fetchData(apiPath('widget', widgetListId, widgetId), {
         body: JSON.stringify({position: position}),
         method: 'PATCH'
       })
       .then(this.updateWidgetList)
-      .catch(this.state.widgetFrameworkSettings.errorHandler)
+      .catch(errorHandler)
   }
 
   makePassThroughProps(widgetInstance) {
+    const { widgetListId } = this.props
+    const { widgetInstances } = this.state
     let passThroughProps = {
       deleteWidget: this.deleteWidget,
-      listLength: this.state.widgetInstances.length,
+      listLength: widgetInstances.length,
       moveWidget: this.moveWidget,
       renderList: this.renderListBody,
       renderWidget: this.renderWidgetBody,
       renderEditWidgetForm: this.renderEditWidgetForm,
       renderNewWidgetForm: this.renderNewWidgetForm,
       updateWidgetList: this.updateWidgetList,
-      widgetListId: this.props.widgetListId,
+      widgetListId: widgetListId,
     }
     if (widgetInstance !== undefined) {
       passThroughProps = Object.assign(passThroughProps, {
@@ -110,46 +110,50 @@ class WidgetList extends Component {
     return passThroughProps
   }
 
-  renderWidgetList() {
-    let ListWrapper
-    if ('listWrapper' in this.props) {
-      ListWrapper = this.props.listWrapper
-    } else {
-      ListWrapper = this.state.widgetFrameworkSettings.defaultListWrapper
+  makeFormProps() {
+    const { widgetListId, errorHandler, fetchData, loader } = this.props
+    const { widgetInstances } = this.state
+    return {
+      fetchData: fetchData,
+      errorHandler: errorHandler,
+      loader: loader,
+      widgetListId: widgetListId,
+      listLength: widgetInstances.length,
+      onSubmit: this.updateWidgetList,
     }
+  }
+
+  renderWidgetList() {
+    const { ListWrapper, listWrapperProps } = this.props
     return (
       <ListWrapper {...this.makePassThroughProps()}
-                   {...this.props.listWrapperProps}
+                   {...listWrapperProps}
       />
     )
   }
 
   renderListBody(listWrapperProps) {
+    const { widgetInstances } = this.state
     return (
-      this.state.widgetInstances.map(widgetInstance => this.renderWidget(widgetInstance, listWrapperProps))
+      widgetInstances.map(widgetInstance => this.renderWidget(widgetInstance, listWrapperProps))
     )
   }
 
   renderWidget(widgetInstance, listWrapperProps) {
-    let WidgetWrapper
-    if ('widgetWrapper' in this.props) {
-      WidgetWrapper = this.props.widgetWrapper
-    } else {
-      WidgetWrapper = this.state.widgetFrameworkSettings.defaultWidgetWrapper
-    }
+    const { WidgetWrapper, widgetWrapperProps } = this.props
     return (
       <WidgetWrapper key={widgetInstance.id}
                      {...widgetInstance}
                      {...this.makePassThroughProps(widgetInstance)}
-                     {...this.props.widgetWrapperProps}
+                     {...widgetWrapperProps}
                      {...listWrapperProps}
       />
     )
   }
 
   renderWidgetBody(widgetInstance) {
-    const Renderer = this.state.widgetFrameworkSettings.renderers[widgetInstance.reactRenderer]
-      || this.state.widgetFrameworkSettings.defaultRenderer
+    const { renderers, defaultRenderer } = this.props
+    const Renderer = renderers[widgetInstance.reactRenderer] || defaultRenderer
     return (
       <Renderer {...widgetInstance}
                 {...widgetInstance.configuration}
@@ -157,54 +161,42 @@ class WidgetList extends Component {
     )
   }
 
-  renderEditWidgetForm(widgetId, listProps) {
-    let FormWrapper
-    if ('formWrapper' in this.props) {
-      FormWrapper = this.props.formWrapper
-    } else {
-      FormWrapper = this.state.widgetFrameworkSettings.defaultFormWrapper
-    }
+  renderEditWidgetForm(widgetId, listWrapperProps) {
+    const { FormWrapper, formWrapperProps } = this.props
     return (
       <FormWrapper {...this.makePassThroughProps(widgetId)}
-                   {...listProps}
                    renderForm={(formProps) => this.renderEditWidgetFormBody(widgetId, formProps)}
+                   {...formWrapperProps}
+                   {...listWrapperProps}
       />
     )
   }
 
-  renderEditWidgetFormBody(widgetId, formProps) {
+  renderEditWidgetFormBody(widgetId, formWrapperProps) {
     return (
-      <EditWidgetForm widgetListId={this.props.widgetListId}
+      <EditWidgetForm {...this.makeFormProps()}
                       widgetId={widgetId}
-                      widgetFrameworkSettings={this.state.widgetFrameworkSettings}
-                      onSubmit={this.updateWidgetList}
-                      {...formProps}
+                      {...formWrapperProps}
       />
     )
   }
 
-  renderNewWidgetForm(listProps) {
-    let FormWrapper
-    if ('formWrapper' in this.props) {
-      FormWrapper = this.props.formWrapper
-    } else {
-      FormWrapper = this.state.widgetFrameworkSettings.defaultFormWrapper
-    }
+  renderNewWidgetForm(listWrapperProps) {
+    const { FormWrapper, formWrapperProps } = this.props
     return (
       <FormWrapper {...this.makePassThroughProps()}
-                   {...listProps}
                    renderForm={(formProps) => this.renderNewWidgetFormBody(formProps)}
+                   {...formWrapperProps}
+                   {...listWrapperProps}
+
       />
     )
   }
 
-  renderNewWidgetFormBody(formProps) {
+  renderNewWidgetFormBody(formWrapperProps) {
     return (
-      <NewWidgetForm widgetListId={this.props.widgetListId}
-                     listLength={this.state.widgetInstances.length}
-                     widgetFrameworkSettings={this.state.widgetFrameworkSettings}
-                     onSubmit={this.updateWidgetList}
-                     {...formProps}
+      <NewWidgetForm {...this.makeFormProps()}
+                     {...formWrapperProps}
       />
     )
   }
@@ -213,13 +205,15 @@ class WidgetList extends Component {
     /**
      * Render list of WidgetDisplays with overhead buttons enabling editing and WidgetForm generation
      */
-    if (this.state.widgetFrameworkSettings.disableWidgetFramework) {
+    const { disableWidgetFramework, loader } = this.props
+    const { widgetInstances } = this.state
+    if (disableWidgetFramework) {
       return null
-    } else if (this.state.widgetInstances === null) {
-      return (this.state.widgetFrameworkSettings.loader)
+    } else if (widgetInstances === null) {
+      return (loader)
     } else {
       return (
-        <div className={'widget-sidebar container bg-secondary rounded'}>
+        <div className="widget-sidebar container bg-secondary rounded">
           {this.renderWidgetList()}
         </div>
       )
