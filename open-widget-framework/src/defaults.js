@@ -51,7 +51,7 @@ class _defaultListWrapper extends Component {
 
   render() {
     return (
-      <div>
+      <div className={'bg-secondary rounded float-right col-lg-4'}>
         {this.state.addWidgetForm ? this.props.renderNewWidgetForm({closeForm: this.closeForm}) : null}
         {this.state.editWidgetForm !== null
           ? this.props.renderEditWidgetForm(this.state.editWidgetForm, {closeForm: this.closeForm}) : null}

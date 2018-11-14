@@ -213,7 +213,7 @@ class WidgetList extends Component {
       return (loader)
     } else {
       return (
-        <div className="widget-sidebar container bg-secondary rounded">
+        <div className="widget-list">
           {this.renderWidgetList()}
         </div>
       )
