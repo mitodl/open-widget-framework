@@ -13,7 +13,7 @@ function apiPath(name, listId, widgetId, args) {
       return apiBase + 'list/' + (listId || '')
 
     case 'widget':
-      return apiBase + 'list/' + listId + '/widget/' + (widgetId || '') + (args ? '?position=' + args.position : '')
+      return apiBase + 'list/' + listId + '/widget/' + (widgetId || '')
   }
 }
 
