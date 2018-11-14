@@ -83,13 +83,3 @@ class TestModels(TestCase):
         self.assertEqual(0, WidgetInstance.objects.filter(id=widget1.id).count())
         self.assertEqual(0, WidgetInstance.objects.filter(id=widget2.id).count())
         self.assertEqual(0, WidgetInstance.objects.filter(id=widget3.id).count())
-
-    def test_widget_list_shift_range(self):
-        widget_list = WidgetList.objects.create()
-        widget1_data = {"title": "example1", "body": "example1"}
-        widget1_class = "Text"
-        widget_list.add_widget(widget1_class, dict(widget1_data))
-        widget1 = WidgetInstance.objects.get(title=widget1_data['title'])
-
-        widget_list.shift_range(start=0, end=0, shift=1)
-        self.assertEqual(0, widget_list.get_widgets()[0].position)

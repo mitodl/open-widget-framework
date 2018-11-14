@@ -3,18 +3,17 @@ WidgetApp widget classes
 """
 from django.contrib.auth.models import User
 from django.utils.html import format_html
-from rest_framework import serializers
 
+from open_widget_framework.widget_class_base import WidgetClassBase
 from open_widget_framework.react_fields import (
     ReactCharField,
     ReactURLField,
     ReactMultipleChoiceField,
     ReactFileField,
 )
-from open_widget_framework.widget_class_base import WidgetBase
 
 
-class TextWidget(WidgetBase):
+class TextWidget(WidgetClassBase):
     """
     A basic text widget
 
@@ -27,11 +26,11 @@ class TextWidget(WidgetBase):
     name = "Text"
     body = ReactCharField(props={"placeholder": "Enter widget text"})
 
-    def render(self, request, configuration):
-        return format_html("<p>{body}</p>", body=configuration["body"])
+    def render(self):
+        return format_html("<p>{body}</p>", body=self.data["body"])
 
 
-class URLWidget(WidgetBase):
+class URLWidget(WidgetClassBase):
     """
     A basic url widget
 
@@ -44,11 +43,11 @@ class URLWidget(WidgetBase):
     name = "URL"
     url = ReactURLField(props={"placeholder": "Enter URL"})
 
-    def render(self, request, configuration):
-        return format_html("<iframe src={url}></iframe>", url=configuration["url"])
+    def render(self):
+        return format_html("<iframe src={url}></iframe>", url=self.data["url"])
 
 
-class ManyUserWidget(WidgetBase):
+class ManyUserWidget(WidgetClassBase):
     """
     Choose any number of Django user objects and display some data about them
 
@@ -67,8 +66,8 @@ class ManyUserWidget(WidgetBase):
             (user.id, user.username) for user in User.objects.all().order_by("id")
         ]
 
-    def render(self, request, configuration):
-        users = {User.objects.get(id=user_id) for user_id in configuration["user_ids"]}
+    def render(self):
+        users = {User.objects.get(id=user_id) for user_id in self.data["user_ids"]}
         select_user_html = (
             "<table><tr><th>Username</th><th>Last Name</th><th>First Name</th><th>Last Logged In</th></tr>"
             + "".join(
@@ -83,7 +82,7 @@ class ManyUserWidget(WidgetBase):
         return format_html(select_user_html)
 
 
-class FileWidget(WidgetBase):
+class FileWidget(WidgetClassBase):
     """
     UNIMPLEMENTED
     Upload a file and display a download link

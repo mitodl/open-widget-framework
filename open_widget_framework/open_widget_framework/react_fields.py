@@ -94,7 +94,12 @@ class ReactChoiceField(serializers.ChoiceField, ReactField):
 
     def configure_form_spec(self):
         configuration = super().configure_form_spec()
-        configuration.update({"choices": dict(self.choices)})
+        configuration.update(
+            {
+                "choice_keys": list(self.choices.keys()),
+                "choice_values": list(self.choices.values()),
+            }
+        )
         return configuration
 
 
@@ -115,6 +120,9 @@ class ReactMultipleChoiceField(serializers.MultipleChoiceField, ReactField):
             }
         )
         return configuration
+
+    def to_internal_value(self, data):
+        return list(super().to_internal_value(data))
 
     @staticmethod
     def serialize(value):
