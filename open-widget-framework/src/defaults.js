@@ -20,27 +20,57 @@ class _defaultRenderer extends Component {
 }
 
 class _defaultListWrapper extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      editMode: false,
+      addWidgetForm: false,
+      editWidgetForm: null,
+    }
+    this.renderAddWidgetButton = this.renderAddWidgetButton.bind(this)
+    this.closeForm = this.closeForm.bind(this)
+  }
+
   renderAddWidgetButton() {
     return (
-      <button className={'btn btn-info'} onClick={this.props.openNewWidgetForm}>
+      <button className={'btn btn-info'} onClick={() => this.setState({
+        addWidgetForm: !this.state.addWidgetForm,
+        editWidgetForm: null,
+      })}>
         <Octicon name={'plus'}/>
       </button>
     )
   }
+
+  closeForm() {
+    this.setState({
+      addWidgetForm: false,
+      editWidgetForm: null,
+    })
+  }
+
   render() {
     return (
       <div>
-        {this.props.renderWidgetForm()}
+        {this.state.addWidgetForm ? this.props.renderNewWidgetForm({closeForm: this.closeForm}) : null}
+        {this.state.editWidgetForm !== null
+          ? this.props.renderEditWidgetForm(this.state.editWidgetForm, {closeForm: this.closeForm}) : null}
         <div className={'edit-widget-list-bar btn-group'} role={'group'}>
-          <button className={'btn btn-info' + (this.props.editModeActive ? ' active' : '') }
-                  onClick={this.props.toggleEditMode}>
+          <button className={'btn btn-info' + (this.state.editMode ? ' active' : '') }
+                  onClick={() => this.setState({editMode: !this.state.editMode})}>
             <Octicon name={'pencil'}/>
           </button>
-          {this.props.editModeActive ? this.renderAddWidgetButton() : null}
+          {this.state.editMode ? this.renderAddWidgetButton() : null}
         </div>
         <hr/>
         <div>
-          {this.props.renderList()}
+          {this.props.renderList({
+            editMode: this.state.editMode,
+            editWidget: widgetId => this.setState({
+              editWidgetForm: widgetId,
+              addWidgetForm: false,
+            }),
+          })}
         </div>
       </div>
     )
@@ -48,6 +78,11 @@ class _defaultListWrapper extends Component {
 }
 
 class _defaultWidgetWrapper extends Component {
+  constructor(props) {
+    super(props)
+    this.renderEditBar = this.renderEditBar.bind(this)
+  }
+
   renderEditBar() {
     return (
       <div className={'edit-widget-bar btn-group card-header'}>
@@ -63,7 +98,7 @@ class _defaultWidgetWrapper extends Component {
                 title={'Move widget down'}>
           <Octicon name={'chevron-down'}/>
         </button>
-        <button className={'btn btn-info col'} onClick={() => this.props.openEditWidgetForm(this.props.id)}
+        <button className={'btn btn-info col'} onClick={() => this.props.editWidget(this.props.id)}
                 title={'Update widget'}>
           <Octicon name={'pencil'}/>
         </button>
@@ -78,7 +113,7 @@ class _defaultWidgetWrapper extends Component {
   render() {
     return (
       <div className={'widget card mb-3 bg-light'} id={'widget-' + this.props.id}>
-        {this.props.editModeActive ? this.renderEditBar() : null}
+        {this.props.editMode ? this.renderEditBar() : null}
         {this.props.renderWidget()}
       </div>
     )
@@ -90,7 +125,15 @@ class _defaultFormWrapper extends Component {
   render() {
     return (
       <div className={'widget-form'}>
-        {this.props.renderWidgetForm()}
+        {this.props.renderForm({
+          onSubmit: data => {
+            this.props.updateWidgetList(data)
+            this.props.closeForm()
+          },
+        })}
+        <button className={'btn btn-danger btn-block'} onClick={this.props.closeForm}>
+          Cancel
+        </button>
       </div>
     )
   }

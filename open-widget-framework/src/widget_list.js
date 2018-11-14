@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {apiPath} from './utils'
-import WidgetForm from './widget-form'
+import {EditWidgetForm, NewWidgetForm} from './widget_form'
 import configureWidgetFrameworkSettings from './config'
 
 
@@ -23,19 +23,17 @@ class WidgetList extends Component {
       widgetInstances: null,
     }
     this.updateWidgetList = this.updateWidgetList.bind(this)
-    this.closeForm = this.closeForm.bind(this)
-    this.submitWidgetForm = this.submitWidgetForm.bind(this)
-    this.openEditWidgetForm = this.openEditWidgetForm.bind(this)
-    this.toggleEditMode = this.toggleEditMode.bind(this)
     this.moveWidget = this.moveWidget.bind(this)
     this.deleteWidget = this.deleteWidget.bind(this)
-    this.openNewWidgetForm = this.openNewWidgetForm.bind(this)
     this.makePassThroughProps = this.makePassThroughProps.bind(this)
     this.renderWidgetList = this.renderWidgetList.bind(this)
     this.renderListBody = this.renderListBody.bind(this)
     this.renderWidget = this.renderWidget.bind(this)
     this.renderWidgetBody = this.renderWidgetBody.bind(this)
-    this.renderWidgetForm = this.renderWidgetForm.bind(this)
+    this.renderEditWidgetForm = this.renderEditWidgetForm.bind(this)
+    this.renderNewWidgetForm = this.renderNewWidgetForm.bind(this)
+    this.renderEditWidgetFormBody = this.renderEditWidgetFormBody.bind(this)
+    this.renderNewWidgetFormBody = this.renderNewWidgetFormBody.bind(this)
   }
 
   componentDidMount() {
@@ -63,43 +61,6 @@ class WidgetList extends Component {
     this.setState({widgetInstances: data})
   }
 
-  closeForm() {
-    this.setState({
-      retrieveFormRoute: null,
-      submitFormMethod: null,
-      submitFormRoute: null,
-    })
-  }
-
-  submitWidgetForm(data) {
-    this.updateWidgetList(data)
-    this.closeForm()
-  }
-
-  // TODO: Make a separate component
-  openEditWidgetForm(widgetId) {
-    this.closeForm()
-    this.setState({
-      retrieveFormRoute: apiPath('widget', this.props.widgetListId, widgetId),
-      submitFormMethod: 'PUT',
-      submitFormRoute: apiPath('widget', this.props.widgetListId, widgetId),
-    })
-  }
-
-  toggleEditMode() {
-    this.setState({editModeActive: !this.state.editModeActive})
-    this.closeForm()
-  }
-
-  // TODO: Make a separate component
-  openNewWidgetForm() {
-    this.setState({
-      retrieveFormRoute: apiPath('get_configurations'),
-      submitFormMethod: 'POST',
-      submitFormRoute: apiPath('widget', this.props.widgetListId),
-    })
-  }
-
   deleteWidget(widgetId) {
     /**
      * Make request to server to delete widget
@@ -116,8 +77,11 @@ class WidgetList extends Component {
      * Make request to server to move widget up
      */
     this.state.widgetFrameworkSettings.fetchData(
-      apiPath('widget', this.props.widgetListId, widgetId, {position: position}),
-      {method: 'PATCH'})
+      apiPath('widget', this.props.widgetListId, widgetId),
+      {
+        body: JSON.stringify({position: position}),
+        method: 'PATCH'
+      })
       .then(this.updateWidgetList)
       .catch(this.state.widgetFrameworkSettings.errorHandler)
   }
@@ -125,23 +89,21 @@ class WidgetList extends Component {
   makePassThroughProps(widgetInstance) {
     let passThroughProps = {
       deleteWidget: this.deleteWidget,
-      editModeActive: this.state.editModeActive,
       listLength: this.state.widgetInstances.length,
       moveWidget: this.moveWidget,
-      openEditWidgetForm: this.openEditWidgetForm,
-      openNewWidgetForm: this.openNewWidgetForm,
       renderList: this.renderListBody,
       renderWidget: this.renderWidgetBody,
-      renderWidgetForm: this.renderWidgetForm,
-      toggleEditMode: this.toggleEditMode,
+      renderEditWidgetForm: this.renderEditWidgetForm,
+      renderNewWidgetForm: this.renderNewWidgetForm,
+      updateWidgetList: this.updateWidgetList,
       widgetListId: this.props.widgetListId,
     }
     if (widgetInstance !== undefined) {
       passThroughProps = Object.assign(passThroughProps, {
         deleteWidget: () => this.deleteWidget(widgetInstance.id),
         moveWidget: (position) => this.moveWidget(widgetInstance.id, position),
-        openEditWidgetForm: () => this.openEditWidgetForm(widgetInstance.id),
-        renderWidget: () => this.renderWidgetBody(widgetInstance.widgetProps),
+        renderEditWidgetForm: () => this.renderEditWidgetForm(widgetInstance.id),
+        renderWidget: () => this.renderWidgetBody(widgetInstance),
       })
     }
 
@@ -162,13 +124,13 @@ class WidgetList extends Component {
     )
   }
 
-  renderListBody() {
+  renderListBody(listWrapperProps) {
     return (
-      this.state.widgetInstances.map(widgetInstance => this.renderWidget(widgetInstance))
+      this.state.widgetInstances.map(widgetInstance => this.renderWidget(widgetInstance, listWrapperProps))
     )
   }
 
-  renderWidget(widgetInstance) {
+  renderWidget(widgetInstance, listWrapperProps) {
     let WidgetWrapper
     if ('widgetWrapper' in this.props) {
       WidgetWrapper = this.props.widgetWrapper
@@ -180,34 +142,71 @@ class WidgetList extends Component {
                      {...widgetInstance}
                      {...this.makePassThroughProps(widgetInstance)}
                      {...this.props.widgetWrapperProps}
+                     {...listWrapperProps}
       />
     )
   }
 
-  renderWidgetBody(widgetProps) {
-    const Renderer = this.state.widgetFrameworkSettings.renderers[widgetProps.reactRenderer]
+  renderWidgetBody(widgetInstance) {
+    const Renderer = this.state.widgetFrameworkSettings.renderers[widgetInstance.reactRenderer]
       || this.state.widgetFrameworkSettings.defaultRenderer
     return (
-      <Renderer {...widgetProps}/>
+      <Renderer {...widgetInstance}
+                {...widgetInstance.configuration}
+      />
     )
   }
 
-  renderWidgetForm(postSubmit) {
-    if (this.state.retrieveFormRoute === null) {
-      return null
+  renderEditWidgetForm(widgetId, listProps) {
+    let FormWrapper
+    if ('formWrapper' in this.props) {
+      FormWrapper = this.props.formWrapper
     } else {
-      return (
-        <WidgetForm csrfToken={this.state.csrfToken}
-                    fetchRoute={this.state.retrieveFormRoute}
-                    onCancel={this.closeForm}
-                    onSubmit={(data) => { this.submitWidgetForm(data); postSubmit() }}
-                    submitMethod={this.state.submitFormMethod}
-                    submitUrl={this.state.submitFormRoute}
-                    widgetFrameworkSettings={this.state.widgetFrameworkSettings}
-                    widgetList={this.props.widgetListId}
-        />
-      )
+      FormWrapper = this.state.widgetFrameworkSettings.defaultFormWrapper
     }
+    return (
+      <FormWrapper {...this.makePassThroughProps(widgetId)}
+                   {...listProps}
+                   renderForm={(formProps) => this.renderEditWidgetFormBody(widgetId, formProps)}
+      />
+    )
+  }
+
+  renderEditWidgetFormBody(widgetId, formProps) {
+    return (
+      <EditWidgetForm widgetListId={this.props.widgetListId}
+                      widgetId={widgetId}
+                      widgetFrameworkSettings={this.state.widgetFrameworkSettings}
+                      onSubmit={this.updateWidgetList}
+                      {...formProps}
+      />
+    )
+  }
+
+  renderNewWidgetForm(listProps) {
+    let FormWrapper
+    if ('formWrapper' in this.props) {
+      FormWrapper = this.props.formWrapper
+    } else {
+      FormWrapper = this.state.widgetFrameworkSettings.defaultFormWrapper
+    }
+    return (
+      <FormWrapper {...this.makePassThroughProps()}
+                   {...listProps}
+                   renderForm={(formProps) => this.renderNewWidgetFormBody(formProps)}
+      />
+    )
+  }
+
+  renderNewWidgetFormBody(formProps) {
+    return (
+      <NewWidgetForm widgetListId={this.props.widgetListId}
+                     listLength={this.state.widgetInstances.length}
+                     widgetFrameworkSettings={this.state.widgetFrameworkSettings}
+                     onSubmit={this.updateWidgetList}
+                     {...formProps}
+      />
+    )
   }
 
   render() {

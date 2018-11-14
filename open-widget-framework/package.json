@@ -1,6 +1,6 @@
 {
   "name": "@zagaran/open-widget-framework",
-  "version": "0.1.20",
+  "version": "0.2.0",
   "description": "open widget framework React component",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -31,11 +31,20 @@
     "react": "16.x"
   },
   "devDependencies": {
+    "@babel/core": "^7.1.5",
+    "@babel/polyfill": "^7.0.0",
     "@babel/preset-env": "^7.1.0",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/register": "^7.0.0",
+    "chai": "^4.2.0",
+    "enzyme": "^3.7.0",
+    "enzyme-adapter-react-16": "^1.7.0",
+    "jsdom": "^13.0.0",
     "nwb": "0.23.x",
     "react": "^16.6.0",
     "react-dom": "^16.6.0",
-    "react-hot-loader": "4.3.11"
+    "react-hot-loader": "4.3.11",
+    "sinon": "^7.1.1"
   },
   "author": "",
   "homepage": "",
