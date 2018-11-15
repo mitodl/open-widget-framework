@@ -1,11 +1,26 @@
 import React, { Component } from 'react'
 import Select from 'react-select'
 
-import { makeOptions } from './utils'
+import { makeOptionsFromList, makeOptionsFromObject } from './utils'
 import { apiPath } from '../es/utils'
 
 
 class EditWidgetForm extends Component {
+  /**
+   * EditWidgetForm handles rendering a WidgetForm with initial data matching a current widget and sending that form
+   *    as a PATCH request to the backend
+   *
+   * State:
+   *    currentWidgetData: the current data of the widget to edit
+   *    widgetClass: the class of the widget to edit
+   *    widgetClassConfiguration: an object that maps the widget's class to that class's configuration
+   *
+   * Props:
+   *    widgetId: id of the widget to edit
+   *
+   *    formProps (see makeFormProps in widget_list.js)
+   *    formWrapperProps (defined by custom FormWrapper or _defaultFormWrapper in defaults.js
+   */
   constructor(props) {
     super(props)
     this.state = {
@@ -18,7 +33,7 @@ class EditWidgetForm extends Component {
 
   componentDidMount() {
     /**
-     * Fetch data on widget instances in list from fetchRoute
+     * Fetch data about the widget to edit and set state
      */
     const { errorHandler, fetchData, widgetListId, widgetId } = this.props
     fetchData(apiPath('widget', widgetListId, widgetId))
@@ -30,6 +45,15 @@ class EditWidgetForm extends Component {
   }
 
   onSubmit(widgetClass, formData) {
+    /**
+     * onSubmit is the onClick behavior of the submit button. It parses the title out of the data and makes a PATCH
+     *    request to the backend. Then it calls the passed in prop onSubmit
+     *
+     * inputs:
+     *    widgetClass: the class of the widget to edit. Less important for EditWidgetForm but allows WidgetForm to
+     *        accept onSubmit from both Edit- and Add- WidgetForm components
+     *    formData: data from the WidgetForm
+     */
     const { errorHandler, fetchData, onSubmit, widgetListId, widgetId } = this.props
     const { title, ...configuration } = formData
     fetchData(apiPath('widget', widgetListId, widgetId), {
@@ -45,13 +69,15 @@ class EditWidgetForm extends Component {
   }
 
   render() {
-    const { loader } = this.props
+    /**
+     * If data is loaded, render a widget form with initial data from the widget
+     */
+    const { Loader } = this.props
     const { widgetClass, widgetClassConfiguration, currentWidgetData } = this.state
     if (widgetClass === null || widgetClassConfiguration === null) {
-      return (loader)
+      return <Loader/>
     } else {
       return <WidgetForm formData={currentWidgetData}
-                         defaultValues={true}
                          onSubmit={this.onSubmit}
                          widgetClass={widgetClass}
                          widgetClassConfigurations={widgetClassConfiguration}
@@ -62,6 +88,18 @@ class EditWidgetForm extends Component {
 }
 
 class NewWidgetForm extends Component {
+  /**
+   * NewWidgetForm handles rendering a WidgetForm for a new widget and directing that form data as a POST request to
+   *    the backend
+   *
+   * State:
+   *    widgetClasses: the classes of the widget available to create
+   *    widgetClassConfigurations: an object that maps the widget classes to those classes' configurations
+   *
+   * Props:
+   *    formProps (see makeFormProps in widget_list.js)
+   *    formWrapperProps (defined by custom FormWrapper or _defaultFormWrapper in defaults.js
+   */
   constructor(props) {
     super(props)
     this.state = {
@@ -73,7 +111,7 @@ class NewWidgetForm extends Component {
 
   componentDidMount() {
     /**
-     * Fetch data on widget instances in list from fetchRoute
+     * Fetch data on available widget classes and set state
      */
     const { errorHandler, fetchData } = this.props
     fetchData(apiPath('get_configurations'))
@@ -86,6 +124,14 @@ class NewWidgetForm extends Component {
   }
 
   onSubmit(widgetClass, formData) {
+    /**
+     * onSubmit is the onClick behavior of the submit button. It parses the title out of the data and makes a POST
+     *    request to the backend. Then it calls the passed in prop onSubmit
+     *
+     * inputs:
+     *    widgetClass: the class of the widget to create.
+     *    formData: data from the WidgetForm
+     */
     const { errorHandler, fetchData, onSubmit, widgetListId, listLength } = this.props
     const { title, ...configuration } = formData
     fetchData(apiPath('widget', widgetListId), {
@@ -103,13 +149,15 @@ class NewWidgetForm extends Component {
   }
 
   render() {
-    const { loader } = this.props
+    /**
+     * If data is loaded, render a blank widget form
+     */
+    const { Loader } = this.props
     const { widgetClasses, widgetClassConfigurations } = this.state
     if (widgetClasses === null || widgetClassConfigurations === null) {
-      return (loader)
+      return <Loader/>
     } else {
       return <WidgetForm formData={null}
-                         defaultValues={false}
                          onSubmit={this.onSubmit}
                          widgetClass={''}
                          widgetClassConfigurations={widgetClassConfigurations}
@@ -121,17 +169,26 @@ class NewWidgetForm extends Component {
 
 class WidgetForm extends Component {
   /**
- * WidgetForm is a dynamically generated form with input fields defined by a configuration JSON blob
- *
- * Props:
- *    csrfToken: token to validate csrf with Django backend
- *    fetchRoute: where to fetch widget configurations from
- *    formDidSubmit: what to do after successful form submission, usually update widget list
- *    submitUrl: where to send fetch post request with this.state.formData
- */
+   * WidgetForm is a dynamically generated form with input fields defined by a configuration JSON blob
+   *
+   * Props:
+   *    formData: the default values for the form. If null, all inputs will start blank
+   *    onSubmit(widgetClass, data): the behavior to take when the form is submitted
+   *    widgetClass: the class of the widget being edited or the empty string for a new widget
+   *    widgetClassConfigurations: object containing available configurations for the available widget classes
+   *    widgetClasses: list of available widget classes
+   *
+   * State:
+   *    formData: keeps track of the current input of the form
+   *    widgetClass: keeps track of the current chosen class
+   */
   constructor(props) {
     super(props)
-    this.state = {...this.props}
+    const { formData, widgetClass } = this.props
+    this.state = {
+      formData: formData,
+      widgetClass: widgetClass,
+    }
     this.onChange = this.onChange.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
     this.makeWidgetClassSelect = this.makeWidgetClassSelect.bind(this)
@@ -140,7 +197,7 @@ class WidgetForm extends Component {
 
   onChange(key, value) {
     /**
-     * Update this.state.formData with the new value on input form change
+     * Update formData with the new value on input form change
      */
     const { formData } = this.state
     this.setState({
@@ -153,7 +210,7 @@ class WidgetForm extends Component {
 
   onSubmit(event) {
     /**
-     * Submit widget configuration from this.state.formData to the server
+     * Submit widget class and form data with onSubmit from props
      */
     event.preventDefault()
 
@@ -163,32 +220,32 @@ class WidgetForm extends Component {
   }
 
   makeWidgetClassSelect() {
+    /**
+     * makeWidgetClassSelect makes a react-select component
+     */
     const { widgetClasses } = this.state
-    if (widgetClasses.length > 1) {
-      return (
-        <Select className="widget-form-input-select"
-                id="widget-class-input-select"
-                onChange={(option) => this.setState({widgetClass: option.value})}
-                options={makeOptions(widgetClasses)}
-                placeholder="Choose a widget class"/>
-      )
-    } else {
-      return null
-    }
+    return (
+      <Select className="widget-form-input-select"
+              id="widget-class-input-select"
+              onChange={(option) => this.setState({widgetClass: option.value})}
+              options={makeOptionsFromList(widgetClasses)}
+              placeholder="Choose a widget class"/>
+    )
   }
 
   render() {
     /**
      * Render a wrapper which handles form title and choosing which class of widget to configure
      */
-    const { widgetClass, widgetClassConfigurations } = this.state
+    const { widgetClasses, widgetClassConfigurations } = this.state
+    const { widgetClass } = this.state
     return (
       <form onSubmit={this.onSubmit}>
         <div className="widget-form-input-group" id="widget-class-input-group">
           <label className='widget-class-select-label' id="widget-class-input-label" htmlFor="widget-class-select">
-            {'Configure ' + widgetClass + ' Widget'}
+            {`Configure ${widgetClass} Widget`}
           </label>
-          {this.makeWidgetClassSelect()}
+          {widgetClasses.length > 1 ? this.makeWidgetClassSelect() : null}
         </div>
         {this.renderInputs(widgetClassConfigurations[widgetClass])}
       </form>
@@ -197,43 +254,47 @@ class WidgetForm extends Component {
 
   renderInputs(model) {
     /**
-     * Render a widget configuration input form based on the this.state.formData.widgetClass
+     * Render widget form inputs based on the configuration of widgetClass
+     *
+     * inputs:
+     *    model: a list of input fields that contain:
+     *      key: a unique key
+     *      inputType: the type of input field
+     *      props: props to put on the input field
      */
     if (model === undefined) {
       return
     }
-    const { defaultValues, formData } = this.state
+    const { formData } = this.props
     let formUI = model.map((field) => {
-      let fieldKey = field.key
-      let inputType = field.input_type || 'text'
-      let props = field.props || {}
+      const { key, inputType, props, choices, label } = field
 
       let inputProps = {
-        className: 'widget-form-input-' + inputType,
+        className: `widget-form-input-${inputType}`,
         defaultValue: null,
-        id: fieldKey,
-        key: fieldKey,
+        id: `widget-form-input-${key}`,
+        key: key,
         onChange: (event) => {
-          this.onChange(fieldKey, event.target.value)
+          this.onChange(key, event.target.value)
         },
         ...props,
       }
 
       // Set default values if they exist
-      if (defaultValues) {
+      if (formData !== null) {
         if (inputType === 'select') {
           inputProps.defaultValue = []
         } else {
-          inputProps.defaultValue = formData[fieldKey]
+          inputProps.defaultValue = formData[key]
         }
       }
 
       // Create options for select parameters and set defaultValue
       if (inputType === 'select') {
-        inputProps.options = makeOptions(field.choice_keys, field.choice_values)
-        if (defaultValues) {
+        inputProps.options = makeOptions(choices)
+        if (formData !== null) {
           for (let option of inputProps.options) {
-            if (formData[fieldKey].includes(option.value)) {
+            if (formData[key].includes(option.value)) {
               inputProps.defaultValue.push(option)
             }
           }
@@ -244,11 +305,11 @@ class WidgetForm extends Component {
       if (inputType === 'select') {
         if (props.isMulti) {
           inputProps.onChange = (selection) => {
-            this.onChange(fieldKey, selection.map((option) => option.value))
+            this.onChange(key, selection.map((option) => option.value))
           }
         } else {
           inputProps.onChange = (selection) => {
-            this.onChange(fieldKey, selection.value)
+            this.onChange(key, selection.value)
           }
         }
         input = <Select {...inputProps}/>
@@ -256,15 +317,15 @@ class WidgetForm extends Component {
         input = <textarea {...inputProps}/>
       } else {
         input = <input {...inputProps}
-                       type={inputType}/>
+                       type="text"/>
       }
 
       return (
-        <div className='widget-form-input-group' key={fieldKey}>
+        <div className='widget-form-input-group' key={key}>
           <label className='widget-form-input-label'
-                 htmlFor={fieldKey}
-                 key={fieldKey + '-label'}>
-            {field.label}
+                 htmlFor={key}
+                 key={key + '-label'}>
+            {label}
           </label>
           {input}
         </div>
