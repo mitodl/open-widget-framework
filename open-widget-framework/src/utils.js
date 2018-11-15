@@ -42,9 +42,9 @@ function makeOptionsFromObject(options) {
   const keys = Object.keys(options)
   return range(keys.length).map(
     index => ({
-      key: keys[index],
-      label: keys[index],
-      value: options[keys[index]],
+      key: options[keys[index]],
+      label: options[keys[index]],
+      value: keys[index],
     })
   )
 }

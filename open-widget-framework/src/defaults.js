@@ -268,7 +268,7 @@ class _defaultLoader extends Component {
    * _defaultLoader is the default component that shows before data has arrived on an asynchronous request
    */
   render() {
-    return <p>Loading</p>
+    return (<p>Loading</p>)
   }
 }
 

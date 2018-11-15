@@ -223,7 +223,7 @@ class WidgetForm extends Component {
     /**
      * makeWidgetClassSelect makes a react-select component
      */
-    const { widgetClasses } = this.state
+    const { widgetClasses } = this.props
     return (
       <Select className="widget-form-input-select"
               id="widget-class-input-select"
@@ -237,7 +237,7 @@ class WidgetForm extends Component {
     /**
      * Render a wrapper which handles form title and choosing which class of widget to configure
      */
-    const { widgetClasses, widgetClassConfigurations } = this.state
+    const { widgetClasses, widgetClassConfigurations } = this.props
     const { widgetClass } = this.state
     return (
       <form onSubmit={this.onSubmit}>
@@ -291,7 +291,7 @@ class WidgetForm extends Component {
 
       // Create options for select parameters and set defaultValue
       if (inputType === 'select') {
-        inputProps.options = makeOptions(choices)
+        inputProps.options = makeOptionsFromObject(choices)
         if (formData !== null) {
           for (let option of inputProps.options) {
             if (formData[key].includes(option.value)) {
