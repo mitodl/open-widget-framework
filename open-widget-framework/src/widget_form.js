@@ -166,8 +166,8 @@ class WidgetForm extends Component {
     const { widgetClasses } = this.state
     if (widgetClasses.length > 1) {
       return (
-        <Select className="widget-form-select"
-                id="widget-class-select"
+        <Select className="widget-form-input-select"
+                id="widget-class-input-select"
                 onChange={(option) => this.setState({widgetClass: option.value})}
                 options={makeOptions(widgetClasses)}
                 placeholder="Choose a widget class"/>
@@ -183,9 +183,9 @@ class WidgetForm extends Component {
      */
     const { widgetClass, widgetClassConfigurations } = this.state
     return (
-      <form className="card" onSubmit={this.onSubmit}>
-        <div className="form-group card-header">
-          <label className='widget-class-select-label' htmlFor="widget-class-select">
+      <form onSubmit={this.onSubmit}>
+        <div className="widget-form-input-group" id="widget-class-input-group">
+          <label className='widget-class-select-label' id="widget-class-input-label" htmlFor="widget-class-select">
             {'Configure ' + widgetClass + ' Widget'}
           </label>
           {this.makeWidgetClassSelect()}
@@ -209,7 +209,7 @@ class WidgetForm extends Component {
       let props = field.props || {}
 
       let inputProps = {
-        className: (inputType !== 'select' ? 'form-control ' : '') + 'widget-form-' + inputType,
+        className: 'widget-form-input-' + inputType,
         defaultValue: null,
         id: fieldKey,
         key: fieldKey,
@@ -260,8 +260,8 @@ class WidgetForm extends Component {
       }
 
       return (
-        <div className='widget-form-group form-group' key={fieldKey}>
-          <label className='widget-form-label'
+        <div className='widget-form-input-group' key={fieldKey}>
+          <label className='widget-form-input-label'
                  htmlFor={fieldKey}
                  key={fieldKey + '-label'}>
             {field.label}
@@ -271,9 +271,9 @@ class WidgetForm extends Component {
       )
     })
     return (
-      <div className="widget-form-body card-body">
+      <div className="widget-form-body">
         {formUI}
-        <button className="widget-form-submit btn btn-primary" type='submit'>Submit</button>
+        <button className="widget-form-submit-btn" type='submit'>Submit</button>
       </div>
     )
   }
