@@ -31,11 +31,10 @@ class EditWidgetForm extends Component {
 
   onSubmit(widgetClass, formData) {
     const { errorHandler, fetchData, onSubmit, widgetListId, widgetId } = this.props
-    let title = formData.title
-    delete formData.title
+    const { title, ...configuration } = formData
     fetchData(apiPath('widget', widgetListId, widgetId), {
       body: JSON.stringify({
-        configuration: formData,
+        configuration: configuration,
         title: title,
         widget_class: widgetClass,
       }),
@@ -88,11 +87,10 @@ class NewWidgetForm extends Component {
 
   onSubmit(widgetClass, formData) {
     const { errorHandler, fetchData, onSubmit, widgetListId, listLength } = this.props
-    let title = formData.title
-    delete formData.title
+    const { title, ...configuration } = formData
     fetchData(apiPath('widget', widgetListId), {
       body: JSON.stringify({
-        configuration: formData,
+        configuration: configuration,
         title: title,
         position: listLength,
         widget_list: widgetListId,

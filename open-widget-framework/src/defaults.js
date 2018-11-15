@@ -10,10 +10,11 @@ class _defaultRenderer extends Component {
    *    html: inner html of the widget
    */
   render() {
+    const { title, html } = this.props
     return (
-      <div className={'widget-body card-body'}>
-        <h5 className={'widget-title card-title'}>{this.props.title}</h5>
-        <div className={'widget-text card-text text-truncate'} dangerouslySetInnerHTML={{__html: this.props.html}}/>
+      <div className="widget-body card-body">
+        <h5 className="widget-title card-title">{title}</h5>
+        <div className="widget-text card-text text-truncate" dangerouslySetInnerHTML={{__html: html}}/>
       </div>
     )
   }
@@ -29,15 +30,18 @@ class _defaultListWrapper extends Component {
     }
     this.renderAddWidgetButton = this.renderAddWidgetButton.bind(this)
     this.closeForm = this.closeForm.bind(this)
+    this.toggleEditMode = this.toggleEditMode.bind(this)
+    this.editWidget = this.editWidget.bind(this)
   }
 
   renderAddWidgetButton() {
+    const { addWidgetForm } = this.state
     return (
-      <button className={'btn btn-info'} onClick={() => this.setState({
-        addWidgetForm: !this.state.addWidgetForm,
+      <button className="btn btn-info" onClick={() => this.setState({
+        addWidgetForm: !addWidgetForm,
         editWidgetForm: null,
       })}>
-        <Octicon name={'plus'}/>
+        <Octicon name="plus"/>
       </button>
     )
   }
@@ -49,27 +53,36 @@ class _defaultListWrapper extends Component {
     })
   }
 
+  toggleEditMode() {
+    const { editMode } = this.state
+    this.setState({editMode: !editMode})
+  }
+
+  editWidget(widgetId) {
+    this.setState({
+      editWidgetForm: widgetId,
+      addWidgetForm: false,
+    })
+  }
+
   render() {
+    const { addWidgetForm, editWidgetForm, editMode } = this.state
+    const { renderNewWidgetForm, renderEditWidgetForm } = this.props
     return (
-      <div className={'bg-secondary rounded float-right col-lg-4'}>
-        {this.state.addWidgetForm ? this.props.renderNewWidgetForm({closeForm: this.closeForm}) : null}
-        {this.state.editWidgetForm !== null
-          ? this.props.renderEditWidgetForm(this.state.editWidgetForm, {closeForm: this.closeForm}) : null}
-        <div className={'edit-widget-list-bar btn-group'} role={'group'}>
-          <button className={'btn btn-info' + (this.state.editMode ? ' active' : '') }
-                  onClick={() => this.setState({editMode: !this.state.editMode})}>
-            <Octicon name={'pencil'}/>
+      <div className="bg-secondary rounded float-right col-lg-4">
+        {addWidgetForm ? renderNewWidgetForm({closeForm: this.closeForm}) : null}
+        {editWidgetForm !== null ? renderEditWidgetForm(editWidgetForm, {closeForm: this.closeForm}) : null}
+        <div className="edit-widget-list-bar btn-group" role="group">
+          <button className="btn btn-info ${this.state.editMode ? 'active' : ''}" onClick={this.toggleEditMode}>
+            <Octicon name="pencil"/>
           </button>
-          {this.state.editMode ? this.renderAddWidgetButton() : null}
+          {editMode ? this.renderAddWidgetButton() : null}
         </div>
         <hr/>
         <div>
           {this.props.renderList({
-            editMode: this.state.editMode,
-            editWidget: widgetId => this.setState({
-              editWidgetForm: widgetId,
-              addWidgetForm: false,
-            }),
+            editMode: editMode,
+            editWidget: this.editWidget,
           })}
         </div>
       </div>
@@ -81,40 +94,60 @@ class _defaultWidgetWrapper extends Component {
   constructor(props) {
     super(props)
     this.renderEditBar = this.renderEditBar.bind(this)
+    this.moveWidgetUp = this.moveWidgetUp.bind(this)
+    this.moveWidgetDown = this.moveWidgetDown.bind(this)
+    this.editWidget = this.editWidget.bind(this)
+    this.deleteWidget = this.deleteWidget.bind(this)
+  }
+
+  moveWidgetUp() {
+    const { moveWidget, position } = this.props
+    moveWidget(position - 1)
+  }
+
+  moveWidgetDown() {
+    const { moveWidget, position } = this.props
+    moveWidget(position + 1)
+  }
+
+  editWidget() {
+    const { editWidget, id } = this.props
+    editWidget(id)
+  }
+
+  deleteWidget() {
+    const { deleteWidget, id } = this.props
+    deleteWidget(id)
   }
 
   renderEditBar() {
+    const { position, listLength } = this.props
     return (
-      <div className={'edit-widget-bar btn-group card-header'}>
-        <button className={'btn btn-info col'}
-                disabled={this.props.position === 0}
-                onClick={() => this.props.moveWidget(this.props.position - 1)}
-                title={'Move widget up'}>
-          <Octicon name={'chevron-up'}/>
+      <div className="edit-widget-bar btn-group card-header">
+        <button className="btn btn-info col" disabled={position === 0}
+                onClick={this.moveWidgetUp} title="Move widget up">
+          <Octicon name="chevron-up"/>
         </button>
-        <button className={'btn btn-info col'}
-                disabled={this.props.position === this.props.listLength - 1}
-                onClick={() => this.props.moveWidget(this.props.position + 1)}
-                title={'Move widget down'}>
-          <Octicon name={'chevron-down'}/>
+        <button className="btn btn-info col" disabled={position === listLength - 1}
+                onClick={this.moveWidgetDown} title="Move widget down">
+          <Octicon name="chevron-down"/>
         </button>
-        <button className={'btn btn-info col'} onClick={() => this.props.editWidget(this.props.id)}
-                title={'Update widget'}>
-          <Octicon name={'pencil'}/>
+        <button className="btn btn-info col" onClick={this.editWidget} title="Update widget">
+          <Octicon name="pencil"/>
         </button>
-        <button className={'btn btn-danger col'} onClick={() => this.props.deleteWidget(this.props.id)}
-                title={'Delete widget'}>
-          <Octicon name={'x'}/>
+        <button className="btn btn-danger col" onClick={this.deleteWidget} title="Delete widget">
+          <Octicon name="x"/>
         </button>
       </div>
     )
   }
 
   render() {
+    const { editMode, renderWidget} = this.props
     return (
-      <div className={'widget card mb-3 bg-light'} id={'widget-' + this.props.id}>
-        {this.props.editMode ? this.renderEditBar() : null}
-        {this.props.renderWidget()}
+      <div className="widget card mb-3 bg-light" id="widget-${id}">
+        {editMode ? this.renderEditBar() : null}
+        {renderWidget()}
       </div>
     )
   }
@@ -122,16 +155,23 @@ class _defaultWidgetWrapper extends Component {
 
 
 class _defaultFormWrapper extends Component {
+  constructor(props) {
+    super(props)
+    this.submitAndClose = this.submitAndClose.bind(this)
+  }
+
+  submitAndClose(data) {
+    const { updateWidgetList, closeForm } = this.props
+    updateWidgetList(data)
+    closeForm()
+  }
+
   render() {
+    const { renderForm, closeForm } = this.props
     return (
-      <div className={'widget-form'}>
-        {this.props.renderForm({
-          onSubmit: data => {
-            this.props.updateWidgetList(data)
-            this.props.closeForm()
-          },
-        })}
-        <button className={'btn btn-danger btn-block'} onClick={this.props.closeForm}>
+      <div className="widget-form">
+        {renderForm({onSubmit: this.submitAndClose}})}
+        <button className="btn btn-danger btn-block" onClick={closeForm}>
           Cancel
         </button>
       </div>
@@ -156,4 +196,10 @@ function _defaultFetchJsonData(url, init) {
     .then(data => data.json())
 }
 
-export {_defaultRenderer, _defaultListWrapper, _defaultWidgetWrapper, _defaultFormWrapper, _defaultLoader, _defaultFetchJsonData}
+export {
+  _defaultRenderer,
+  _defaultListWrapper,
+  _defaultWidgetWrapper,
+  _defaultFormWrapper,
+  _defaultLoader,
+  _defaultFetchJsonData}
