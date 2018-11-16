@@ -34,11 +34,6 @@ class ReactField(serializers.Field):
         }
 
     @staticmethod
-    def serialize(value):
-        """Serialize data in the field for the configuration JSONField on the widget"""
-        return value
-
-    @staticmethod
     def make_choices_dict(choices):
         """Force choices into a format that react-select component prefers"""
         if choices and isinstance(choices, list) and not isinstance(choices[0], tuple):
