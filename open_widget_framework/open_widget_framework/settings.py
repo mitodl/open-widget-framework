@@ -14,8 +14,6 @@ DEFAULTS = {
         "open_widget_framework.widget_classes.ManyUserWidget",
     ),
 
-    'SITE_BASE_URL': "https://localhost:8000/api/v1/",
-
     'WIDGET_FRAMEWORK_AUTHENTICATION_CLASSES': None,
 
     'WIDGET_FRAMEWORK_PERMISSION_CLASSES': None,
@@ -30,7 +28,6 @@ class APISettings(object):
             self._user_settings = user_settings
         self.defaults = defaults or DEFAULTS
         self._cached_attrs = set()
-
 
     @property
     def user_settings(self):

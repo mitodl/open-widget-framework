@@ -2,7 +2,6 @@
 WidgetApp widget classes
 """
 from django.contrib.auth.models import User
-from django.utils.html import format_html
 
 from open_widget_framework.widget_class_base import WidgetClassBase
 from open_widget_framework.react_fields import (
@@ -27,7 +26,7 @@ class TextWidget(WidgetClassBase):
     body = ReactCharField(props={"placeholder": "Enter widget text"})
 
     def render(self):
-        return format_html("<p>{body}</p>", body=self.data["body"])
+        return "<p>%s</p>" % self.data["body"]
 
 
 class URLWidget(WidgetClassBase):
@@ -44,7 +43,7 @@ class URLWidget(WidgetClassBase):
     url = ReactURLField(props={"placeholder": "Enter URL"})
 
     def render(self):
-        return format_html("<iframe src={url}></iframe>", url=self.data["url"])
+        return "<iframe src=%s></iframe>" % self.data["url"]
 
 
 class ManyUserWidget(WidgetClassBase):
@@ -79,7 +78,7 @@ class ManyUserWidget(WidgetClassBase):
             )
             + "</table>"
         )
-        return format_html(select_user_html)
+        return select_user_html
 
 
 class FileWidget(WidgetClassBase):

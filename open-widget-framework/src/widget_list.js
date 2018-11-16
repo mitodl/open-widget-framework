@@ -16,7 +16,7 @@ class WidgetList extends Component {
    *    formWrapperProps: custom props to pass to the form wrapper
    *
    *    defaultProps: these props are settings that are propogated to the component's children. They are set by
-   *        default but can be overridden by configureWidgetFrameworkSettings. See config.js for a list of these
+   *        default but can be overridden. See config.js for a list of these
    *        settings.
    *
    * State:

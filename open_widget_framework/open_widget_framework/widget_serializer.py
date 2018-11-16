@@ -2,6 +2,7 @@ from django.core.exceptions import ImproperlyConfigured
 from rest_framework.serializers import ModelSerializer, ValidationError
 from rest_framework.validators import UniqueTogetherValidator
 from django.db.models import CharField
+from django.utils.html import format_html
 
 from open_widget_framework.react_fields import ReactCharField, ReactChoiceField
 from open_widget_framework.models import WidgetInstance, WidgetList
@@ -115,7 +116,7 @@ class WidgetSerializer(ModelSerializer):
         if isinstance(rendered_body, dict):
             base_configuration.update(rendered_body)
         else:
-            base_configuration.update({'html': rendered_body})
+            base_configuration.update({'html': format_html(rendered_body)})
         return base_configuration
 
     def get_form_data(self):

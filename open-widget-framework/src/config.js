@@ -14,14 +14,21 @@ const defaultSettings = {
    *    defaultRenderer: renderer to use when no renderer is specified
    *
    *    ListWrapper: component that will render around the widget-list and call renderWidgetList()
-   *    FormWrapper: component that will render around a widget-form and call renderWidgetForm()
-   *    WidgetWrapper: component that will render around a widget and call renderWidget()
+   *    listWrapperProps: props to attach to the listWrapper
    *
+   *    FormWrapper: component that will render around a widget-form and call renderWidgetForm()
+   *    formWrapperProps: props to attach to the formWrapper
+   *
+   *    WidgetWrapper: component that will render around a widget and call renderWidget()
+   *    widgetWrapperProps: props to attach to the widgetWrapper
    */
   FormWrapper: _defaultFormWrapper,
+  formWrapperProps: null,
   ListWrapper: _defaultListWrapper,
+  listWrapperProps: null,
   Loader: _defaultLoader,
   WidgetWrapper: _defaultWidgetWrapper,
+  widgetWrapperProps: null,
   defaultRenderer: _defaultRenderer,
   disableWidgetFramework: false,
   errorHandler: console.error,
@@ -29,17 +36,4 @@ const defaultSettings = {
   renderers: {},
 }
 
-function configureWidgetFrameworkSettings(userSettings = {}) {
-  /**
-   * Allows user to pass in custom settings that override defaults. Must be called and the return values passed into
-   *    the widget-list as props:
-   *
-   *      <WidgetList {...configureWidgetFrameworkSettings(mySettings)}>
-   */
-  return {
-    ...defaultSettings,
-    ...userSettings
-  }
-}
-
-export { defaultSettings, configureWidgetFrameworkSettings }
+export { defaultSettings }
