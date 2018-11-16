@@ -154,9 +154,9 @@ class WidgetViewSet(ModelViewSet):
             Returns an updated widget list
         """
         self.check_widget_list_edit_permissions()
-        if 'position' in request.data:
-            queryset = self.get_queryset()
-            target_pos = max(0, min(queryset.count() - 1, request.data['position']))
+        queryset = self.get_queryset()
+        if 'position' in request.data and 0 <= request.data['position'] <= (queryset.count() - 1):
+            target_pos = request.data['position']
             target_widget = self.get_object()
             current_pos = target_widget.position
 

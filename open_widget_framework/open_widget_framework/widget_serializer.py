@@ -1,5 +1,6 @@
 from django.core.exceptions import ImproperlyConfigured
-from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer, ValidationError
+from rest_framework.validators import UniqueTogetherValidator
 from django.db.models import CharField
 
 from open_widget_framework.react_fields import ReactCharField, ReactChoiceField
@@ -26,7 +27,37 @@ def get_widget_class_serializer(widget_class_name):
         raise ImproperlyConfigured("no widget of type %s found" % widget_class_name)
 
 
-class WidgetSerializer(serializers.ModelSerializer):
+class WidgetListSerializer(ModelSerializer):
+    """
+    A very simple serializer that allows us to use DRF ModelViewSets to create and destroy widget-lists in views.py
+    """
+    class Meta:
+        fields = ()
+        model = WidgetList
+
+
+class WidgetListPositionValidator(UniqueTogetherValidator):
+    """
+    WidgetListPositionValidator extends the UniqueTogetherValidator. UniqueTogetherValidator will ensure that no two
+        widgets on the same widget list have the same position and WidgetListPositionValidator extends it to ensure
+        that no widgets are set to positions above the end of the list
+    """
+    def __call__(self, attrs):
+        super().__call__(attrs)
+        if self.instance:
+            # This is an update and so the list length stays the same
+            widget_list = self.instance.widget_list
+            max_length = widget_list.get_length() - 1
+        else:
+            # This is a create and so the position can be at the list length
+            widget_list = WidgetList.objects.get(pk=attrs['widget_list'].id)
+            max_length = widget_list.get_length()
+        if 'position' in attrs and attrs['position'] > max_length:
+            raise ValidationError('Position %s is greater than maximum length %s for list %s' %
+                                  (attrs['position'], max_length, widget_list.id))
+
+
+class WidgetSerializer(ModelSerializer):
     """
     WidgetSerializer is a model serializer based on the widgetInstance model. It handles validating the widgetInstance
         data by validating it's own data and passing the JSON blob into a widget_class_serializer that validates that
@@ -40,6 +71,13 @@ class WidgetSerializer(serializers.ModelSerializer):
         model = WidgetInstance
         fields = '__all__'
         form_fields = ('title',)
+        validators = [
+            WidgetListPositionValidator(
+                queryset=WidgetInstance.objects.all(),
+                fields=('widget_list', 'position'),
+                message="Two widgets cannot occupy the same position on a list"
+            )
+        ]
 
     def __init__(self, *args, **kwargs):
         """
@@ -62,11 +100,7 @@ class WidgetSerializer(serializers.ModelSerializer):
             return widget_class_serializer.post_configure()
         else:
             #TODO: better error messaging
-            raise serializers.ValidationError('Bad configuration')
-
-    def validate_position(self, value):
-        #TODO check for proper positioning
-        return value
+            raise ValidationError('Bad configuration')
 
     def render_with_title(self):
         """
@@ -120,11 +154,3 @@ class WidgetSerializer(serializers.ModelSerializer):
         else:
             return widget_serializer
 
-
-class WidgetListSerializer(serializers.ModelSerializer):
-    """
-    A very simple serializer that allows us to use DRF ModelViewSets to create and destroy widget-lists in views.py
-    """
-    class Meta:
-        model = WidgetList
-        fields = ()
