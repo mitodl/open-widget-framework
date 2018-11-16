@@ -4,6 +4,10 @@ from open_widget_framework.settings import api_settings
 
 
 def get_widget_class_dict():
+    """
+    get_widget_class_dict constructs a dictionary of widget_class names to widget_class objects. This is the sole means
+        by which widget_classes are listed and defined.
+    """
     widget_classes = api_settings.WIDGET_CLASSES
 
     imported_widget_classes = [
