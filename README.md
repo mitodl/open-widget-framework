@@ -27,60 +27,22 @@ WIDGET_CLASSES = [
 ]
 ```
 
-You can define a custom authentication backend class as well: 
+You can define a custom authentication and permission classes as well: 
 ```python
-WIDGET_FRAMEWORK_AUTHENTICATION_BACKEND = MyAuthenticationClass
+WIDGET_FRAMEWORK_AUTHENTICATION_CLASSES = (MyAuthenticationClass,)
+WIDGET_FRAMEWORK_PERMISSION_CLASSES = (MyPermissionClass,)
+WIDGET_LIST_EDIT_PERMISSIONS = ['my-permission-class']
 ``` 
+The authentication and permission classes control who can view which widget-lists while the WIDGET_LIST_EDIT_PERMISSIONS
+is a list of object level permissions that a user must have to make changes to a widget list. By default these are all 
+set to None so that anyone can view and change anything, but an easy way to restrict widget edit power would be to 
+change WIDGET_LSIT_EDIT_PERMISSIONS to ['change_widgetlist'], which would allow only users with the permission to change
+a widget list change that list. That permissions can be added with 
+```
+user.add_obj_perm('change_widgetlist', WidgetList.objecst.get(id=id_of_widget_list))
+```
 
 ### React
-To incorporate widgets into your frontend, you have to configure some settings. Import the following configuration function:
-
-```javascript
-import configureWidgetFrameworkSettings from '@zagaran/open-widget-framework/es/config'
-```
-
-and run it somewhere in your frontend. You can pass in a partial or full object of user settings to define your own defaults:
-
-```javascript
-configureWidgetFrameworkSettings({
-  mySetting: mySettingValue,
-  ...
-})
-```
-
-The settings that you can currently customize are:
-#### `disableWidgetFramework:`
-If set to true, WidgetLists will not render on any page
-
-#### `csrfToken:` 
-The django generated cross site request forgery token that can be passed in through the template. If this isn't defined, you will not be able to create, adit, or delete widgets. For more, see the django documentation:  https://docs.djangoproject.com/en/2.1/ref/csrf/
-
-#### `renderers:`
-An object that maps names of custom renderers to their corresponding react components. The name should match the `react_renderer` field on the widget class defined in your custom classes. See the section below on react renderers
-
-#### `fetchData:` 
-A custom fetch function that takes a url and an object of options similar to fetch
-
-#### `errorHandler:`
-A function that takes an error message and does something with it. Use this to define your own error handling. Defaults to `console.error`
-
-#### `loader:` 
-A component that displays when data is being fetched. Note that this is not a class. It is an instance of a class.
-
-#### `defaultRenderer:`
-This setting defines what renderer is used in the default case. Note that unless otherwise specified in the class, widget's will only have two props available to the renderer: title and innerHtml 
-
-#### `defaultWrappers`
-
-`defaultFormWrapper:`
-
-`defaultListWrapper:`
-
-`defaultWidgetWrapper:`
-
-These three settings are react components that wrap the various types of components included in this package. This allows for customization of each individual part of the framework. See the section later about wrappers.
-
-### Using the components
 To include a widget list on the page, simply import the widget list component:
 ```javascript
 import WidgetList from '@zagaran/open-widget-framework/es/widget-list'
@@ -90,32 +52,130 @@ and then include the component in your app, specifying which widget list to incl
 <WidgetList widgetListId={id}/>
 ```
 
+#### Configuring a widget list
+You may want ot customize your widget list further. There are a number of settings that can be configured. The easy way 
+to override the default settings is with the configureWidgetFrameworkSettings function from config.js:
+
+```javascript
+import configureWidgetFrameworkSettings from '@zagaran/open-widget-framework/es/config'
+```
+
+to override the defaultSettings, simply pass your userSettings in as props on the widgetList:
+
+```javascript
+const mySettings = {
+  mySetting: mySettingValue,
+  ...
+}
+
+<WidgetList widgetListId={id} ...mySettings/>
+```
+
+The settings that you can currently customize are:
+#### `disableWidgetFramework: False`
+If set to true, WidgetLists will not render on any page
+
+#### `renderers: []`
+An object that maps names of custom renderers to their corresponding react components. The name should match the `react_renderer` field on the widget class defined in your custom classes. See the section below on react renderers
+
+#### `fetchData: _defaultFetchJsonData` 
+A custom fetch function that takes a url and an object of options similar to fetch. Use this to handle csrf validation and json loading. The 
+default fetch wrapper looks for a csrfToken on the window and handles deserializing json
+
+#### `errorHandler: console.error`
+A function that takes an error message and does something with it. Use this to define your own error handling. Defaults to `console.error`
+
+#### `loader: _defaultLoader` 
+A component that displays when data is being fetched.
+
+#### `defaultRenderer: _defaultRenderer`
+This setting defines what renderer is used in the default case. Note that unless otherwise specified in the class, widget's will only have two props available to the renderer: title and hHtml 
+
+#### `Wrappers`
+
+`ListWrapper: _defaultListWrapper`
+
+`FormWrapper: _defaultFormWrapper`
+
+`WidgetWrapper: _defaultWidgetWrapper`
+
+These three settings are react components that wrap the various types of components included in this package. This allows for customization of each individual part of the framework. See the section later about wrappers.
+
+#### `wrapperProps`
+
+`listWrapperProps: null`
+
+`formormWrapperProps: null`
+
+`widgetWrapperProps: null`
+
+These three settings are prop objects that are passed to their respective wrappers. Use these to further customize your wrapper with information, components, and functions from your app
+
 ### Creating your own widgets
 
 #### Defining a widget class
-```
-class MyWidget(WidgetBase):
-    name = 'MyWidget'
-    myWidgetField = ReactCharField(props={'placeholder': 'This is my widget's only field!})
+When defining a widget class, simply extend WidgetClassBase and define ReactFields from react_fields.py on it. These
+fields allow you to configure props for the widget-form (like placeholder in the below example).
 
-    def render(self, request, configuration):
-        return {'myWidgetField': configuration['myWidgetField']}
+All widget classes must implement the render function and return either a string of html (WidgetSerializer runs format_html on it) or 
+a dictionary (as in the below example) which will be used as props on the renderer. The default renderer provided with the app only handles title and html props,
+but you can change the default renderer.
+```python
+from open_widget_framework.widget_class_base import WidgetClassBase
+from open_widget_framework.react_fields improt ReactCharField, ReactChoice
+
+
+class MyWidget(WidgetClassBase):
+    name = 'MyWidgetClass'
+    react_renderer = 'myRenderer'
+    myTextField = ReactCharField(props={'placeholder': 'This is my widget's text field!})
+    myClassField = ReactCharField(props={'placeholder': 'This is my widget's class field!})
+    myChoiceField = ReactChoiceField([], props={'placeholder': 'Choose one!'})
+
+    def render(self):
+        # render can return a string of html or a dictionary of props to set on a custom renderer
+        return self.data
+        
+    def pre_configure(self):
+        # pre_configure allows us to dynamically configure a field, in this case to load options from the db
+        self.fields['myChoiceField'].choices = [user.username for user in User.objects.all()]
+        
+    def post_configure(self):
+    # post_configure allows us to manipulate data right before it enters the database
+        escaped_data = {
+            myTextField: format_html(self.initial_data['myTextField'])
+            myClassField: format_html(self.initial_data['myClassField'])
+            myChoiceField: format_html(self.initial_data['myChoiceField'])
+        return escaped_data
+```
+
+Add you widget class in your settings.py:
+```python
+WIDGET_FRAMEWORK = {
+    WIDGET_CLASSES: [
+        'path.to.myWidget'
+    ]
+}
 ```
 #### Defining a renderer
+A custom renderer is just a React component that will receive the rendered props, either title and html or a custom set of props 
+defined in the widget class render function.
 ```javascript
 class myRenderer extends Component {
   render() {
     return (
       <div>
         <h3>{this.props.title}</h3>
-        <div dangerouslySetInnerHTML={{__html: this.props.html}}/>
+        <div className={this.props.myClassField}>{this.props.myTextField}</div>
+        <div>You chose {this.props.myChoiceField}</div>
       </div>
   }
 }
+```
+Add your renderer as a prop in WidgetList:
 
-renderers: {
-  myRenderer: myRenderer
-}
+```javascript
+<WidgetList widgetListId={id} renderers={myRenderer: myRenderer}/>
 ```
 ### Database
 The `open_widget_framework` django package makes use of PostgreSQL and `django.contrib.postgres.fields.JSONField` to store JSON.
