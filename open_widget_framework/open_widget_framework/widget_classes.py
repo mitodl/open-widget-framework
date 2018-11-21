@@ -10,8 +10,10 @@ from open_widget_framework.react_fields import (
     ReactURLField,
     ReactMultipleChoiceField,
     ReactFileField,
+    ReactIntegerField,
 )
-
+import feedparser
+import time
 
 class TextWidget(WidgetClassBase):
     """
@@ -79,6 +81,56 @@ class ManyUserWidget(WidgetClassBase):
             + "</table>"
         )
         return select_user_html
+
+
+class MembersWidget(WidgetClassBase):
+    """
+    A basic widget that displays how many users there are.
+
+    Fields:
+        url: url to display
+
+    Renderer: default
+    """
+    name = "Members"
+    url = ReactURLField(props={"placeholder": "Enter URL"})
+
+    def render(self):
+        users_count = User.objects.count()
+        members_page_url = self.data["url"]
+        return f'<p>Members: {users_count}</p><p><a href="{members_page_url}"></a></p>'
+
+
+class RssFeedWidget(WidgetClassBase):
+    """
+    A basic rss feed widget
+
+    Fields:
+        url: rss feed url
+        feed_display_limit: limit how many feeds to display
+
+    Renderer: default
+    """
+    name = "RSS Feed"
+    url = ReactURLField(props={"placeholder": "Enter RSS Feed URL"})
+    feed_display_limit = ReactIntegerField(min_value=0, max_value=12, props={"default": 3})
+
+    def render(self):
+        feed_output = ""
+        feed = feedparser.parse(self.data["url"]).entries
+        if not feed:
+            return f"<p>No RSS entries found. You may have selected an invalid RSS url.</p>"
+        timestamp_key = "published_parsed" if "published_parsed" in feed[0] else "updated_parsed"
+        sorted_feed = sorted(feed, reverse=True, key=lambda entry: entry[timestamp_key])
+        display_limit = min(0, self.data["feed_display_limit"])
+        for entry in sorted_feed[:display_limit]:
+            entry_title = entry.get("title", None)
+            entry_link = entry.get("link", None)
+            entry_timestamp = entry.get(timestamp_key, None)
+            if entry_timestamp:
+                entry_timestamp = time.strftime('%m/%d %I:%M%p', entry_timestamp)
+            feed_output += f'<p><a href="{entry_link}">{entry_timestamp} | {entry_title}<a><p>'
+        return feed_output
 
 
 class FileWidget(WidgetClassBase):
