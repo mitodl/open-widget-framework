@@ -39,12 +39,7 @@ class APISettings(object):
         if attr not in self.defaults:
             raise AttributeError("Invalid API setting: '%s'" % attr)
 
-        try:
-            # Check if present in user settings
-            val = self.user_settings[attr]
-        except KeyError:
-            # Fall back to defaults
-            val = self.defaults[attr]
+        val = self.user_settings.get(attr, self.defaults[attr])
 
         # Cache the result
         self._cached_attrs.add(attr)

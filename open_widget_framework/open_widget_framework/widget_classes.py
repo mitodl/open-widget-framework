@@ -2,6 +2,7 @@
 WidgetApp widget classes
 """
 from django.contrib.auth.models import User
+from django.utils.html import escape, format_html
 
 from open_widget_framework.widget_class_base import WidgetClassBase
 from open_widget_framework.react_fields import (
@@ -26,7 +27,7 @@ class TextWidget(WidgetClassBase):
     body = ReactCharField(props={"placeholder": "Enter widget text"})
 
     def render(self):
-        return "<p>%s</p>" % self.data["body"]
+        return format_html("<div>{body}</div>", body=self.data["body"])
 
 
 class URLWidget(WidgetClassBase):
@@ -43,7 +44,7 @@ class URLWidget(WidgetClassBase):
     url = ReactURLField(props={"placeholder": "Enter URL"})
 
     def render(self):
-        return "<iframe src=%s></iframe>" % self.data["url"]
+        return format_html('<iframe src="{url}"></iframe>', url=self.data["url"])
 
 
 class ManyUserWidget(WidgetClassBase):
@@ -71,8 +72,7 @@ class ManyUserWidget(WidgetClassBase):
             "<table><tr><th>Username</th><th>Last Name</th><th>First Name</th><th>Last Logged In</th></tr>"
             + "".join(
                 [
-                    "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>"
-                    % (u.username, u.last_name, u.first_name, u.last_login)
+                    format_html("<tr><td>{}</td><td>{}</td><td>{}</td></tr>", u.username, u.last_name, u.first_name)
                     for u in users
                 ]
             )

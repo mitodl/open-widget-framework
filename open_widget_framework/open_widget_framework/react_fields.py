@@ -106,6 +106,7 @@ class ReactMultipleChoiceField(serializers.MultipleChoiceField, ReactField):
         configuration.update({"choices": self.choices})
         return configuration
 
+    # Is this necessary
     def to_internal_value(self, data):
         return list(super().to_internal_value(data))
 

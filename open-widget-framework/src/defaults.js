@@ -1,20 +1,42 @@
 import React, {Component} from 'react'
 import Octicon from 'react-component-octicons'
 
-class _defaultRenderer extends Component {
+class _defaultFormWrapper extends Component {
   /**
-   * DefaultRenderer is the basic component to render a widget configuration
+   * _defaultFormWrapper is a basic wrapper for the widget form component. It handles closing the form after submit
+   *    and renders a cancel button
    *
    * Props:
-   *    title: title of the widget
-   *    html: inner html of the widget
+   *    updateWidgetList(data): updates the widget-list with data returned from the form submission
+   *    renderForm(props): renders the the widget form with props that overwrite the default props
+   *
+   * Props (passed by _defaultListWrapper)
+   *    closeForm(): closes the widget form
    */
+
+  submitAndClose = (data) => {
+    /**
+     * submitAndClose takes data, updates the widget-list, and then closes the form. This function will overwrite the
+     *    default onSubmit passed by WidgetList which only updates the widget-list
+     *
+     * inputs:
+     *    data: the data returned by the form submission
+     */
+    const { updateWidgetList, closeForm } = this.props
+    updateWidgetList(data)
+    closeForm()
+  }
+
   render() {
-    const { title, html } = this.props
+    const { renderForm, closeForm } = this.props
     return (
-      <div className="widget-body card-body">
-        <h5 className="widget-title card-title">{title}</h5>
-        <div className="widget-text card-text text-truncate" dangerouslySetInnerHTML={{__html: html}}/>
+      <div className="widget-form card" id="default-form-wrapper">
+        {renderForm({onSubmit: this.submitAndClose})}
+        <div className="cancel-form-button card-footer">
+          <button className="btn btn-danger btn-block" id="widget-form-cancel-btn" onClick={closeForm}>
+            Cancel
+          </button>
+        </div>
       </div>
     )
   }
@@ -45,13 +67,13 @@ class _defaultListWrapper extends Component {
     this.addWidget = this.addWidget.bind(this)
   }
 
-  addWidget() {
+  addWidget = () => {
     /**
      * addWidget is the onClick for the addWidgetButton. It sets the state so that a new widget form is rendered
      */
-    const { addWidgetForm } = this.state
     this.setState({
-      addWidgetForm: !addWidgetForm,
+      editMode: true,
+      addWidgetForm: true,
       editWidgetForm: null,
     })
   }
@@ -61,7 +83,7 @@ class _defaultListWrapper extends Component {
      * renderAddWidgetButton creates a button to add a new widget
      */
     return (
-      <button className="btn btn-info col" onClick={this.addWidget}>
+      <button className="btn btn-info col" onClick={this.addWidget} id="add-widget-btn">
         <Octicon name="plus"/>
       </button>
     )
@@ -94,6 +116,7 @@ class _defaultListWrapper extends Component {
      *    widgetId: the widget to edit
      */
     this.setState({
+      editMode: true,
       editWidgetForm: widgetId,
       addWidgetForm: false,
     })
@@ -103,9 +126,10 @@ class _defaultListWrapper extends Component {
     const { addWidgetForm, editWidgetForm, editMode } = this.state
     const { renderNewWidgetForm, renderEditWidgetForm, renderList } = this.props
     return (
-      <div className="bg-secondary rounded card">
+      <div className="bg-secondary rounded card" id="default-list-wrapper">
         <div className="edit-widget-list-bar btn-group card-header" role="group">
-          <button className={`btn btn-info col ${editMode ? "active" : ""}`} onClick={this.toggleEditMode}>
+          <button className={`btn btn-info col ${editMode ? "active" : ""}`} id="edit-widget-list-btn"
+                  onClick={this.toggleEditMode}>
             <Octicon name="pencil"/>
           </button>
           {editMode ? this.renderAddWidgetButton() : null}
@@ -118,6 +142,34 @@ class _defaultListWrapper extends Component {
             editWidget: this.editWidget,
           })}
         </div>
+      </div>
+    )
+  }
+}
+
+class _defaultLoader extends Component {
+  /**
+   * _defaultLoader is the default component that shows before data has arrived on an asynchronous request
+   */
+  render() {
+    return (<div className="default-loader">Loading</div>)
+  }
+}
+
+class _defaultRenderer extends Component {
+  /**
+   * DefaultRenderer is the basic component to render a widget configuration
+   *
+   * Props:
+   *    title: title of the widget
+   *    html: inner html of the widget
+   */
+  render() {
+    const { title, html } = this.props
+    return (
+      <div className="widget-body card-body">
+        <h5 className="widget-title card-title">{title}</h5>
+        <div className="widget-text card-text text-truncate" dangerouslySetInnerHTML={{__html: html}}/>
       </div>
     )
   }
@@ -177,8 +229,8 @@ class _defaultWidgetWrapper extends Component {
     /**
      * deleteWidget deletes the widget. It's an onClick function for the edit bar
      */
-    const { deleteWidget, id } = this.props
-    deleteWidget(id)
+    const { deleteWidget } = this.props
+    deleteWidget()
   }
 
   renderEditBar() {
@@ -214,61 +266,6 @@ class _defaultWidgetWrapper extends Component {
         {renderWidget()}
       </div>
     )
-  }
-}
-
-
-class _defaultFormWrapper extends Component {
-  /**
-   * _defaultFormWrapper is a basic wrapper for the widget form component. It handles closing the form after submit
-   *    and renders a cancel button
-   *
-   * Props:
-   *    updateWidgetList(data): updates the widget-list with data returned from the form submission
-   *    renderForm(props): renders the the widget form with props that overwrite the default props
-   *
-   * Props (passed by _defaultListWrapper)
-   *    closeForm(): closes the widget form
-   */
-  constructor(props) {
-    super(props)
-    this.submitAndClose = this.submitAndClose.bind(this)
-  }
-
-  submitAndClose(data) {
-    /**
-     * submitAndClose takes data, updates the widget-list, and then closes the form. This function will overwrite the
-     *    default onSubmit passed by WidgetList which only updates the widget-list
-     *
-     * inputs:
-     *    data: the data returned by the form submission
-     */
-    const { updateWidgetList, closeForm } = this.props
-    updateWidgetList(data)
-    closeForm()
-  }
-
-  render() {
-    const { renderForm, closeForm } = this.props
-    return (
-      <div className="widget-form card">
-        {renderForm({onSubmit: this.submitAndClose})}
-        <div className="cancel-form-button card-footer">
-          <button className="btn btn-danger btn-block" onClick={closeForm}>
-            Cancel
-          </button>
-        </div>
-      </div>
-    )
-  }
-}
-
-class _defaultLoader extends Component {
-  /**
-   * _defaultLoader is the default component that shows before data has arrived on an asynchronous request
-   */
-  render() {
-    return (<p>Loading</p>)
   }
 }
 

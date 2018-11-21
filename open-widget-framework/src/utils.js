@@ -1,22 +1,22 @@
 import range from 'lodash.range'
 
-function apiPath(name, listId, widgetId) {
+function apiPath(name, pk) {
   /**
    * constructs an api path based on the view name and the list and widget ids
    */
-  let apiBase = '/api/v1/'
+  let apiBase = '/api/v1'
   switch (name) {
     case 'get_lists':
-      return apiBase + 'lists'
+      return `${apiBase}/list/`
 
     case 'get_configurations':
-      return apiBase + 'configurations'
+      return `${apiBase}/list/get_configurations/`
 
     case 'widget_list':
-      return apiBase + 'list/' + (listId || '')
+      return `${apiBase}/list/${pk ? (pk + '/') : ''}`
 
     case 'widget':
-      return apiBase + 'list/' + listId + '/widget/' + (widgetId || '')
+      return `${apiBase}/widget/${pk ? (pk + '/') : ''}`
   }
 }
 

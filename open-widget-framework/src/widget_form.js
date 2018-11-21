@@ -35,8 +35,8 @@ class EditWidgetForm extends Component {
     /**
      * Fetch data about the widget to edit and set state
      */
-    const { errorHandler, fetchData, widgetListId, widgetId } = this.props
-    fetchData(apiPath('widget', widgetListId, widgetId))
+    const { errorHandler, fetchData, widgetId } = this.props
+    fetchData(apiPath('widget', widgetId))
       .then(data => this.setState({
         currentWidgetData: data.widgetData,
         widgetClassConfiguration: data.widgetClassConfigurations,
@@ -54,9 +54,9 @@ class EditWidgetForm extends Component {
      *        accept onSubmit from both Edit- and Add- WidgetForm components
      *    formData: data from the WidgetForm
      */
-    const { errorHandler, fetchData, onSubmit, widgetListId, widgetId } = this.props
+    const { errorHandler, fetchData, onSubmit, widgetId } = this.props
     const { title, ...configuration } = formData
-    fetchData(apiPath('widget', widgetListId, widgetId), {
+    fetchData(apiPath('widget', widgetId), {
       body: JSON.stringify({
         configuration: configuration,
         title: title,
@@ -134,7 +134,7 @@ class NewWidgetForm extends Component {
      */
     const { errorHandler, fetchData, onSubmit, widgetListId, listLength } = this.props
     const { title, ...configuration } = formData
-    fetchData(apiPath('widget', widgetListId), {
+    fetchData(apiPath('widget'), {
       body: JSON.stringify({
         configuration: configuration,
         title: title,

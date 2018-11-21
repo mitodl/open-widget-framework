@@ -2,7 +2,6 @@ from django.core.exceptions import ImproperlyConfigured
 from rest_framework.serializers import ModelSerializer, ValidationError
 from rest_framework.validators import UniqueTogetherValidator
 from django.db.models import CharField
-from django.utils.html import format_html
 
 from open_widget_framework.react_fields import ReactCharField, ReactChoiceField
 from open_widget_framework.models import WidgetInstance, WidgetList
@@ -14,7 +13,7 @@ def get_widget_class_configurations():
     Get_widget_class_configurations returns a dictionary mapping the names of the widget classes to their configurations
     """
     widget_classes = get_widget_class_dict()
-    return {key: WidgetSerializer().get_configuration_form_spec(key) for key in widget_classes.keys()}
+    return {key: WidgetSerializer.get_configuration_form_spec(key) for key in widget_classes.keys()}
 
 
 def get_widget_class_serializer(widget_class_name):
@@ -33,7 +32,7 @@ class WidgetListSerializer(ModelSerializer):
     A very simple serializer that allows us to use DRF ModelViewSets to create and destroy widget-lists in views.py
     """
     class Meta:
-        fields = ()
+        fields = '__all__'
         model = WidgetList
 
 
@@ -116,7 +115,7 @@ class WidgetSerializer(ModelSerializer):
         if isinstance(rendered_body, dict):
             base_configuration.update(rendered_body)
         else:
-            base_configuration.update({'html': format_html(rendered_body)})
+            base_configuration.update({'html': rendered_body})
         return base_configuration
 
     def get_form_data(self):

@@ -84,8 +84,8 @@ class WidgetList extends Component {
     /**
      * Make request to server to delete a widget with id widgetId
      */
-    const { widgetListId, errorHandler, fetchData } = this.props
-    fetchData(apiPath('widget', widgetListId, widgetId), {method: 'DELETE'})
+    const { errorHandler, fetchData } = this.props
+    fetchData(apiPath('widget', widgetId), {method: 'DELETE'})
       .then(this.updateWidgetList)
       .catch(errorHandler)
   }
@@ -94,8 +94,8 @@ class WidgetList extends Component {
     /**
      * Make request to server to move widget with id widgetId to position in the widget-list
      */
-    const { widgetListId, errorHandler, fetchData } = this.props
-    fetchData(apiPath('widget', widgetListId, widgetId), {
+    const { errorHandler, fetchData } = this.props
+    fetchData(apiPath('widget', widgetId), {
         body: JSON.stringify({position: position}),
         method: 'PATCH'
       })
