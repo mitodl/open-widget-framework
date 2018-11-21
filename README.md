@@ -130,9 +130,9 @@ from open_widget_framework.react_fields improt ReactCharField, ReactChoice
 class MyWidget(WidgetClassBase):
     name = 'MyWidgetClass'
     react_renderer = 'myRenderer'
-    myTextField = ReactCharField(props={'placeholder': 'This is my widget's text field!})
-    myClassField = ReactCharField(props={'placeholder': 'This is my widget's class field!})
-    myChoiceField = ReactChoiceField([], props={'placeholder': 'Choose one!'})
+    myTextField = ReactCharField(props={'placeholder': "This is my widget's text field!"})
+    myClassField = ReactCharField(props={'placeholder': "This is my widget's class field!"})
+    myChoiceField = ReactChoiceField([], props={'placeholder': "Choose one!"})
 
     def render(self):
         # render can return a string of html or a dictionary of props to set on a custom renderer
