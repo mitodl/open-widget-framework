@@ -1,39 +1,52 @@
 import range from 'lodash.range'
 
-function apiPath(name, listId, widgetId, args) {
-  let apiBase = '/api/v1/'
+function apiPath(name, pk) {
+  /**
+   * constructs an api path based on the view name and the list and widget ids
+   */
+  let apiBase = '/api/v1'
   switch (name) {
     case 'get_lists':
-      return apiBase + 'lists'
+      return `${apiBase}/list/`
 
     case 'get_configurations':
-      return apiBase + 'configurations'
+      return `${apiBase}/list/get_configurations/`
 
     case 'widget_list':
-      return apiBase + 'list/' + (listId || '')
+      return `${apiBase}/list/${pk ? (pk + '/') : ''}`
 
     case 'widget':
-      return apiBase + 'list/' + listId + '/widget/' + (widgetId || '') + (args ? '?position=' + args.position : '')
+      return `${apiBase}/widget/${pk ? (pk + '/') : ''}`
   }
 }
 
 // TODO: split into two functions
-function makeOptions(values, keys) {
-  if (keys === undefined) {
-    keys = values
-  }
 
-  if (keys.length !== values.length) {
-    return []
-  }
-
-  return range(keys.length).map(
+function makeOptionsFromList(values) {
+  /**
+   * constructs an options object from a list of values
+   */
+  return range(values.length).map(
     index => ({
-      key: keys[index],
-      label: keys[index],
+      key: values[index],
+      label: values[index],
       value: values[index],
     })
   )
 }
 
-export {makeOptions, apiPath}
+function makeOptionsFromObject(options) {
+  /**
+   * constructs an options object from an object of key, value mappings
+   */
+  const keys = Object.keys(options)
+  return range(keys.length).map(
+    index => ({
+      key: options[keys[index]],
+      label: options[keys[index]],
+      value: keys[index],
+    })
+  )
+}
+
+export {makeOptionsFromList, makeOptionsFromObject, apiPath}

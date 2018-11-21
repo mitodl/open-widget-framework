@@ -29,14 +29,9 @@ class ReactField(serializers.Field):
         return {
             "key": self.key,
             "label": self.label,
-            "input_type": self.input_type,
+            "inputType": self.input_type,
             "props": self.props,
         }
-
-    @staticmethod
-    def serialize(value):
-        """Serialize data in the field for the configuration JSONField on the widget"""
-        return value
 
     @staticmethod
     def make_choices_dict(choices):
@@ -94,7 +89,7 @@ class ReactChoiceField(serializers.ChoiceField, ReactField):
 
     def configure_form_spec(self):
         configuration = super().configure_form_spec()
-        configuration.update({"choices": dict(self.choices)})
+        configuration.update({"choices": self.choices})
         return configuration
 
 
@@ -108,13 +103,12 @@ class ReactMultipleChoiceField(serializers.MultipleChoiceField, ReactField):
 
     def configure_form_spec(self):
         configuration = super().configure_form_spec()
-        configuration.update(
-            {
-                "choice_keys": list(self.choices.keys()),
-                "choice_values": list(self.choices.values()),
-            }
-        )
+        configuration.update({"choices": self.choices})
         return configuration
+
+    # Is this necessary
+    def to_internal_value(self, data):
+        return list(super().to_internal_value(data))
 
     @staticmethod
     def serialize(value):
