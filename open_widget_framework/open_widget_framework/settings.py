@@ -11,7 +11,6 @@ DEFAULTS = {
     'WIDGET_CLASSES': (
         "open_widget_framework.widget_classes.TextWidget",
         "open_widget_framework.widget_classes.URLWidget",
-        "open_widget_framework.widget_classes.ManyUserWidget",
         "open_widget_framework.widget_classes.MembersWidget",
         "open_widget_framework.widget_classes.RssFeedWidget",
     ),

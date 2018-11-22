@@ -49,7 +49,7 @@ class URLWidget(WidgetClassBase):
         return format_html('<iframe src="{url}"></iframe>', url=self.data["url"])
 
 
-class ManyUserWidget(WidgetClassBase):
+class MembersWidget(WidgetClassBase):
     """
     Choose any number of Django user objects and display some data about them
 
@@ -81,24 +81,6 @@ class ManyUserWidget(WidgetClassBase):
             + "</table>"
         )
         return select_user_html
-
-
-class MembersWidget(WidgetClassBase):
-    """
-    A basic widget that displays how many users there are.
-
-    Fields:
-        url: url to display
-
-    Renderer: default
-    """
-    name = "Members"
-    url = ReactURLField(props={"placeholder": "Enter URL"})
-
-    def render(self):
-        users_count = User.objects.count()
-        members_page_url = self.data["url"]
-        return f'<p>Members: {users_count}</p><p><a href="{members_page_url}"></a></p>'
 
 
 class RssFeedWidget(WidgetClassBase):
