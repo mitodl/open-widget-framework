@@ -21,14 +21,10 @@ class EditWidgetForm extends Component {
    *    formProps (see makeFormProps in widget_list.js)
    *    formWrapperProps (defined by custom FormWrapper or _defaultFormWrapper in defaults.js
    */
-  constructor(props) {
-    super(props)
-    this.state = {
-      currentWidgetData: null,
-      widgetClass: null,
-      widgetClassConfiguration: null,
-    }
-    this.onSubmit = this.onSubmit.bind(this)
+  state = {
+    currentWidgetData: null,
+    widgetClass: null,
+    widgetClassConfiguration: null,
   }
 
   componentDidMount() {
@@ -44,7 +40,7 @@ class EditWidgetForm extends Component {
       .catch(errorHandler)
   }
 
-  onSubmit(widgetClass, formData) {
+  onSubmit = (widgetClass, formData) => {
     /**
      * onSubmit is the onClick behavior of the submit button. It parses the title out of the data and makes a PATCH
      *    request to the backend. Then it calls the passed in prop onSubmit
@@ -100,13 +96,9 @@ class NewWidgetForm extends Component {
    *    formProps (see makeFormProps in widget_list.js)
    *    formWrapperProps (defined by custom FormWrapper or _defaultFormWrapper in defaults.js
    */
-  constructor(props) {
-    super(props)
-    this.state = {
-      widgetClassConfigurations: null,
-      widgetClasses: null,
-    }
-    this.onSubmit = this.onSubmit.bind(this)
+  state = {
+    widgetClassConfigurations: null,
+    widgetClasses: null,
   }
 
   componentDidMount() {
@@ -123,7 +115,7 @@ class NewWidgetForm extends Component {
       .catch(errorHandler)
   }
 
-  onSubmit(widgetClass, formData) {
+  onSubmit = (widgetClass, formData) => {
     /**
      * onSubmit is the onClick behavior of the submit button. It parses the title out of the data and makes a POST
      *    request to the backend. Then it calls the passed in prop onSubmit
@@ -182,17 +174,9 @@ class WidgetForm extends Component {
    *    formData: keeps track of the current input of the form
    *    widgetClass: keeps track of the current chosen class
    */
-  constructor(props) {
-    super(props)
-    const { formData, widgetClass } = this.props
-    this.state = {
-      formData: formData,
-      widgetClass: widgetClass,
-    }
-    this.onChange = this.onChange.bind(this)
-    this.onSubmit = this.onSubmit.bind(this)
-    this.makeWidgetClassSelect = this.makeWidgetClassSelect.bind(this)
-    this.renderInputs = this.renderInputs.bind(this)
+  state = {
+    formData: this.props.formData,
+    widgetClass: this.props.widgetClass,
   }
 
   onChange(key, value) {
@@ -208,7 +192,7 @@ class WidgetForm extends Component {
     })
   }
 
-  onSubmit(event) {
+  onSubmit = (event) => {
     /**
      * Submit widget class and form data with onSubmit from props
      */
@@ -219,7 +203,7 @@ class WidgetForm extends Component {
     onSubmit(widgetClass, formData)
   }
 
-  makeWidgetClassSelect() {
+  makeWidgetClassSelect = () => {
     /**
      * makeWidgetClassSelect makes a react-select component
      */
@@ -252,7 +236,7 @@ class WidgetForm extends Component {
     )
   }
 
-  renderInputs(model) {
+  renderInputs = (model) => {
     /**
      * Render widget form inputs based on the configuration of widgetClass
      *
