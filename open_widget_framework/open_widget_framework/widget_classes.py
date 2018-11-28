@@ -49,7 +49,7 @@ class URLWidget(WidgetClassBase):
         return format_html('<iframe src="{url}"></iframe>', url=self.data["url"])
 
 
-class MembersWidget(WidgetClassBase):
+class ManyUserWidget(WidgetClassBase):
     """
     Choose any number of Django user objects and display some data about them
 
@@ -101,7 +101,7 @@ class RssFeedWidget(WidgetClassBase):
         feed_output = ""
         feed = feedparser.parse(self.data["url"]).entries
         if not feed:
-            return f"<p>No RSS entries found. You may have selected an invalid RSS url.</p>"
+            return "<p>No RSS entries found. You may have selected an invalid RSS url.</p>"
         timestamp_key = "published_parsed" if "published_parsed" in feed[0] else "updated_parsed"
         sorted_feed = sorted(feed, reverse=True, key=lambda entry: entry[timestamp_key])
         display_limit = min(0, self.data["feed_display_limit"])
