@@ -7,7 +7,7 @@ function mockTextWidget(position) {
     widgetProps: {
       html: '<p>example' + position + '</p>',
       position: position,
-      reactRenderer: null,
+      react_renderer: null,
       title: 'example' + position,
     },
   }

@@ -216,7 +216,7 @@ class WidgetList extends Component {
      * finds appropriate renderer and render the widget instance
      */
     const { renderers, defaultRenderer } = this.props
-    const Renderer = renderers[widgetInstance.reactRenderer] || defaultRenderer
+    const Renderer = renderers[widgetInstance.react_renderer] || defaultRenderer
     return (
       <Renderer {...widgetInstance}
                 {...widgetInstance.configuration}
