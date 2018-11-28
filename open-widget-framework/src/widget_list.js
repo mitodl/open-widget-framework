@@ -24,8 +24,6 @@ class WidgetList extends Component {
    *        model from the django backend containing id, position, widget_class, react_renderer, widget_list, title,
    *        and configuration
    */
-  // TODO: why do we need to use constructor
-
   static defaultProps = {...defaultSettings}
 
   state = {widgetInstances: null}

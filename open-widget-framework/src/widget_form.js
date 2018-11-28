@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import Select from 'react-select'
 
-import { makeOptionsFromList, makeOptionsFromObject } from './utils'
-import { apiPath } from '../es/utils'
+import { makeOptionsFromList, makeOptionsFromObject, apiPath } from './utils'
 
 
 class EditWidgetForm extends Component {
@@ -226,7 +225,7 @@ class WidgetForm extends Component {
     return (
       <form onSubmit={this.onSubmit}>
         <div className="widget-form-input-group" id="widget-class-input-group">
-          <label className='widget-class-select-label' id="widget-class-input-label" htmlFor="widget-class-select">
+          <label className='widget-form-input-label' id="widget-class-select-label" htmlFor="widget-class-select">
             {`Configure ${widgetClass} Widget`}
           </label>
           {widgetClasses.length > 1 ? this.makeWidgetClassSelect() : null}
@@ -276,7 +275,7 @@ class WidgetForm extends Component {
       // Create options for select parameters and set defaultValue
       if (inputType === 'select') {
         inputProps.options = makeOptionsFromObject(choices)
-        if (formData !== null) {
+        if (formData !== null && key in formData) {
           for (let option of inputProps.options) {
             if (formData[key].includes(option.value)) {
               inputProps.defaultValue.push(option)
@@ -324,4 +323,4 @@ class WidgetForm extends Component {
   }
 }
 
-export { EditWidgetForm, NewWidgetForm }
+export { EditWidgetForm, NewWidgetForm, WidgetForm }

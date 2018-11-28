@@ -96,8 +96,11 @@ class _defaultListWrapper extends Component {
      * toggleEditMode toggles the value of editMode
      */
     const { editMode } = this.state
-    this.setState({editMode: !editMode})
-    this.closeForm()
+    this.setState({
+      editMode: !editMode,
+      addWidgetForm: false,
+      editWidgetForm: null,
+    })
   }
 
   editWidget = (widgetId) => {
