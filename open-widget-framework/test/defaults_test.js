@@ -59,8 +59,8 @@ describe('<_defaultFormWrapper />', () => {
   it('cancel button calls closeForm', () => {
     resetSpyHistory()
     const wrap = mount(<FormWrapper {...dummyProps}/>)
-    expect(wrap.exists('#widget-form-cancel-btn')).to.equal(true)
-    wrap.find('#widget-form-cancel-btn').simulate('click')
+    expect(wrap.exists('.widget-form-cancel-btn')).to.equal(true)
+    wrap.find('.widget-form-cancel-btn').simulate('click')
 
     expect(dummyProps.renderForm.callCount).to.equal(1)
     expect(dummyProps.updateWidgetList.callCount).to.equal(0)
@@ -108,7 +108,7 @@ describe('<_defaultListWrapper />', () => {
     const instance = wrap.instance()
     const btn = mount(instance.renderAddWidgetButton())
 
-    expect(btn.exists('#add-widget-btn')).to.equal(true)
+    expect(btn.exists('.add-widget-btn')).to.equal(true)
   })
 
   it('closeForm sets addWidgetForm to false and editWidgetForm to null', () => {
@@ -212,7 +212,7 @@ describe('<_defaultListWrapper />', () => {
     const toggleEditModeSpy = sinon.spy(instance, 'toggleEditMode')
     const btn = mount(instance.render())
 
-    btn.find('#edit-widget-list-btn').simulate('click')
+    btn.find('.edit-widget-list-btn').simulate('click')
     expect(toggleEditModeSpy.callCount).to.equal(1)
   })
 
@@ -222,8 +222,8 @@ describe('<_defaultListWrapper />', () => {
     const addWidgetSpy = sinon.spy(instance, 'addWidget')
     const btn = mount(instance.renderAddWidgetButton())
 
-    expect(btn.exists('#add-widget-btn')).to.equal(true)
-    btn.find('#add-widget-btn').simulate('click')
+    expect(btn.exists('.add-widget-btn')).to.equal(true)
+    btn.find('.add-widget-btn').simulate('click')
     expect(addWidgetSpy.callCount).to.equal(1)
   })
 })

@@ -222,7 +222,7 @@ describe('<WidgetList />', () => {
     instance.updateWidgetList(dummyWidgetInstances)
 
     const listWrap = mount(instance.renderWidgetList())
-    expect(listWrap.exists('#default-list-wrapper')).to.equal(true)
+    expect(listWrap.exists('.default-list-wrapper')).to.equal(true)
     expect(listWrap.props()).to.include(instance.makePassThroughProps())
     expect(listWrap.props()).to.include(dummyProps.listWrapperProps)
   })
@@ -274,7 +274,7 @@ describe('<WidgetList />', () => {
     const renderEditWidgetFormSpy = sinon.spy(instance, 'renderEditWidgetFormBody')
 
     const formWrap = mount(instance.renderEditWidgetForm(dummyWidgetId, dummyProps.listWrapperProps))
-    expect(formWrap.exists('#default-form-wrapper')).to.equal(true)
+    expect(formWrap.exists('.default-form-wrapper')).to.equal(true)
     expect(formWrap.props()).to.include(dummyProps.listWrapperProps)
     expect(formWrap.props()).to.include(dummyProps.formWrapperProps)
     // TODO: figure out how to check for the passthrough props
@@ -302,7 +302,7 @@ describe('<WidgetList />', () => {
     const renderNewWidgetFormSpy = sinon.spy(instance, 'renderNewWidgetFormBody')
 
     const formWrap = mount(instance.renderNewWidgetForm(dummyProps.listWrapperProps))
-    expect(formWrap.exists('#default-form-wrapper')).to.equal(true)
+    expect(formWrap.exists('.default-form-wrapper')).to.equal(true)
     expect(formWrap.props()).to.include(dummyProps.listWrapperProps)
     expect(formWrap.props()).to.include(dummyProps.formWrapperProps)
     // TODO: figure out how to check for the passthrough props

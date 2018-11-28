@@ -240,7 +240,7 @@ describe('<WidgetForm />', () => {
 
     expect(wrap.find(Select)).to.have.length(0)
     for (let input of dummyWidgetClassConfiguration[dummyWidgetClass]) {
-      expect(wrap.exists(`#widget-form-input-${input.key}`)).to.equal(true)
+      expect(wrap.exists(`.widget-form-input-${input.key}`)).to.equal(true)
     }
     expect(wrap.state('formData')).to.deep.equal(dummyFormData)
   })
@@ -275,7 +275,7 @@ describe('<WidgetForm />', () => {
     const instance = wrap.instance()
     const widgetClassSelect = mount(instance.makeWidgetClassSelect())
 
-    expect(widgetClassSelect.exists('#widget-class-input-select')).to.equal(true)
+    expect(widgetClassSelect.exists('.widget-class-input-select')).to.equal(true)
     expect(widgetClassSelect.prop('options')).to.deep.equal(makeOptionsFromList(dummyWidgetClasses))
   })
 
@@ -290,7 +290,7 @@ describe('<WidgetForm />', () => {
 
     expect(inputForm.find(Select)).to.have.length(1)
     const select = inputForm.find(Select)
-    expect(select.is(`#widget-form-input-${selectModel.key}`)).to.equal(true)
+    expect(select.is(`.widget-form-input-${selectModel.key}`)).to.equal(true)
     expect(select.hasClass('widget-form-input-select')).to.equal(true)
     expect(select.prop('defaultValue')[0].value).to.equal(dummyDefaultValue)
     expect(select.props()).to.include(selectModel.props)
@@ -304,9 +304,9 @@ describe('<WidgetForm />', () => {
     const instance = wrap.instance()
 
     const inputForm = mount(instance.renderInputs(dummyModel))
-    expect(inputForm.find(`#widget-form-input-${textareaModel.key}`)).to.have.length(1)
+    expect(inputForm.find(`.widget-form-input-${textareaModel.key}`)).to.have.length(1)
 
-    const textarea = inputForm.find(`#widget-form-input-${textareaModel.key}`)
+    const textarea = inputForm.find(`.widget-form-input-${textareaModel.key}`)
     expect(textarea.hasClass('widget-form-input-textarea')).to.equal(true)
     expect(textarea.prop('defaultValue')).to.equal(dummyDefaultValue)
     expect(textarea.props()).to.include(textareaModel.props)
@@ -324,9 +324,9 @@ describe('<WidgetForm />', () => {
     const instance = wrap.instance()
 
     const inputForm = mount(instance.renderInputs(dummyModel))
-    expect(inputForm.find(`#widget-form-input-${textModel.key}`)).to.have.length(1)
+    expect(inputForm.find(`.widget-form-input-${textModel.key}`)).to.have.length(1)
 
-    const text = inputForm.find(`#widget-form-input-${textModel.key}`)
+    const text = inputForm.find(`.widget-form-input-${textModel.key}`)
     expect(text.hasClass('widget-form-input-text')).to.equal(true)
     expect(text.prop('defaultValue')).to.equal(dummyDefaultValue)
     expect(text.props()).to.include(textModel.props)

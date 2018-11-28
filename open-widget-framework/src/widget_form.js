@@ -223,7 +223,7 @@ class WidgetForm extends Component {
     const { widgetClass } = this.state
     return (
       <form onSubmit={this.onSubmit}>
-        <div className="widget-form-input-group" id="widget-class-input-group">
+        <div className="widget-form-input-group widget-class-input-group">
           <label className='widget-form-input-label widget-class-select-label' htmlFor="widget-class-select">
             {`Configure ${widgetClass} Widget`}
           </label>
@@ -252,9 +252,8 @@ class WidgetForm extends Component {
       const { key, inputType, props, choices, label } = field
 
       let inputProps = {
-        className: `widget-form-input-${inputType}`,
+        className: `widget-form-input-${inputType} widget-form-input-${key}`,
         defaultValue: null,
-        id: `widget-form-input-${key}`,
         key: key,
         onChange: (event) => {
           this.onChange(key, event.target.value)
