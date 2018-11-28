@@ -301,7 +301,6 @@ describe('<WidgetForm />', () => {
     const dummyDefaultValue = 'some text for your text area'
     defaultValues[textareaModel.key] = dummyDefaultValue
     const wrap = mount(<WidgetForm {...dummyNewFormProps} formData={defaultValues}/>)
-    console.log(wrap.props())
     const instance = wrap.instance()
 
     const inputForm = mount(instance.renderInputs(dummyModel))
