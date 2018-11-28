@@ -15,9 +15,7 @@
     "clean": "nwb clean-module && nwb clean-demo",
     "prepublishOnly": "npm run build",
     "start": "nwb serve-react-demo",
-    "test": "nyc mocha",
-    "test:coverage": "nwb test-react --coverage",
-    "test:watch": "nwb test-react --server"
+    "test": "nyc mocha"
   },
   "dependencies": {
     "eslint": "^5.8.0",

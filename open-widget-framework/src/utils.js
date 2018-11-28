@@ -38,7 +38,7 @@ function makeOptionsFromList(values) {
 function makeOptionsFromObject(options) {
   /**
    * constructs an options object from an object of key, value mappings where the keys are the value and the value
-   * it the key and label
+   * is the key and label
    */
   const keys = Object.keys(options)
   return range(keys.length).map(

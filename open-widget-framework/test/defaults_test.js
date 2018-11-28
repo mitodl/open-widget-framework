@@ -238,18 +238,18 @@ describe('<_defaultLoader />', () => {
 
 describe('< _defaultRenderer />', () => {
   const dummyTitle = 'dummyTitle'
-  const dummyHTML = <p>dummyHTML</p>
+  const expectedWidgetText = <div className="widget-text card-text text-truncate"><p>dummyHTML</p></div>
   const dummyProps = {
     title: dummyTitle,
-    html: 'dummyHTML',
+    html: '<p>dummyHTML</p>',
   }
 
   it('sets title and html elements on render', () => {
     const wrap = mount(<Renderer {...dummyProps}/>)
-    const htmlWrap = mount(dummyHTML)
+    const htmlWrap = mount(expectedWidgetText)
 
     expect(wrap.find('.widget-title').text()).to.equal(dummyTitle)
-    expect(wrap.find('.widget-text').text()).to.equal(htmlWrap.text())
+    expect(wrap.find('.widget-text').html()).to.equal(htmlWrap.html())
   })
 })
 
