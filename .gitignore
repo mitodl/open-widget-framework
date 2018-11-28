@@ -128,6 +128,7 @@ venv.bak/
 .mypy_cache/
 
 open-widget-framework/coverage
+open-widget-framework/.nyc_output
 open-widget-framework/demo
 open-widget-framework/es
 open-widget-framework/lib

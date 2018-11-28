@@ -30,10 +30,10 @@ class _defaultFormWrapper extends Component {
   render() {
     const { renderForm, closeForm } = this.props
     return (
-      <div className="widget-form card" id="default-form-wrapper">
+      <div className="widget-form card default-form-wrapper">
         {renderForm({onSubmit: this.submitAndClose})}
         <div className="cancel-form-button card-footer">
-          <button className="btn btn-danger btn-block" id="widget-form-cancel-btn" onClick={closeForm}>
+          <button className="btn btn-danger btn-block widget-form-cancel-btn" onClick={closeForm}>
             Cancel
           </button>
         </div>
@@ -75,7 +75,7 @@ class _defaultListWrapper extends Component {
      * renderAddWidgetButton creates a button to add a new widget
      */
     return (
-      <button className="btn btn-info col" onClick={this.addWidget} id="add-widget-btn">
+      <button className="btn btn-info col add-widget-btn" onClick={this.addWidget}>
         <Octicon name="plus"/>
       </button>
     )
@@ -121,9 +121,9 @@ class _defaultListWrapper extends Component {
     const { addWidgetForm, editWidgetForm, editMode } = this.state
     const { renderNewWidgetForm, renderEditWidgetForm, renderList } = this.props
     return (
-      <div className="bg-secondary rounded card" id="default-list-wrapper">
+      <div className="bg-secondary rounded card default-list-wrapper">
         <div className="edit-widget-list-bar btn-group card-header" role="group">
-          <button className={`btn btn-info col ${editMode ? "active" : ""}`} id="edit-widget-list-btn"
+          <button className={`btn btn-info col edit-widget-list-btn ${editMode ? "active" : ""}`}
                   onClick={this.toggleEditMode}>
             <Octicon name="pencil"/>
           </button>

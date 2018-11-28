@@ -208,8 +208,7 @@ class WidgetForm extends Component {
      */
     const { widgetClasses } = this.props
     return (
-      <Select className="widget-form-input-select"
-              id="widget-class-input-select"
+      <Select className="widget-form-input-select widget-class-input-select"
               onChange={(option) => this.setState({widgetClass: option.value})}
               options={makeOptionsFromList(widgetClasses)}
               placeholder="Choose a widget class"/>
@@ -225,7 +224,7 @@ class WidgetForm extends Component {
     return (
       <form onSubmit={this.onSubmit}>
         <div className="widget-form-input-group" id="widget-class-input-group">
-          <label className='widget-form-input-label' id="widget-class-select-label" htmlFor="widget-class-select">
+          <label className='widget-form-input-label widget-class-select-label' htmlFor="widget-class-select">
             {`Configure ${widgetClass} Widget`}
           </label>
           {widgetClasses.length > 1 ? this.makeWidgetClassSelect() : null}

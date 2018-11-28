@@ -41,7 +41,7 @@ set to None so that anyone can view and change anything, but an easy way to rest
 change WIDGET_LSIT_EDIT_PERMISSIONS to ['change_widgetlist'], which would allow only users with the permission to change
 a widget list change that list. That permissions can be added with 
 ```
-user.add_obj_perm('change_widgetlist', WidgetList.objecst.get(id=id_of_widget_list))
+user.add_obj_perm('change_widgetlist', WidgetList.objects.get(id=id_of_widget_list))
 ```
 
 ### React
