@@ -53,18 +53,10 @@ class _defaultListWrapper extends Component {
    *      passes props to the FormWrapper
    *    renderList(props): renders the list of widgets, passing props to each widgetWrapper
    */
-  constructor(props) {
-    super(props)
-    this.state = {
-      editMode: false,
-      addWidgetForm: false,
-      editWidgetForm: null,
-    }
-    this.renderAddWidgetButton = this.renderAddWidgetButton.bind(this)
-    this.closeForm = this.closeForm.bind(this)
-    this.toggleEditMode = this.toggleEditMode.bind(this)
-    this.editWidget = this.editWidget.bind(this)
-    this.addWidget = this.addWidget.bind(this)
+  state = {
+    editMode: false,
+    addWidgetForm: false,
+    editWidgetForm: null,
   }
 
   addWidget = () => {
@@ -78,7 +70,7 @@ class _defaultListWrapper extends Component {
     })
   }
 
-  renderAddWidgetButton() {
+  renderAddWidgetButton = () => {
     /**
      * renderAddWidgetButton creates a button to add a new widget
      */
@@ -89,7 +81,7 @@ class _defaultListWrapper extends Component {
     )
   }
 
-  closeForm() {
+  closeForm = () => {
     /**
      * closeForm sets the state so that no forms are rendered
      */
@@ -99,7 +91,7 @@ class _defaultListWrapper extends Component {
     })
   }
 
-  toggleEditMode() {
+  toggleEditMode = () => {
     /**
      * toggleEditMode toggles the value of editMode
      */
@@ -108,7 +100,7 @@ class _defaultListWrapper extends Component {
     this.closeForm()
   }
 
-  editWidget(widgetId) {
+  editWidget = (widgetId) => {
     /**
      * editWidget sets the state so that an edit widget form is rendered
      *
@@ -192,16 +184,8 @@ class _defaultWidgetWrapper extends Component {
    *    editWidget(): renders an edit widget form for the widget
    *    editMode: a boolean indicating whether the edit bar should be rendered or not
    */
-  constructor(props) {
-    super(props)
-    this.renderEditBar = this.renderEditBar.bind(this)
-    this.moveWidgetUp = this.moveWidgetUp.bind(this)
-    this.moveWidgetDown = this.moveWidgetDown.bind(this)
-    this.editWidget = this.editWidget.bind(this)
-    this.deleteWidget = this.deleteWidget.bind(this)
-  }
 
-  moveWidgetUp() {
+  moveWidgetUp = () => {
     /**
      * moveWidgetUp moves the widget up one position. It's an onClick function for the edit bar
      */
@@ -209,7 +193,7 @@ class _defaultWidgetWrapper extends Component {
     moveWidget(position - 1)
   }
 
-  moveWidgetDown() {
+  moveWidgetDown = () => {
     /**
      * moveWidgetDown moves the widget down one position. It's an onClick function for the edit bar
      */
@@ -217,7 +201,7 @@ class _defaultWidgetWrapper extends Component {
     moveWidget(position + 1)
   }
 
-  editWidget() {
+  editWidget = () => {
     /**
      * editWidget activates editMode for the widget. It's an onClick function for the edit bar
      */
@@ -225,7 +209,7 @@ class _defaultWidgetWrapper extends Component {
     editWidget(id)
   }
 
-  deleteWidget() {
+  deleteWidget = () => {
     /**
      * deleteWidget deletes the widget. It's an onClick function for the edit bar
      */
@@ -233,7 +217,7 @@ class _defaultWidgetWrapper extends Component {
     deleteWidget()
   }
 
-  renderEditBar() {
+  renderEditBar = () => {
     /**
      * renderEditBar renders the edit bar for the widget
      */
