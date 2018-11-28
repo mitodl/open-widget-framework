@@ -5,3 +5,4 @@ django-webpack-loader
 ipython
 psycopg2
 djangorestframework
+feedparser

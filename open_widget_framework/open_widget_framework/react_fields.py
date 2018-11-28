@@ -64,6 +64,18 @@ class ReactCharField(serializers.CharField, ReactField):
         return configuration
 
 
+class ReactIntegerField(serializers.IntegerField, ReactField):
+    def __init__(self, **kwargs):
+        super().__init__(input_type='number', **kwargs)
+
+    def configure_form_spec(self):
+        configuration = super().configure_form_spec()
+        configuration['props'].update({'max': '' if self.max_value is None else self.max_value,
+                                       'min': '' if self.min_value is None else self.min_value,
+                                       })
+        return configuration
+
+
 class ReactURLField(serializers.URLField, ReactField):
     """ReactField extension of DRF UrlField"""
 

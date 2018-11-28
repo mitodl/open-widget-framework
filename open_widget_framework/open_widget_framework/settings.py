@@ -12,6 +12,7 @@ DEFAULTS = {
         "open_widget_framework.widget_classes.TextWidget",
         "open_widget_framework.widget_classes.URLWidget",
         "open_widget_framework.widget_classes.ManyUserWidget",
+        "open_widget_framework.widget_classes.RssFeedWidget",
     ),
 
     'WIDGET_FRAMEWORK_AUTHENTICATION_CLASSES': None,
