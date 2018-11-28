@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/mitodl/open-widget-framework.svg?branch=master)](https://travis-ci.org/mitodl/open-widget-framework)
+[![codecov](https://codecov.io/gh/mitodl/open-widget-framework/branch/master/graph/badge.svg)](https://codecov.io/gh/mitodl/open-widget-framework)
 
 # open-widget-framework
 A django + react library for managing user-configurable widgets
