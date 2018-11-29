@@ -135,5 +135,3 @@ open-widget-framework/lib
 open-widget-framework/node_modules
 open-widget-framework/umd
 npm-debug.log*
-
-*yarn.lock
