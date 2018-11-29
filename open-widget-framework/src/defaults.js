@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import Octicon from 'react-component-octicons'
+import fetch from 'node-fetch'
 
 class _defaultFormWrapper extends Component {
   /**
@@ -265,17 +266,15 @@ function _defaultFetchJsonData(url, init) {
    *    url: the path to make the request to
    *    init: values to set on the request
    */
-  if (init !== undefined && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(init.method) && 'headers' in init === false) {
-    if (window.csrfToken === undefined) {
-      console.error('No csrfToken found on window')
+  return fetch(url, init === undefined ? undefined : {
+    ...init,
+    method: init.method || 'GET',
+    headers: {
+      ...init.headers,
+      'X-CSRFToken': 'headers' in init ? (init.headers['X-CSRFToken'] || window.csrfToken) : window.csrfToken,
+      'Content-Type': 'headers' in init ? (init.headers['Content-Type'] || 'application/json') : 'application/json'
     }
-    init.headers = {
-      'Content-Type': 'application/json',
-      'X-CSRFToken': window.csrfToken,
-    }
-  }
-
-  return fetch(url, init)
+  })
     .then(data => data.json())
 }
 

@@ -15,12 +15,14 @@
     "clean": "nwb clean-module && nwb clean-demo",
     "prepublishOnly": "npm run build",
     "start": "nwb serve-react-demo",
-    "test": "nyc mocha"
+    "test": "nyc mocha",
+    "codecov": "nyc --reporter=lcovonly -R spec mocha"
   },
   "dependencies": {
     "eslint": "^5.8.0",
     "eslint-plugin-react": "^7.11.1",
     "lodash.range": "^3.2.0",
+    "node-fetch": "^2.3.0",
     "octicons": "^8.1.0",
     "react-component-octicons": "^1.8.0",
     "react-select": "^2.1.1"

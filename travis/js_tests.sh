@@ -4,4 +4,8 @@ cd open-widget-framework
 
 npm install
 
-npm run test
+npm run codecov
+
+echo "Uploading coverage..."
+
+node ./node_modules/codecov/bin/codecov

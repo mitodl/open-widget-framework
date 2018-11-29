@@ -2,6 +2,7 @@ import React from 'react'
 import { expect } from 'chai'
 import sinon from 'sinon'
 import { mount } from 'enzyme'
+import * as fetch from 'node-fetch'
 
 import {
   _defaultFetchJsonData as fetchData,
@@ -13,11 +14,62 @@ import {
 } from '../src/defaults'
 
 describe('_defaultFetchJsonData', () => {
-  const dummyUrl = "some.dummy.url"
-  const dummyPostInit = {
+  const dummyUrl = "https://some/dummy.url"
+  const dummyCsrf = 'token'
+  const dummyInit1 = {
     method: 'POST',
+    body: JSON.stringify('dummyData')
   }
-  // TODO: implement
+  const dummyInit2 = {
+    method: 'POST',
+    body: JSON.stringify('dummyData'),
+    headers: {
+      'X-CSRFToken': dummyCsrf,
+    }
+  }
+  const expectedInit = {
+    method: 'POST',
+    body: JSON.stringify('dummyData'),
+    headers: {
+      'X-CSRFToken': dummyCsrf,
+      'Content-Type': 'application/json',
+    }
+  }
+
+  const fetchStub = sinon.stub(fetch, 'default')
+  afterEach(() => fetchStub.resetHistory())
+
+  it('makes a GET request when no init is given', (done) => {
+    fetchStub.resolves(new fetch.Response(JSON.stringify('dummyData')))
+
+    fetchData(dummyUrl)
+      .then(() => {
+        expect(fetchStub.withArgs(dummyUrl).callCount).to.equal(1)
+        done()
+      })
+  })
+
+  it('makes an appropriate request when an init is given and window.csrfToken is defined', (done) => {
+    window.csrfToken = dummyCsrf
+
+    fetchStub.resolves(new fetch.Response(JSON.stringify('dummyData')))
+    fetchData(dummyUrl, dummyInit1)
+      .then(() => {
+        expect(fetchStub.firstCall.args).to.deep.equal([dummyUrl, expectedInit])
+        done()
+      })
+  })
+
+  it('uses the defined csrf token if it is given in headers', (done) => {
+    window.csrfToken = undefined
+
+    fetchStub.resolves(new fetch.Response(JSON.stringify('dummyData')))
+    fetchData(dummyUrl, dummyInit2)
+      .then(() => {
+        expect(fetchStub.firstCall.args).to.deep.equal([dummyUrl, expectedInit])
+        done()
+      })
+  })
 })
 
 describe('<_defaultFormWrapper />', () => {
