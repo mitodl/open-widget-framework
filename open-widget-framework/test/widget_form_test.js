@@ -4,10 +4,9 @@ import sinon from 'sinon'
 import { mount } from 'enzyme'
 import Select from 'react-select'
 
-import { apiPath } from '../src/utils'
+import { apiPath, makeOptionsFromList } from '../src/utils'
 import { EditWidgetForm, NewWidgetForm, WidgetForm } from '../src/widget_form'
 import { _defaultLoader as Loader } from '../src/defaults'
-import { makeOptionsFromList } from '../src/utils'
 
 const dummyWidgetListId = 2
 const dummyWidgetId = 3

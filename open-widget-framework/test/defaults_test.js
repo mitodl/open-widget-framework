@@ -406,6 +406,13 @@ describe('<_defaultWidgetWrapper />', () => {
     expect(dummyProps.editWidget.callCount).to.equal(0)
   })
 
+  it('first edit-widget-bar button is disabled if pos is 0', () => {
+    const wrap = mount(<WidgetWrapper {...dummyProps} position={0} editMode={true}/>)
+
+    console.log(wrap.debug())
+    expect(wrap.find('.edit-widget-bar').childAt(0).prop('disabled')).to.equal(true)
+  })
+
   it('second edit-widget-bar button calls moveWidgetDown on click', () => {
     const wrap = mount(<WidgetWrapper {...dummyProps} editMode={true}/>)
     resetSpyHistory()
@@ -415,6 +422,12 @@ describe('<_defaultWidgetWrapper />', () => {
     expect(dummyProps.moveWidget.withArgs(dummyPos + 1).callCount).to.equal(1)
     expect(dummyProps.deleteWidget.callCount).to.equal(0)
     expect(dummyProps.editWidget.callCount).to.equal(0)
+  })
+
+  it('first edit-widget-bar button is disabled if pos is listLength - 1', () => {
+    const wrap = mount(<WidgetWrapper {...dummyProps} position={dummyProps.listLength - 1} editMode={true}/>)
+
+    expect(wrap.find('.edit-widget-bar').childAt(1).prop('disabled')).to.equal(true)
   })
 
   it('third edit-widget-bar button calls editWidget on click', () => {
