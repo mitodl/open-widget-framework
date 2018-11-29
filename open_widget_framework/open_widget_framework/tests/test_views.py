@@ -82,7 +82,7 @@ class TestViews(TestCase):
         resp = self.client.post(url, content_type="application/json")
         self.assertEqual(
             resp.status_code,
-            status.HTTP_200_OK,
+            status.HTTP_201_CREATED,
             msg="POST widget-list-list returned a bad status: %s" % resp.status_code,
         )
         data = loads(resp.content)
@@ -94,8 +94,8 @@ class TestViews(TestCase):
         )
         self.assertEqual(
             1,
-            len(WidgetList.objects.filter(id=data[0])),
-            msg="POST widget-list-list returned a bad widget list: %s" % data[0],
+            len(WidgetList.objects.filter(id=data['id'])),
+            msg="POST widget-list-list returned a bad widget list: %s" % data['id'],
         )
 
     def test_delete_widget_list(self):
@@ -105,11 +105,8 @@ class TestViews(TestCase):
         resp = self.client.delete(url, content_type="application/json")
         self.assertEqual(
             resp.status_code,
-            status.HTTP_200_OK,
+            status.HTTP_204_NO_CONTENT,
             msg="DELETE widget-list-detail returned a bad status: %s" % resp.status_code,
-        )
-        self.assertEqual(
-            resp.content, b"[]", msg="DELETE widget-list-detail returned bad data"
         )
         self.assertEqual(
             0,
@@ -361,7 +358,7 @@ class TestViews(TestCase):
         add_widget(widget_list, index=3)
         widget3 = WidgetInstance.objects.get(title="widget3")
 
-        url = reverse("widget-detail", {"pk": widget3.id})
+        url = reverse("widget-detail", kwargs={"pk": widget3.id})
         resp = self.client.patch(url, data={"position": -100}, content_type="application/json")
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST,
                          msg='PATCH widget-detail returned a bad status: %s' % resp.status_code)

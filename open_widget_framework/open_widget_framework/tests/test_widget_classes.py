@@ -27,9 +27,7 @@ class TestWidgetClasses(TestCase):
         """ Test POST request to create a text widget """
         widget_list = WidgetList.objects.create()
         widget_data = get_post_data(widget_list, 'Text', {'body': 'example body'})
-        url = reverse(
-            "widget_view", kwargs={"widget_list_id": widget_list.id, "pk": ""}
-        )
+        url = reverse("widget-list")
         resp = self.client.post(url, data=widget_data, content_type="application/json")
         self.assertEqual(
             resp.status_code,
@@ -54,14 +52,12 @@ class TestWidgetClasses(TestCase):
         """ Test POST request to create a url widget """
         widget_list = WidgetList.objects.create()
         widget_data = get_post_data(widget_list, 'URL', {'url': 'https://zagaran.com'})
-        url = reverse(
-            "widget_view", kwargs={"widget_list_id": widget_list.id, "pk": ""}
-        )
+        url = reverse("widget-list")
         resp = self.client.post(url, data=widget_data, content_type="application/json")
         self.assertEqual(
             resp.status_code,
             status.HTTP_200_OK,
-            msg="POST widget_view returned a bad status: %s" % resp.status_code,
+            msg="POST widget-list returned a bad status: %s" % resp.status_code,
         )
         data = loads(resp.content)
         widget = WidgetInstance.objects.get(widget_list=widget_list)
@@ -69,12 +65,12 @@ class TestWidgetClasses(TestCase):
         self.assertEqual(
             widget_data,
             WidgetSerializer(widget).data,
-            msg="POST widget_view entered bad widget data",
+            msg="POST widget-list entered bad widget data",
         )
         self.assertEqual(
             WidgetSerializer(widget).render_with_title(),
             data[0],
-            msg="POST widget_view returned bad data",
+            msg="POST widget-list returned bad data",
         )
 
     def test_many_user_widget(self):
@@ -84,14 +80,12 @@ class TestWidgetClasses(TestCase):
         User.objects.create_user('user2')
         user3 = User.objects.create_user('user3')
         widget_data = get_post_data(widget_list, 'Many User', {'user_ids': [user1.id, user3.id]})
-        url = reverse(
-            "widget_view", kwargs={"widget_list_id": widget_list.id, "pk": ""}
-        )
+        url = reverse("widget-list")
         resp = self.client.post(url, data=widget_data, content_type="application/json")
         self.assertEqual(
             resp.status_code,
             status.HTTP_200_OK,
-            msg="POST widget_view returned a bad status: %s" % resp.status_code,
+            msg="POST widget-list returned a bad status: %s" % resp.status_code,
         )
         data = loads(resp.content)
         widget = WidgetInstance.objects.get(widget_list=widget_list)
@@ -99,10 +93,10 @@ class TestWidgetClasses(TestCase):
         self.assertEqual(
             widget_data,
             WidgetSerializer(widget).data,
-            msg="POST widget_view entered bad widget data",
+            msg="POST widget-list entered bad widget data",
         )
         self.assertEqual(
             WidgetSerializer(widget).render_with_title(),
             data[0],
-            msg="POST widget_view returned bad data",
+            msg="POST widget-list returned bad data",
         )
