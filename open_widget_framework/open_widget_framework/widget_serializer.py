@@ -90,6 +90,14 @@ class WidgetSerializer(ModelSerializer):
         self.serializer_choice_field = ReactChoiceField
         super().__init__(*args, **kwargs)
 
+    def validate_widget_class(self, value):
+        """
+        validate_widget_class checks to make sure that the widget_class is one of the given widget classes
+        """
+        if value not in get_widget_class_dict().keys():
+            raise ValidationError("Unrecognized widget class")
+        return value
+
     def validate_configuration(self, value):
         """
         validate_configuration finds the appropriate widget_class_serializer and validated the configuration field of

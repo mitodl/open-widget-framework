@@ -4,8 +4,6 @@ WidgetApp models
 from django.db import models
 from django.contrib.postgres.fields import JSONField
 
-from open_widget_framework.utils import get_widget_class_dict
-
 
 class WidgetList(models.Model):
     """
@@ -29,7 +27,7 @@ class WidgetInstance(models.Model):
     WidgetInstance contains data for a single widget instance, regardless of what class of widget it is
     """
     widget_list = models.ForeignKey(WidgetList, related_name="widgets", on_delete=models.CASCADE)
-    widget_class = models.CharField(max_length=200, choices=[(cls, cls) for cls in get_widget_class_dict().keys()])
+    widget_class = models.CharField(max_length=200)
     react_renderer = models.CharField(max_length=200, null=True)
     configuration = JSONField()
     position = models.PositiveIntegerField()
