@@ -409,7 +409,6 @@ describe('<_defaultWidgetWrapper />', () => {
   it('first edit-widget-bar button is disabled if pos is 0', () => {
     const wrap = mount(<WidgetWrapper {...dummyProps} position={0} editMode={true}/>)
 
-    console.log(wrap.debug())
     expect(wrap.find('.edit-widget-bar').childAt(0).prop('disabled')).to.equal(true)
   })
 

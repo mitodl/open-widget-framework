@@ -207,6 +207,21 @@ describe('<WidgetForm />', () => {
         3: 'choices',
       }
     }
+    const multiSelectModel = {
+      key: 'dummyMultiSelectKey',
+      label: 'dummyMultiSelectLabel',
+      inputType: 'select',
+      props: {
+        isMulti: true,
+        placeholder: 'dummyMultiSelectPlaceholder'
+      },
+      choices: {
+        1: 'some',
+        2: 'real',
+        3: 'good',
+        4: 'choices',
+      }
+    }
     const textareaModel= {
       key: 'dummyTextareaKey',
       label: 'dummyTextareaLabel',
@@ -224,7 +239,7 @@ describe('<WidgetForm />', () => {
         autoFocus: true
       }
     }
-    const dummyModel = [textModel, textareaModel, selectModel]
+    const dummyModel = [textModel, textareaModel, selectModel, multiSelectModel]
 
   // Test default behavior
   it('renders a widget class select by default if there is more than one widget class', () => {
@@ -242,6 +257,7 @@ describe('<WidgetForm />', () => {
       expect(wrap.exists(`.widget-form-input-${input.key}`)).to.equal(true)
     }
     expect(wrap.state('formData')).to.deep.equal(dummyFormData)
+    expect(wrap.state('widgetClass')).to.equal(dummyWidgetClass)
   })
 
   // method tests
@@ -278,7 +294,7 @@ describe('<WidgetForm />', () => {
     expect(widgetClassSelect.prop('options')).to.deep.equal(makeOptionsFromList(dummyWidgetClasses))
   })
 
-  it('renderInputs creates an appropriate set of inputs for a select configuration', () => {
+  it('renderInputs creates an appropriate set of inputs for a single select configuration', () => {
     let defaultValues = {}
     const dummyDefaultValue = Object.keys(selectModel.choices)[1]
     defaultValues[selectModel.key] = [dummyDefaultValue]
@@ -287,12 +303,29 @@ describe('<WidgetForm />', () => {
 
     const inputForm = mount(instance.renderInputs(dummyModel))
 
-    expect(inputForm.find(Select)).to.have.length(1)
-    const select = inputForm.find(Select)
+    expect(inputForm.find(Select).filterWhere(select => select.prop('isMulti') === false)).to.have.length(1)
+    const select = inputForm.find(Select).filterWhere(select => select.prop('isMulti') === false)
     expect(select.is(`.widget-form-input-${selectModel.key}`)).to.equal(true)
     expect(select.hasClass('widget-form-input-select')).to.equal(true)
     expect(select.prop('defaultValue')[0].value).to.equal(dummyDefaultValue)
     expect(select.props()).to.include(selectModel.props)
+  })
+
+  it('renderInputs creates an appropriate set of inputs for a multi select configuration', () => {
+    let defaultValues = {}
+    const dummyDefaultValues = [Object.keys(multiSelectModel.choices)[1], Object.keys(multiSelectModel.choices)[2]]
+    defaultValues[multiSelectModel.key] = dummyDefaultValues
+    const wrap = mount(<WidgetForm {...dummyNewFormProps} formData={defaultValues}/>)
+    const instance = wrap.instance()
+
+    const inputForm = mount(instance.renderInputs(dummyModel))
+
+    expect(inputForm.find(Select).filterWhere(select => select.prop('isMulti') === true)).to.have.length(1)
+    const select = inputForm.find(Select).filterWhere(select => select.prop('isMulti') === true)
+    expect(select.is(`.widget-form-input-${multiSelectModel.key}`)).to.equal(true)
+    expect(select.hasClass('widget-form-input-select')).to.equal(true)
+    expect(select.prop('defaultValue').map(option => option.value)).to.deep.equal(dummyDefaultValues)
+    expect(select.props()).to.include(multiSelectModel.props)
   })
 
   it('renderInputs creates an appropriate set of inputs for a textarea configuration', () => {
