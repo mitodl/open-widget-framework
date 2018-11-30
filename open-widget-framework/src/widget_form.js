@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import Select from 'react-select'
 
-import { makeOptionsFromList, makeOptionsFromObject } from './utils'
-import { apiPath } from '../es/utils'
+import { makeOptionsFromList, makeOptionsFromObject, apiPath } from './utils'
 
 
 class EditWidgetForm extends Component {
