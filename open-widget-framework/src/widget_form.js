@@ -224,7 +224,7 @@ class WidgetForm extends Component {
     return (
       <form onSubmit={this.onSubmit}>
         <div className="widget-form-input-group widget-class-input-group">
-          <label className='widget-form-input-label widget-class-select-label' htmlFor="widget-class-select">
+          <label className='widget-form-input-label widget-class-label'>
             {`Configure ${widgetClass} Widget`}
           </label>
           {widgetClasses.length > 1 ? this.makeWidgetClassSelect() : null}
