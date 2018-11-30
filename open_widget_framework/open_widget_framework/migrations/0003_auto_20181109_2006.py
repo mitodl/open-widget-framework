@@ -23,6 +23,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='widgetinstance',
             name='widget_class',
-            field=models.CharField(choices=[('Text', 'Text'), ('URL', 'URL'), ('Many User', 'Many User')], max_length=200),
+            field=models.CharField(max_length=200),
         ),
     ]
