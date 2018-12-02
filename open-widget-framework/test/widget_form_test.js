@@ -1,4 +1,5 @@
 import React from 'react'
+import ReactTestUtils from 'react-dom/test-utils'
 import { expect } from 'chai'
 import sinon from 'sinon'
 import { mount } from 'enzyme'
@@ -188,7 +189,7 @@ describe('<WidgetForm />', () => {
       3: 'choices',
     }
   }
-  const selectValues = [[2], [3], [1], []]
+  const selectValues = [['2'], ['3'], ['1'], []]
   const multiSelectConfig = {
     key: 'dummyMultiSelectKey',
     label: 'dummyMultiSelectLabel',
@@ -204,7 +205,7 @@ describe('<WidgetForm />', () => {
       4: 'choices',
     }
   }
-  const multiSelectValues = [[1, 2], [3], [], [3, 1]]
+  const multiSelectValues = [['1', '2'], ['3'], [], ['1', '3']]
   const textareaConfig= {
     key: 'dummyTextareaKey',
     label: 'dummyTextareaLabel',
@@ -213,8 +214,8 @@ describe('<WidgetForm />', () => {
       placeholder: 'dummyTextareaPlaceholder',
     }
   }
-  const textareaValues = ['', 'some text', 'This is just a large text block with dangerous characters to ensure that' +
-  'nothing breaks if the user enters weird data into the text block. The sample value for text will also contain the' +
+  const textareaValues = ['', 'some text', 'This is just a large text block with dangerous characters to ensure that ' +
+  'nothing breaks if the user enters weird data into the text block. The sample value for text will also contain the ' +
   'special characters but not so much text because textareas are supposed to be bigger `~!@#$%^&*()_+-=}{][|\\\'";:>' +
   '<,./?']
   const textConfig= {
@@ -234,37 +235,45 @@ describe('<WidgetForm />', () => {
     'multiSelect': multiSelectConfig,
   }
   const testInputs = [
-    ['text', 'text', textConfig, textValues,
-        wrap => wrap.find('input').filterWhere(input => input.prop('type') === 'text')
-    ],
-    ['textarea', 'textarea', textareaConfig, textareaValues,
-        wrap => wrap.find('input').filterWhere(input => input.prop('type') === 'textarea')
-    ],
-    ['select', 'select', selectConfig, selectValues,
-        wrap => wrap.find(Select).filterWhere(select => select.prop('isMulti') === false),
-        options => options.map(option => option.value)
-    ],
-    ['multiSelect', 'select', multiSelectConfig,
-      multiSelectValues, wrap => wrap.find(Select).filterWhere(select => select.prop('isMulti') === true),
-      options => options.map(option => option.value)
-    ]
+    {
+      testType: 'text',
+      inputType: 'text',
+      config: textConfig,
+      values: textValues,
+      findComponent: wrap => wrap.find('input').filterWhere(input => input.prop('type') === 'text'),
+      restoreDefault: (value) => value
+    },
+    {
+      testType: 'textarea',
+      inputType: 'textarea',
+      config: textareaConfig,
+      values: textareaValues,
+      findComponent: wrap => wrap.find('textarea'),
+      restoreDefault: (value) => value
+    },
+    {
+      testType: 'select',
+      inputType: 'select',
+      config: selectConfig,
+      values: selectValues,
+      findComponent: wrap => wrap.find(Select).filterWhere(select => select.prop('isMulti') === false),
+      restoreDefault: options => options.map(option => option.value)
+    },
+    {
+      testType: 'multiSelect',
+      inputType: 'select',
+      config: multiSelectConfig,
+      values: multiSelectValues,
+      findComponent: wrap => wrap.find(Select).filterWhere(select => select.prop('isMulti')),
+      restoreDefault: options => options.map(option => option.value)
+    }
   ]
 
 
-  testInputs.forEach(inputs => {
-    const modelType = inputs[0]
-    const inputType = inputs[1]
-    const config = inputs[2]
-    const values = inputs[3]
-    const findComponent = inputs[4]
-    let restoreDefault
-    if (inputs.length === 6) {
-      restoreDefault = inputs[5]
-    } else {
-      restoreDefault = (value) => value
-    }
+  testInputs.forEach(inputObject => {
+    const { testType, inputType, config, values, findComponent, restoreDefault } = inputObject
 
-    describe('WidgetForm new widget input test - ' + modelType, () => {
+    describe('WidgetForm new widget input test - ' + testType, () => {
       // props for a WidgetForm passed from a NewWidgetForm
       const dummyNewFormProps = {
         formData: null,
@@ -281,7 +290,7 @@ describe('<WidgetForm />', () => {
       // Test default behavior
       it('renders a widget class select by default if there is more than one widget class', () => {
         const wrap = mount(<WidgetForm {...dummyNewFormProps}/>)
-        expect(wrap.find(Select).filterWhere(select => select.hasClass('widget-class-input-select') === true)).to.have.lengthOf(1)
+        expect(wrap.find(Select).filterWhere(select => select.hasClass('widget-class-input-select'))).to.have.lengthOf(1)
         expect(wrap.find('.widget-form-input-group')).to.have.lengthOf(1)
       })
 
@@ -295,7 +304,8 @@ describe('<WidgetForm />', () => {
           expect(wrap.state('formData')[config.key]).to.equal(value)
         })
 
-        it('onSubmit calls the prop onSubmit with widgetClass and formData matching default value: ' + value, () => {
+        it('onSubmit calls the prop onSubmit with widgetClass and formData matching default value: ' + value,
+          () => {
           const wrap = mount(<WidgetForm {...dummyNewFormProps}/>)
           const dummyFormData = {}
           dummyFormData[config.key] = value
@@ -311,7 +321,9 @@ describe('<WidgetForm />', () => {
           expect(wrap.prop('onSubmit').withArgs('testClass', dummyFormData).callCount).to.equal(1)
         })
       })
-      it('makeWidgetClassSelect creates a select with options that match the widgetClasses given', () => {
+
+      it('makeWidgetClassSelect creates a select with options that match the widgetClasses given',
+        () => {
         const wrap = mount(<WidgetForm {...dummyNewFormProps}/>)
         const instance = wrap.instance()
         const widgetClassSelect = mount(instance.makeWidgetClassSelect())
@@ -323,24 +335,34 @@ describe('<WidgetForm />', () => {
       })
 
       values.forEach((value) => {
-        it('renderInputs creates an appropriate input for a ' + modelType + ' input with defaultValue: ' + value , () => {
+        it('renderInputs creates an appropriate input for a ' + testType + ' input with defaultValue: ' + value,
+          () => {
           let defaultValues = {}
           defaultValues[config.key] = value
           const wrap = mount(<WidgetForm {...dummyNewFormProps} formData={defaultValues}/>)
           const instance = wrap.instance()
           const inputForm = mount(instance.renderInputs([config]))
-          console.log(findComponent(inputForm).filterWhere(input => input.hasClass(`widget-form-input-${config.key}`) === true).debug())
-          expect(findComponent(inputForm).filterWhere(input => input.hasClass(`widget-form-input-${config.key}`) === true).exists())
-            .to.equal(true)
+          expect(findComponent(inputForm).filterWhere(input => input.hasClass(`widget-form-input-${config.key}`))).to.have.lengthOf(1)
           const component = findComponent(inputForm)
 
-          expect(component.is(`.widget-form-input-${inputType}.widget-form-input-${config.key}`)).to.equal(true)
-          expect(restoreDefault(component.prop('defaultValue'))).to.equal(value)
+          expect(component.is(`.widget-form-input-${inputType}`)).to.equal(true)
+          expect(restoreDefault(component.prop('defaultValue'))).to.deep.equal(value)
           expect(component.props()).to.include(config.props)
 
-          values.forEach((value) => {
-            component.simulate('change', {target: {value: value}})
-            expect(wrap.state('formData')[config.key]).to.equal(value)
+          values.forEach((newValue) => {
+            if (inputType === 'select') {
+              let selection = []
+              component.prop('options').forEach(option => {
+                if (newValue && newValue.includes(option.value)) {
+                  selection.push(option)
+                }
+              })
+              component.props().onChange(selection)
+            }
+            else {
+              component.simulate('change', {target: {value: newValue}})
+            }
+            expect(wrap.state('formData')[config.key]).to.deep.equal(newValue)
           })
         })
       })

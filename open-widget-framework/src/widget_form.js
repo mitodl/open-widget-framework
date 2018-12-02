@@ -273,7 +273,7 @@ class WidgetForm extends Component {
       // Create options for select parameters and set defaultValue
       if (inputType === 'select') {
         inputProps.options = makeOptionsFromObject(choices)
-        if (formData !== null && key in formData) {
+        if (formData !== null && key in formData && formData[key]) {
           for (let option of inputProps.options) {
             if (formData[key].includes(option.value)) {
               inputProps.defaultValue.push(option)
@@ -284,14 +284,8 @@ class WidgetForm extends Component {
 
       let input
       if (inputType === 'select') {
-        if (props.isMulti) {
-          inputProps.onChange = (selection) => {
-            this.onChange(key, selection.map((option) => option.value))
-          }
-        } else {
-          inputProps.onChange = (selection) => {
-            this.onChange(key, selection.value)
-          }
+        inputProps.onChange = (selection) => {
+          this.onChange(key, selection.map((option) => option.value))
         }
         input = <Select {...inputProps}/>
       } else if (inputType === 'textarea') {
