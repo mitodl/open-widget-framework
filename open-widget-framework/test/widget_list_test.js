@@ -8,7 +8,6 @@ import { apiPath } from '../src/utils'
 import { mockTextWidget } from './test_utils'
 import { defaultSettings } from '../src/config'
 import { EditWidgetForm, NewWidgetForm } from '../src/widget_form'
-import * as fetch from 'node-fetch'
 
 
 describe('<WidgetList />', () => {
@@ -256,7 +255,14 @@ describe('<WidgetList />', () => {
     const widgetWrap = mount(instance.renderWidget(dummyWidgetInstance, dummyProps.listWrapperProps))
     expect(widgetWrap.exists('#widget-' + dummyWidgetId)).to.equal(true)
     expect(widgetWrap.props()).to.include(dummyWidgetInstance)
-    // TODO: figure out how to check for the passthrough props
+    const { deleteWidget, moveWidget, renderEditWidgetForm, renderWidget, ...simplePassThroughProps }
+      = instance.makePassThroughProps()
+    expect(widgetWrap.props()).to.include(simplePassThroughProps)
+    expect(widgetWrap.props()).to.have.property('deleteWidget')
+    expect(widgetWrap.props()).to.have.property('moveWidget')
+    expect(widgetWrap.props()).to.have.property('renderEditWidgetForm')
+    expect(widgetWrap.props()).to.have.property('renderWidget')
+
     expect(widgetWrap.props()).to.include(dummyProps.widgetWrapperProps)
     expect(widgetWrap.props()).to.include(dummyProps.listWrapperProps)
   })
@@ -283,7 +289,13 @@ describe('<WidgetList />', () => {
     expect(formWrap.exists('.default-form-wrapper')).to.equal(true)
     expect(formWrap.props()).to.include(dummyProps.listWrapperProps)
     expect(formWrap.props()).to.include(dummyProps.formWrapperProps)
-    // TODO: figure out how to check for the passthrough props
+    const { deleteWidget, moveWidget, renderEditWidgetForm, renderWidget, ...simplePassThroughProps }
+      = instance.makePassThroughProps()
+    expect(formWrap.props()).to.include(simplePassThroughProps)
+    expect(formWrap.props()).to.have.property('deleteWidget')
+    expect(formWrap.props()).to.have.property('moveWidget')
+    expect(formWrap.props()).to.have.property('renderEditWidgetForm')
+    expect(formWrap.props()).to.have.property('renderWidget')
 
     formWrap.prop('renderForm')(dummyFormProps)
     expect(renderEditWidgetFormSpy.withArgs(dummyWidgetId, dummyFormProps).callCount).to.equal(1)
@@ -311,8 +323,7 @@ describe('<WidgetList />', () => {
     expect(formWrap.exists('.default-form-wrapper')).to.equal(true)
     expect(formWrap.props()).to.include(dummyProps.listWrapperProps)
     expect(formWrap.props()).to.include(dummyProps.formWrapperProps)
-    // TODO: figure out how to check for the passthrough props
-
+    expect(formWrap.props()).to.include(instance.makePassThroughProps())
     formWrap.prop('renderForm')(dummyFormProps)
     expect(renderNewWidgetFormSpy.withArgs(dummyFormProps).callCount).to.equal(1)
   })
