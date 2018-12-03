@@ -84,12 +84,18 @@ describe('<WidgetList />', () => {
     expect(loadDataSpy.callCount).to.equal(1)
   })
 
-  it('loadData calls fetch with widget list id', () => {
+  it('loadData calls fetch with widget list id', (done) => {
     const wrap = mount(<WidgetList {...dummyProps}/>)
     const instance = wrap.instance()
+    const updateWidgetListSpy = sinon.spy(instance, 'updateWidgetList')
+    fetchStub.resolves(dummyData)
     resetSpyHistory()
-    instance.loadData()
-    expect(fetchStub.withArgs(apiPath('widget_list', dummyWidgetListId)).callCount).to.equal(1)
+    const loadDataTest = async () => {
+      await instance.loadData()
+      expect(fetchStub.withArgs(apiPath('widget_list', dummyWidgetListId)).callCount).to.equal(1)
+      expect(updateWidgetListSpy.withArgs(dummyData).callCount).to.equal(1)
+    }
+    loadDataTest().then(done)
   })
 
   it('updateWidgetList sets the state', () => {
