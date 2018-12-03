@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
+
 set -e -o pipefail
+
 cd open-widget-framework
 
 npm install
