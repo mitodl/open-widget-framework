@@ -152,7 +152,7 @@ describe('<NewWidgetForm />', () => {
     wrap.update()
 
     expect(wrap.exists('WidgetForm')).to.equal(true)
-    expect(wrap.find(WidgetForm).prop('formData')).to.equal(null)
+    expect(wrap.find(WidgetForm).prop('formData')).to.deep.equal({title: null})
     expect(wrap.find(WidgetForm).prop('widgetClass')).to.equal('')
     expect(wrap.find(WidgetForm).prop('widgetClassConfigurations')).to.deep.equal(dummyWidgetClassConfigurations)
     expect(wrap.find(WidgetForm).prop('widgetClasses')).to.equal(dummyWidgetClasses)
@@ -164,6 +164,25 @@ describe('<NewWidgetForm />', () => {
       body: JSON.stringify({
         configuration: configuration,
         title: title,
+        position: dummyListLength,
+        widget_list: dummyWidgetListId,
+        widget_class: '',
+      }),
+      method: 'POST',
+    }).callCount).to.equal(1)
+    resetSpyHistory()
+  })
+
+  it('handles a null submit', () => {
+    const wrap = mount(<NewWidgetForm {...dummyNewWidgetFormProps}/>)
+    wrap.setState(dummyNewWidgetFormState)
+    wrap.update()
+    wrap.simulate('submit')
+    const { title, ...configuration } = dummyFormData
+    expect(fetchSpy.withArgs(apiPath('widget'), {
+      body: JSON.stringify({
+        configuration: {},
+        title: null,
         position: dummyListLength,
         widget_list: dummyWidgetListId,
         widget_class: '',

@@ -148,7 +148,7 @@ class NewWidgetForm extends Component {
     if (widgetClasses === null || widgetClassConfigurations === null) {
       return <Loader/>
     } else {
-      return <WidgetForm formData={null}
+      return <WidgetForm formData={{title: null}}
                          onSubmit={this.onSubmit}
                          widgetClass={''}
                          widgetClassConfigurations={widgetClassConfigurations}
