@@ -294,7 +294,7 @@ describe('<WidgetForm />', () => {
     describe('WidgetForm new widget input test - ' + testType, () => {
       // props for a WidgetForm passed from a NewWidgetForm
       const dummyNewFormProps = {
-        formData: null,
+        formData: {title: null},
         onSubmit: sinon.spy(),
         widgetClasses: ['testClass', 'dummyClass'],
         widgetClassConfigurations: {
