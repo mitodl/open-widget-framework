@@ -36,7 +36,7 @@ describe('_defaultFetchJsonData', () => {
     }
   }
 
-  const fetchStub = sinon.stub(fetch, 'default')
+  const fetchStub = global.fetchStub
   afterEach(() => fetchStub.resetHistory())
 
   it('makes a GET request when no init is given', (done) => {

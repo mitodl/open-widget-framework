@@ -2,6 +2,9 @@ import Enzyme from 'enzyme'
 import Adapter from 'enzyme-adapter-react-16'
 import 'babel-polyfill'
 import { JSDOM } from 'jsdom'
+import * as fetch from 'node-fetch'
+import sinon from 'sinon'
+
 
 Enzyme.configure({adapter: new Adapter()})
 const jsdom = new JSDOM('<!doctype html><html><body></body></html>');
@@ -22,4 +25,5 @@ global.document = window.document;
 global.navigator = {
   userAgent: 'node.js',
 };
+global.fetchStub = sinon.stub(fetch, 'default')
 copyProps(window, global);

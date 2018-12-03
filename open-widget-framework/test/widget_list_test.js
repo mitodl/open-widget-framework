@@ -8,6 +8,7 @@ import { apiPath } from '../src/utils'
 import { mockTextWidget } from './test_utils'
 import { defaultSettings } from '../src/config'
 import { EditWidgetForm, NewWidgetForm } from '../src/widget_form'
+import * as fetch from 'node-fetch'
 
 
 describe('<WidgetList />', () => {
@@ -15,22 +16,22 @@ describe('<WidgetList />', () => {
   const dummyWidgetId = 3
   const dummyPosition = 10
   const dummyWidgetInstances = [mockTextWidget(dummyWidgetId)]
-  const dummyFetch = () => Promise.resolve(null)
+  const fetchStub = global.fetchStub
+  const dummyData = JSON.stringify({data: 'some dummy data'})
   const dummyFormProps = {formProp: 'dummy-form-prop'}
   const dummyProps = {
     ...defaultSettings,
     widgetListId: dummyWidgetListId,
-    fetchData: dummyFetch,
+    fetchData: fetchStub,
     errorHandler: sinon.spy(),
     listWrapperProps: {listWrapperProp: 'dummy-list-wrapper-prop'},
     formWrapperProps: {formWrapperProp: 'dummy-form-wrapper-prop'},
     widgetWrapperProps: {widgetWrapperProp: 'dummy-widget-wrapper-prop'},
   }
-  const fetchSpy = sinon.spy(dummyProps, 'fetchData')
 
   const resetSpyHistory = () => {
     dummyProps.errorHandler.resetHistory()
-    fetchSpy.resetHistory()
+    fetchStub.resetHistory()
   }
 
   // Default behavior tests
@@ -88,8 +89,7 @@ describe('<WidgetList />', () => {
     const instance = wrap.instance()
     resetSpyHistory()
     instance.loadData()
-
-    expect(fetchSpy.withArgs(apiPath('widget_list', dummyWidgetListId)).callCount).to.equal(1)
+    expect(fetchStub.withArgs(apiPath('widget_list', dummyWidgetListId)).callCount).to.equal(1)
   })
 
   it('updateWidgetList sets the state', () => {
@@ -107,7 +107,7 @@ describe('<WidgetList />', () => {
     resetSpyHistory()
     instance.deleteWidget(dummyWidgetId)
 
-    expect(fetchSpy.withArgs(apiPath('widget', dummyWidgetId), {method: 'DELETE'}).callCount).to.equal(1)
+    expect(fetchStub.withArgs(apiPath('widget', dummyWidgetId), {method: 'DELETE'}).callCount).to.equal(1)
   })
 
   it('moveWidget calls fetch with the widgetId and a PATCH request', () => {
@@ -116,7 +116,7 @@ describe('<WidgetList />', () => {
     resetSpyHistory()
     instance.moveWidget(dummyWidgetId, dummyPosition)
 
-    expect(fetchSpy.withArgs(apiPath('widget', dummyWidgetId), {
+    expect(fetchStub.withArgs(apiPath('widget', dummyWidgetId), {
       method: 'PATCH',
       body: JSON.stringify({position: dummyPosition})
     }).callCount).to.equal(1)
@@ -202,7 +202,7 @@ describe('<WidgetList />', () => {
     resetSpyHistory()
     const dummyUrl = apiPath('widget', dummyWidgetId)
     formProps.fetchData(dummyUrl)
-    expect(fetchSpy.withArgs(dummyUrl).callCount).to.equal(1)
+    expect(fetchStub.withArgs(dummyUrl).callCount).to.equal(1)
 
     const dummyError = 'error'
     formProps.errorHandler(dummyError)
