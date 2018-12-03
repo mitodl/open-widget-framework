@@ -178,7 +178,6 @@ describe('<NewWidgetForm />', () => {
     wrap.setState(dummyNewWidgetFormState)
     wrap.update()
     wrap.simulate('submit')
-    const { title, ...configuration } = dummyFormData
     expect(fetchSpy.withArgs(apiPath('widget'), {
       body: JSON.stringify({
         configuration: {},

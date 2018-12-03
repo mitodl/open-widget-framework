@@ -262,18 +262,16 @@ class WidgetForm extends Component {
       }
 
       // Set default values if they exist
-      if (formData !== null) {
-        if (inputType === 'select') {
-          inputProps.defaultValue = []
-        } else {
-          inputProps.defaultValue = formData[key]
-        }
+      if (inputType === 'select') {
+        inputProps.defaultValue = []
+      } else {
+        inputProps.defaultValue = formData[key]
       }
 
       // Create options for select parameters and set defaultValue
       if (inputType === 'select') {
         inputProps.options = makeOptionsFromObject(choices)
-        if (formData !== null && key in formData && formData[key]) {
+        if (key in formData && formData[key]) {
           for (let option of inputProps.options) {
             if (formData[key].includes(option.value)) {
               inputProps.defaultValue.push(option)
