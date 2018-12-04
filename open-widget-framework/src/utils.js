@@ -1,22 +1,22 @@
-import range from 'lodash.range'
+import range from "lodash.range"
 
 function apiPath(name, pk) {
   /**
    * constructs an api path based on the view name and the list and widget ids
    */
-  let apiBase = '/api/v1'
+  const apiBase = "/api/v1"
   switch (name) {
-    case 'get_lists':
-      return `${apiBase}/list/`
+  case "get_lists":
+    return `${apiBase}/list/`
 
-    case 'get_configurations':
-      return `${apiBase}/list/get_configurations/`
+  case "get_configurations":
+    return `${apiBase}/list/get_configurations/`
 
-    case 'widget_list':
-      return `${apiBase}/list/${pk ? (pk + '/') : ''}`
+  case "widget_list":
+    return `${apiBase}/list/${pk ? `${pk}/` : ""}`
 
-    case 'widget':
-      return `${apiBase}/widget/${pk ? (pk + '/') : ''}`
+  case "widget":
+    return `${apiBase}/widget/${pk ? `${pk}/` : ""}`
   }
 }
 
@@ -26,13 +26,11 @@ function makeOptionsFromList(values) {
   /**
    * constructs an options object from a list of values
    */
-  return range(values.length).map(
-    index => ({
-      key: values[index],
-      label: values[index],
-      value: values[index],
-    })
-  )
+  return range(values.length).map(index => ({
+    key:   values[index],
+    label: values[index],
+    value: values[index]
+  }))
 }
 
 function makeOptionsFromObject(options) {
@@ -41,13 +39,11 @@ function makeOptionsFromObject(options) {
    * is the key and label
    */
   const keys = Object.keys(options)
-  return range(keys.length).map(
-    index => ({
-      key: options[keys[index]],
-      label: options[keys[index]],
-      value: keys[index],
-    })
-  )
+  return range(keys.length).map(index => ({
+    key:   options[keys[index]],
+    label: options[keys[index]],
+    value: keys[index]
+  }))
 }
 
-export {makeOptionsFromList, makeOptionsFromObject, apiPath}
+export { makeOptionsFromList, makeOptionsFromObject, apiPath }

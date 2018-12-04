@@ -1,5 +1,11 @@
-import {_defaultRenderer, _defaultWidgetWrapper, _defaultListWrapper,
-  _defaultFormWrapper, _defaultLoader, _defaultFetchJsonData} from './defaults'
+import {
+  _defaultRenderer,
+  _defaultWidgetWrapper,
+  _defaultListWrapper,
+  _defaultFormWrapper,
+  _defaultLoader,
+  _defaultFetchJsonData
+} from "./defaults"
 
 const defaultSettings = {
   /**
@@ -22,18 +28,18 @@ const defaultSettings = {
    *    WidgetWrapper: component that will render around a widget and call renderWidget()
    *    widgetWrapperProps: props to attach to the widgetWrapper
    */
-  FormWrapper: _defaultFormWrapper,
-  formWrapperProps: null,
-  ListWrapper: _defaultListWrapper,
-  listWrapperProps: null,
-  Loader: _defaultLoader,
-  WidgetWrapper: _defaultWidgetWrapper,
-  widgetWrapperProps: null,
-  defaultRenderer: _defaultRenderer,
+  FormWrapper:            _defaultFormWrapper,
+  formWrapperProps:       null,
+  ListWrapper:            _defaultListWrapper,
+  listWrapperProps:       null,
+  Loader:                 _defaultLoader,
+  WidgetWrapper:          _defaultWidgetWrapper,
+  widgetWrapperProps:     null,
+  defaultRenderer:        _defaultRenderer,
   disableWidgetFramework: false,
-  errorHandler: console.error,
-  fetchData: _defaultFetchJsonData,
-  renderers: {},
+  errorHandler: console.error, // eslint-disable-line
+  fetchData:              _defaultFetchJsonData,
+  renderers:              {}
 }
 
 export { defaultSettings }
