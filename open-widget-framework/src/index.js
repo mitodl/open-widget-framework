@@ -1,1 +1,1 @@
-module.exports = require('./widget_list')
+module.exports = require("./widget_list")

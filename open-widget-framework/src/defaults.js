@@ -1,6 +1,6 @@
-import React, {Component} from 'react'
-import Octicon from 'react-component-octicons'
-import fetch from 'node-fetch'
+import React, { Component } from "react"
+import Octicon from "react-component-octicons"
+import fetch from "node-fetch"
 
 class _defaultFormWrapper extends Component {
   /**
@@ -15,7 +15,7 @@ class _defaultFormWrapper extends Component {
    *    closeForm(): closes the widget form
    */
 
-  submitAndClose = (data) => {
+  submitAndClose = data => {
     /**
      * submitAndClose takes data, updates the widget-list, and then closes the form. This function will overwrite the
      *    default onSubmit passed by WidgetList which only updates the widget-list
@@ -32,9 +32,12 @@ class _defaultFormWrapper extends Component {
     const { renderForm, closeForm } = this.props
     return (
       <div className="widget-form card default-form-wrapper">
-        {renderForm({onSubmit: this.submitAndClose})}
+        {renderForm({ onSubmit: this.submitAndClose })}
         <div className="cancel-form-button card-footer">
-          <button className="btn btn-danger btn-block widget-form-cancel-btn" onClick={closeForm}>
+          <button
+            className="btn btn-danger btn-block widget-form-cancel-btn"
+            onClick={closeForm}
+          >
             Cancel
           </button>
         </div>
@@ -55,9 +58,9 @@ class _defaultListWrapper extends Component {
    *    renderList(props): renders the list of widgets, passing props to each widgetWrapper
    */
   state = {
-    editMode: false,
-    addWidgetForm: false,
-    editWidgetForm: null,
+    editMode:       false,
+    addWidgetForm:  false,
+    editWidgetForm: null
   }
 
   addWidget = () => {
@@ -65,9 +68,9 @@ class _defaultListWrapper extends Component {
      * addWidget is the onClick for the addWidgetButton. It sets the state so that a new widget form is rendered
      */
     this.setState({
-      editMode: true,
-      addWidgetForm: true,
-      editWidgetForm: null,
+      editMode:       true,
+      addWidgetForm:  true,
+      editWidgetForm: null
     })
   }
 
@@ -76,8 +79,11 @@ class _defaultListWrapper extends Component {
      * renderAddWidgetButton creates a button to add a new widget
      */
     return (
-      <button className="btn btn-info col add-widget-btn" onClick={this.addWidget}>
-        <Octicon name="plus"/>
+      <button
+        className="btn btn-info col add-widget-btn"
+        onClick={this.addWidget}
+      >
+        <Octicon name="plus" />
       </button>
     )
   }
@@ -87,8 +93,8 @@ class _defaultListWrapper extends Component {
      * closeForm sets the state so that no forms are rendered
      */
     this.setState({
-      addWidgetForm: false,
-      editWidgetForm: null,
+      addWidgetForm:  false,
+      editWidgetForm: null
     })
   }
 
@@ -98,13 +104,13 @@ class _defaultListWrapper extends Component {
      */
     const { editMode } = this.state
     this.setState({
-      editMode: !editMode,
-      addWidgetForm: false,
-      editWidgetForm: null,
+      editMode:       !editMode,
+      addWidgetForm:  false,
+      editWidgetForm: null
     })
   }
 
-  editWidget = (widgetId) => {
+  editWidget = widgetId => {
     /**
      * editWidget sets the state so that an edit widget form is rendered
      *
@@ -112,9 +118,9 @@ class _defaultListWrapper extends Component {
      *    widgetId: the widget to edit
      */
     this.setState({
-      editMode: true,
+      editMode:       true,
       editWidgetForm: widgetId,
-      addWidgetForm: false,
+      addWidgetForm:  false
     })
   }
 
@@ -123,19 +129,32 @@ class _defaultListWrapper extends Component {
     const { renderNewWidgetForm, renderEditWidgetForm, renderList } = this.props
     return (
       <div className="bg-secondary rounded card default-list-wrapper">
-        <div className="edit-widget-list-bar btn-group card-header" role="group">
-          <button className={`btn btn-info col edit-widget-list-btn ${editMode ? "active" : ""}`}
-                  onClick={this.toggleEditMode}>
-            <Octicon name="pencil"/>
+        <div
+          className="edit-widget-list-bar btn-group card-header"
+          role="group"
+        >
+          <button
+            className={`btn btn-info col edit-widget-list-btn ${
+              editMode ? "active" : ""
+            }`}
+            onClick={this.toggleEditMode}
+          >
+            <Octicon name="pencil" />
           </button>
           {editMode ? this.renderAddWidgetButton() : null}
         </div>
         <div className="card-body">
-          {addWidgetForm ? renderNewWidgetForm({closeForm: this.closeForm}) : null}
-          {editWidgetForm !== null ? renderEditWidgetForm(editWidgetForm, {closeForm: this.closeForm}) : null}
+          {addWidgetForm
+            ? renderNewWidgetForm({ closeForm: this.closeForm })
+            : null}
+          {editWidgetForm !== null
+            ? renderEditWidgetForm(editWidgetForm, {
+              closeForm: this.closeForm
+            })
+            : null}
           {renderList({
-            editMode: editMode,
-            editWidget: this.editWidget,
+            editMode:   editMode,
+            editWidget: this.editWidget
           })}
         </div>
       </div>
@@ -148,7 +167,7 @@ class _defaultLoader extends Component {
    * _defaultLoader is the default component that shows before data has arrived on an asynchronous request
    */
   render() {
-    return (<div className="default-loader">Loading</div>)
+    return <div className="default-loader">Loading</div>
   }
 }
 
@@ -165,7 +184,10 @@ class _defaultRenderer extends Component {
     return (
       <div className="widget-body card-body">
         <h5 className="widget-title card-title">{title}</h5>
-        <div className="widget-text card-text text-truncate" dangerouslySetInnerHTML={{__html: html}}/>
+        <div
+          className="widget-text card-text text-truncate"
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
       </div>
     )
   }
@@ -228,19 +250,35 @@ class _defaultWidgetWrapper extends Component {
     const { position, listLength } = this.props
     return (
       <div className="edit-widget-bar btn-group card-header">
-        <button className="btn btn-info col" disabled={position === 0}
-                onClick={this.moveWidgetUp} title="Move widget up">
-          <Octicon name="chevron-up"/>
+        <button
+          className="btn btn-info col"
+          disabled={position === 0}
+          onClick={this.moveWidgetUp}
+          title="Move widget up"
+        >
+          <Octicon name="chevron-up" />
         </button>
-        <button className="btn btn-info col" disabled={position === listLength - 1}
-                onClick={this.moveWidgetDown} title="Move widget down">
-          <Octicon name="chevron-down"/>
+        <button
+          className="btn btn-info col"
+          disabled={position === listLength - 1}
+          onClick={this.moveWidgetDown}
+          title="Move widget down"
+        >
+          <Octicon name="chevron-down" />
         </button>
-        <button className="btn btn-info col" onClick={this.editWidget} title="Update widget">
-          <Octicon name="pencil"/>
+        <button
+          className="btn btn-info col"
+          onClick={this.editWidget}
+          title="Update widget"
+        >
+          <Octicon name="pencil" />
         </button>
-        <button className="btn btn-danger col" onClick={this.deleteWidget} title="Delete widget">
-          <Octicon name="x"/>
+        <button
+          className="btn btn-danger col"
+          onClick={this.deleteWidget}
+          title="Delete widget"
+        >
+          <Octicon name="x" />
         </button>
       </div>
     )
@@ -266,16 +304,26 @@ function _defaultFetchJsonData(url, init) {
    *    url: the path to make the request to
    *    init: values to set on the request
    */
-  return fetch(url, init === undefined ? undefined : {
-    ...init,
-    method: init.method || 'GET',
-    headers: {
-      ...init.headers,
-      'X-CSRFToken': 'headers' in init ? (init.headers['X-CSRFToken'] || window.csrfToken) : window.csrfToken,
-      'Content-Type': 'headers' in init ? (init.headers['Content-Type'] || 'application/json') : 'application/json'
-    }
-  })
-    .then(data => data.json())
+  return fetch(
+    url,
+    init === undefined
+      ? undefined
+      : {
+        ...init,
+        method:  init.method || "GET",
+        headers: {
+          ...init.headers,
+          "X-CSRFToken":
+              "headers" in init
+                ? init.headers["X-CSRFToken"] || window.csrfToken
+                : window.csrfToken,
+          "Content-Type":
+              "headers" in init
+                ? init.headers["Content-Type"] || "application/json"
+                : "application/json"
+        }
+      }
+  ).then(data => data.json())
 }
 
 export {
@@ -284,4 +332,5 @@ export {
   _defaultWidgetWrapper,
   _defaultFormWrapper,
   _defaultLoader,
-  _defaultFetchJsonData}
+  _defaultFetchJsonData
+}
