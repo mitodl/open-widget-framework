@@ -37,7 +37,7 @@ const defaultSettings = {
   widgetWrapperProps:     null,
   defaultRenderer:        _defaultRenderer,
   disableWidgetFramework: false,
-  errorHandler:           console.error,
+  errorHandler: console.error, // eslint-disable-line
   fetchData:              _defaultFetchJsonData,
   renderers:              {}
 }
