@@ -1,9 +1,17 @@
 import React, { Component } from "react"
-import { apiPath } from "./utils"
-import { EditWidgetForm, NewWidgetForm } from "./widget_form"
-import { defaultSettings } from "./config"
 
-class WidgetList extends Component {
+import FormWrapper from "./FormWrapper"
+import ListWrapper from "./ListWrapper"
+import Loader from "./Loader"
+import Renderer from "./Renderer"
+import WidgetWrapper from "./WidgetWrapper"
+import EditWidgetForm from "./EditWidgetForm"
+import NewWidgetForm from "./NewWidgetForm"
+
+import { fetchJsonData } from "../lib"
+import { apiPath } from "../utils"
+
+export default class WidgetList extends Component {
   /**
    * WidgetList is a list of rendered widgets. It manages list, widget, and form wrappers and is the primary component
    *    in this library
@@ -23,7 +31,40 @@ class WidgetList extends Component {
    *        model from the django backend containing id, position, widget_class, react_renderer, widget_list, title,
    *        and configuration
    */
-  static defaultProps = { ...defaultSettings }
+  static defaultProps = {
+    /*
+     * defaultSettings are the default props attached to a widget-list. Most of these are defined in defaults.js
+     *
+     * defaultSettings:
+     *    disableWidgetFramework: if true, widget lists will not render
+     *    fetchData: fetch wrapper to make requests to the widget-framework backend
+     *    errorHandler: default behavior when an error is caught after a fetch request
+     *    Loader: a component to render while waiting for async data requests
+     *    renderers: an object mapping the name of a custom renderer to its component
+     *    defaultRenderer: renderer to use when no renderer is specified
+     *
+     *    ListWrapper: component that will render around the widget-list and call renderWidgetList()
+     *    listWrapperProps: props to attach to the listWrapper
+     *
+     *    FormWrapper: component that will render around a widget-form and call renderWidgetForm()
+     *    formWrapperProps: props to attach to the formWrapper
+     *
+     *    WidgetWrapper: component that will render around a widget and call renderWidget()
+     *    widgetWrapperProps: props to attach to the widgetWrapper
+     */
+    FormWrapper:            FormWrapper,
+    formWrapperProps:       null,
+    ListWrapper:            ListWrapper,
+    listWrapperProps:       null,
+    Loader:                 Loader,
+    WidgetWrapper:          WidgetWrapper,
+    widgetWrapperProps:     null,
+    defaultRenderer:        Renderer,
+    disableWidgetFramework: false,
+    errorHandler:           console.error, // eslint-disable-line no-console
+    fetchData:              fetchJsonData,
+    renderers:              {}
+  }
 
   state = { widgetInstances: null }
 
@@ -270,5 +311,3 @@ class WidgetList extends Component {
     }
   }
 }
-
-export default WidgetList

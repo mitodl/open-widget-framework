@@ -30,4 +30,8 @@ echo "Uploading coverage..."
 
 run_test node ./node_modules/codecov/bin/codecov
 
+echo "Making sure building works..."
+
+run_test npm run build
+
 exit $status

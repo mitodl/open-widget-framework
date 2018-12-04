@@ -1,16 +1,16 @@
-import range from 'lodash.range'
+import range from "lodash.range"
 
 function mockTextWidget(position) {
   return {
-    id: position,
-    position: position,
-    configuration: {body: 'example-body-' + position},
-    widgetProps: {
-      html: '<p>example' + position + '</p>',
-      position: position,
+    id:            position,
+    position:      position,
+    configuration: { body: `example-body-${position}` },
+    widgetProps:   {
+      html:           `<p>example${position}</p>`,
+      position:       position,
       react_renderer: null,
-      title: 'example' + position,
-    },
+      title:          `example${position}`
+    }
   }
 }
 
@@ -19,12 +19,11 @@ function mockWidgetInstances(numWidgets) {
 }
 
 function mockFetchData(data) {
-  return async (url, request) => {
+  return async () => {
     return await new Promise(resolve => {
       resolve(data)
     })
   }
 }
 
-export {mockWidgetInstances, mockTextWidget, mockFetchData}
-
+export { mockWidgetInstances, mockTextWidget, mockFetchData }

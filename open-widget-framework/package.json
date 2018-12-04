@@ -15,11 +15,11 @@
     "clean": "nwb clean-module && nwb clean-demo",
     "prepublishOnly": "npm run build",
     "start": "nwb serve-react-demo",
-    "test": "nyc mocha",
-    "codecov": "nyc --reporter=lcovonly -R spec mocha",
-    "lint": "eslint ./src",
-    "fmt": "prettier-eslint --write --no-semi 'src/**/*.js' 'src/**/*.scss'",
-    "fmt:check": "prettier-eslint --list-different --no-semi 'src/**/*.js' 'src/**/*.scss'"
+    "test": "mocha 'test/**/*_test.js'",
+    "codecov": "nyc --reporter=lcovonly -R spec mocha 'test/**/*_test.js'",
+    "lint": "eslint ./src ./test",
+    "fmt": "prettier-eslint --write --no-semi 'src/**/*.js' 'test/**/*.js' 'src/**/*.scss'",
+    "fmt:check": "prettier-eslint --list-different --no-semi 'src/**/*.js' 'test/**/*.js' 'src/**/*.scss'"
   },
   "dependencies": {
     "lodash.range": "^3.2.0",
