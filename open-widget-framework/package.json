@@ -1,5 +1,5 @@
 {
-  "name": "@zagaran/open-widget-framework",
+  "name": "@mitodl/open-widget-framework",
   "version": "0.2.36",
   "description": "open widget framework React component",
   "main": "lib/index.js",

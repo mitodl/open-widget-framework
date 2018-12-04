@@ -12,9 +12,9 @@ pip install the `open_widget_framework` django package:
 pip install open-widget-framework
 ```  
 
-npm install the `@zagaran/open-widget-framework` npm module: 
+npm install the `@mitodl/open-widget-framework` npm module: 
 ```bash
-npm install @zagaran/open-widget-framework
+npm install @mitodl/open-widget-framework
 ```  
 
 ## Configuration
@@ -48,7 +48,7 @@ user.add_obj_perm('change_widgetlist', WidgetList.objects.get(id=id_of_widget_li
 ### React
 To include a widget list on the page, simply import the widget list component:
 ```javascript
-import WidgetList from '@zagaran/open-widget-framework/es/widget-list'
+import WidgetList from '@mitodl/open-widget-framework/es/widget-list'
 ```
 and then include the component in your app, specifying which widget list to include by its id. Make sure that you have a widget list in the database before you do so.
 ```javascript
@@ -60,7 +60,7 @@ You may want ot customize your widget list further. There are a number of settin
 to override the default settings is with the configureWidgetFrameworkSettings function from config.js:
 
 ```javascript
-import configureWidgetFrameworkSettings from '@zagaran/open-widget-framework/es/config'
+import configureWidgetFrameworkSettings from '@mitodl/open-widget-framework/es/config'
 ```
 
 to override the defaultSettings, simply pass your userSettings in as props on the widgetList:
