@@ -103,7 +103,25 @@ describe('<WidgetList />', () => {
     resetSpyHistory()
     instance.updateWidgetList(dummyWidgetInstances)
 
-    expect(wrap.state('widgetInstances')).to.equal(dummyWidgetInstances)
+    expect(wrap.state('widgetInstances')).to.deep.equal(dummyWidgetInstances)
+  })
+
+  it('updateWidgetList handles a null widgetInstances', () => {
+    const wrap = mount(<WidgetList {...dummyProps}/>)
+    const instance = wrap.instance()
+    resetSpyHistory()
+    instance.updateWidgetList(null)
+
+    expect(wrap.state('widgetInstances')).to.deep.equal(null)
+  })
+
+  it('updateWidgetList handles an empty widgetInstances', () => {
+    const wrap = mount(<WidgetList {...dummyProps}/>)
+    const instance = wrap.instance()
+    resetSpyHistory()
+    instance.updateWidgetList([])
+
+    expect(wrap.state('widgetInstances')).to.deep.equal([])
   })
 
   it('deleteWidget calls fetch with the widgetId and a DELETE request', () => {
