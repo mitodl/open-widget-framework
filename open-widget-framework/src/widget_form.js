@@ -148,7 +148,7 @@ class NewWidgetForm extends Component {
     if (widgetClasses === null || widgetClassConfigurations === null) {
       return <Loader/>
     } else {
-      return <WidgetForm formData={null}
+      return <WidgetForm formData={{title: null}}
                          onSubmit={this.onSubmit}
                          widgetClass={''}
                          widgetClassConfigurations={widgetClassConfigurations}
@@ -208,8 +208,7 @@ class WidgetForm extends Component {
      */
     const { widgetClasses } = this.props
     return (
-      <Select className="widget-form-input-select"
-              id="widget-class-input-select"
+      <Select className="widget-form-input-select widget-class-input-select"
               onChange={(option) => this.setState({widgetClass: option.value})}
               options={makeOptionsFromList(widgetClasses)}
               placeholder="Choose a widget class"/>
@@ -224,8 +223,8 @@ class WidgetForm extends Component {
     const { widgetClass } = this.state
     return (
       <form onSubmit={this.onSubmit}>
-        <div className="widget-form-input-group" id="widget-class-input-group">
-          <label className='widget-class-select-label' id="widget-class-input-label" htmlFor="widget-class-select">
+        <div className="widget-form-input-group widget-class-input-group">
+          <label className='widget-form-input-label widget-class-label'>
             {`Configure ${widgetClass} Widget`}
           </label>
           {widgetClasses.length > 1 ? this.makeWidgetClassSelect() : null}
@@ -253,9 +252,8 @@ class WidgetForm extends Component {
       const { key, inputType, props, choices, label } = field
 
       let inputProps = {
-        className: `widget-form-input-${inputType}`,
+        className: `widget-form-input-${inputType} widget-form-input-${key}`,
         defaultValue: null,
-        id: `widget-form-input-${key}`,
         key: key,
         onChange: (event) => {
           this.onChange(key, event.target.value)
@@ -264,18 +262,16 @@ class WidgetForm extends Component {
       }
 
       // Set default values if they exist
-      if (formData !== null) {
-        if (inputType === 'select') {
-          inputProps.defaultValue = []
-        } else {
-          inputProps.defaultValue = formData[key]
-        }
+      if (inputType === 'select') {
+        inputProps.defaultValue = []
+      } else {
+        inputProps.defaultValue = formData[key]
       }
 
       // Create options for select parameters and set defaultValue
       if (inputType === 'select') {
         inputProps.options = makeOptionsFromObject(choices)
-        if (formData !== null) {
+        if (key in formData && formData[key]) {
           for (let option of inputProps.options) {
             if (formData[key].includes(option.value)) {
               inputProps.defaultValue.push(option)
@@ -286,14 +282,8 @@ class WidgetForm extends Component {
 
       let input
       if (inputType === 'select') {
-        if (props.isMulti) {
-          inputProps.onChange = (selection) => {
-            this.onChange(key, selection.map((option) => option.value))
-          }
-        } else {
-          inputProps.onChange = (selection) => {
-            this.onChange(key, selection.value)
-          }
+        inputProps.onChange = (selection) => {
+          this.onChange(key, selection.map((option) => option.value))
         }
         input = <Select {...inputProps}/>
       } else if (inputType === 'textarea') {
@@ -323,4 +313,4 @@ class WidgetForm extends Component {
   }
 }
 
-export { EditWidgetForm, NewWidgetForm }
+export { EditWidgetForm, NewWidgetForm, WidgetForm }

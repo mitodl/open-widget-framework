@@ -4,6 +4,7 @@ function mockTextWidget(position) {
   return {
     id: position,
     position: position,
+    configuration: {body: 'example-body-' + position},
     widgetProps: {
       html: '<p>example' + position + '</p>',
       position: position,

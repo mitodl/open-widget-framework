@@ -3,7 +3,7 @@ language: generic
 
 addons:
   postgresql: '9.6'
-  
+
 before_script:
   - psql -c 'create user widgetuser; alter user widgetuser createdb;' -U postgres
   - psql -c "alter user widgetuser with encrypted password '1';" -U postgres
