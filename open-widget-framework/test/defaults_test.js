@@ -2,7 +2,7 @@ import React from 'react'
 import { expect } from 'chai'
 import sinon from 'sinon'
 import { mount } from 'enzyme'
-import * as fetch from 'node-fetch'
+import fetch, { Response } from 'node-fetch'
 
 import {
   _defaultFetchJsonData as fetchData,
@@ -36,11 +36,19 @@ describe('_defaultFetchJsonData', () => {
     }
   }
 
-  const fetchStub = global.fetchStub
-  afterEach(() => fetchStub.resetHistory())
+  let sandbox, fetchStub
+
+  beforeEach(() => {
+    sandbox = sinon.createSandbox()
+    fetchStub = sandbox.stub(fetch, 'default')
+  })
+
+  afterEach(() => {
+    sandbox.restore()
+  })
 
   it('makes a GET request when no init is given', (done) => {
-    fetchStub.resolves(new fetch.Response(JSON.stringify('dummyData')))
+    fetchStub.resolves(new Response(JSON.stringify('dummyData')))
 
     fetchData(dummyUrl)
       .then(() => {
@@ -52,7 +60,7 @@ describe('_defaultFetchJsonData', () => {
   it('makes an appropriate request when an init is given and window.csrfToken is defined', (done) => {
     window.csrfToken = dummyCsrf
 
-    fetchStub.resolves(new fetch.Response(JSON.stringify('dummyData')))
+    fetchStub.resolves(new Response(JSON.stringify('dummyData')))
     fetchData(dummyUrl, dummyInit1)
       .then(() => {
         expect(fetchStub.firstCall.args).to.deep.equal([dummyUrl, expectedInit])
@@ -63,7 +71,7 @@ describe('_defaultFetchJsonData', () => {
   it('uses the defined csrf token if it is given in headers', (done) => {
     window.csrfToken = undefined
 
-    fetchStub.resolves(new fetch.Response(JSON.stringify('dummyData')))
+    fetchStub.resolves(new Response(JSON.stringify('dummyData')))
     fetchData(dummyUrl, dummyInit2)
       .then(() => {
         expect(fetchStub.firstCall.args).to.deep.equal([dummyUrl, expectedInit])

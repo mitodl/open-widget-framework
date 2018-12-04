@@ -15,29 +15,28 @@ describe('<WidgetList />', () => {
   const dummyWidgetId = 3
   const dummyPosition = 10
   const dummyWidgetInstances = [mockTextWidget(dummyWidgetId)]
-  const fetchStub = global.fetchStub
-  const dummyData = JSON.stringify({data: 'some dummy data'})
   const dummyFormProps = {formProp: 'dummy-form-prop'}
+  const dummyFetch = () => Promise.resolve(dummyWidgetInstances)
   const dummyProps = {
     ...defaultSettings,
     widgetListId: dummyWidgetListId,
-    fetchData: fetchStub,
+    fetchData: dummyFetch,
     errorHandler: sinon.spy(),
     listWrapperProps: {listWrapperProp: 'dummy-list-wrapper-prop'},
     formWrapperProps: {formWrapperProp: 'dummy-form-wrapper-prop'},
     widgetWrapperProps: {widgetWrapperProp: 'dummy-widget-wrapper-prop'},
   }
 
+  const fetchSpy = sinon.spy(dummyProps, 'fetchData')
   const resetSpyHistory = () => {
     dummyProps.errorHandler.resetHistory()
-    fetchStub.resetHistory()
+    fetchSpy.resetHistory()
   }
 
   // Default behavior tests
   it('returns null if disableWidgetFramework is true', () => {
     const wrap = mount(<WidgetList {...dummyProps} disableWidgetFramework={true}/>)
     const instance = wrap.instance()
-
     expect(instance.render()).to.equal(null)
   })
 
@@ -86,13 +85,12 @@ describe('<WidgetList />', () => {
   it('loadData calls fetch with widget list id', (done) => {
     const wrap = mount(<WidgetList {...dummyProps}/>)
     const instance = wrap.instance()
-    const updateWidgetListSpy = sinon.spy(instance, 'updateWidgetList')
-    fetchStub.resolves(dummyData)
+    const updateWidgetListSpy = sinon.stub(instance, 'updateWidgetList')
     resetSpyHistory()
     const loadDataTest = async () => {
       await instance.loadData()
-      expect(fetchStub.withArgs(apiPath('widget_list', dummyWidgetListId)).callCount).to.equal(1)
-      expect(updateWidgetListSpy.withArgs(dummyData).callCount).to.equal(1)
+      expect(fetchSpy.withArgs(apiPath('widget_list', dummyWidgetListId)).callCount).to.equal(1)
+      expect(updateWidgetListSpy.withArgs(dummyWidgetInstances).callCount).to.equal(1)
     }
     loadDataTest().then(done)
   })
@@ -112,7 +110,7 @@ describe('<WidgetList />', () => {
     resetSpyHistory()
     instance.deleteWidget(dummyWidgetId)
 
-    expect(fetchStub.withArgs(apiPath('widget', dummyWidgetId), {method: 'DELETE'}).callCount).to.equal(1)
+    expect(dummyProps.fetchData.withArgs(apiPath('widget', dummyWidgetId), {method: 'DELETE'}).callCount).to.equal(1)
   })
 
   it('moveWidget calls fetch with the widgetId and a PATCH request', () => {
@@ -121,7 +119,7 @@ describe('<WidgetList />', () => {
     resetSpyHistory()
     instance.moveWidget(dummyWidgetId, dummyPosition)
 
-    expect(fetchStub.withArgs(apiPath('widget', dummyWidgetId), {
+    expect(dummyProps.fetchData.withArgs(apiPath('widget', dummyWidgetId), {
       method: 'PATCH',
       body: JSON.stringify({position: dummyPosition})
     }).callCount).to.equal(1)
@@ -207,7 +205,7 @@ describe('<WidgetList />', () => {
     resetSpyHistory()
     const dummyUrl = apiPath('widget', dummyWidgetId)
     formProps.fetchData(dummyUrl)
-    expect(fetchStub.withArgs(dummyUrl).callCount).to.equal(1)
+    expect(dummyProps.fetchData.withArgs(dummyUrl).callCount).to.equal(1)
 
     const dummyError = 'error'
     formProps.errorHandler(dummyError)
