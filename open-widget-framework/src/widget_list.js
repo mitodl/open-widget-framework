@@ -1,8 +1,7 @@
-import React, { Component } from 'react'
-import { apiPath } from './utils'
-import { EditWidgetForm, NewWidgetForm } from './widget_form'
-import { defaultSettings } from './config'
-
+import React, { Component } from "react"
+import { apiPath } from "./utils"
+import { EditWidgetForm, NewWidgetForm } from "./widget_form"
+import { defaultSettings } from "./config"
 
 class WidgetList extends Component {
   /**
@@ -24,9 +23,9 @@ class WidgetList extends Component {
    *        model from the django backend containing id, position, widget_class, react_renderer, widget_list, title,
    *        and configuration
    */
-  static defaultProps = {...defaultSettings}
+  static defaultProps = { ...defaultSettings }
 
-  state = {widgetInstances: null}
+  state = { widgetInstances: null }
 
   componentDidMount() {
     /**
@@ -49,24 +48,24 @@ class WidgetList extends Component {
      * loadData fetches the widget instances and runs updateWidgetList
      */
     const { widgetListId, errorHandler, fetchData } = this.props
-    fetchData(apiPath('widget_list', widgetListId))
+    fetchData(apiPath("widget_list", widgetListId))
       .then(this.updateWidgetList)
       .catch(errorHandler)
   }
 
-  updateWidgetList = (data) => {
+  updateWidgetList = data => {
     /**
      * updateWidgetList takes widgetInstances data and sets the state
      */
-    this.setState({widgetInstances: data})
+    this.setState({ widgetInstances: data })
   }
 
-  deleteWidget = (widgetId) => {
+  deleteWidget = widgetId => {
     /**
      * Make request to server to delete a widget with id widgetId
      */
     const { errorHandler, fetchData } = this.props
-    fetchData(apiPath('widget', widgetId), {method: 'DELETE'})
+    fetchData(apiPath("widget", widgetId), { method: "DELETE" })
       .then(this.updateWidgetList)
       .catch(errorHandler)
   }
@@ -76,15 +75,15 @@ class WidgetList extends Component {
      * Make request to server to move widget with id widgetId to position in the widget-list
      */
     const { errorHandler, fetchData } = this.props
-    fetchData(apiPath('widget', widgetId), {
-        body: JSON.stringify({position: position}),
-        method: 'PATCH'
-      })
+    fetchData(apiPath("widget", widgetId), {
+      body:   JSON.stringify({ position: position }),
+      method: "PATCH"
+    })
       .then(this.updateWidgetList)
       .catch(errorHandler)
   }
 
-  makePassThroughProps = (widgetInstance) => {
+  makePassThroughProps = widgetInstance => {
     /**
      * makePassThroughProps constructs an object of props to pass to children components. This allows the wrapper
      *    components to have access to various information from the widget-list and ways of manipulating the
@@ -105,22 +104,23 @@ class WidgetList extends Component {
     const { widgetListId } = this.props
     const { widgetInstances } = this.state
     let passThroughProps = {
-      deleteWidget: this.deleteWidget,
-      listLength: widgetInstances.length,
-      moveWidget: this.moveWidget,
-      renderList: this.renderListBody,
-      renderWidget: this.renderWidgetBody,
+      deleteWidget:         this.deleteWidget,
+      listLength:           widgetInstances.length,
+      moveWidget:           this.moveWidget,
+      renderList:           this.renderListBody,
+      renderWidget:         this.renderWidgetBody,
       renderEditWidgetForm: this.renderEditWidgetForm,
-      renderNewWidgetForm: this.renderNewWidgetForm,
-      updateWidgetList: this.updateWidgetList,
-      widgetListId: widgetListId,
+      renderNewWidgetForm:  this.renderNewWidgetForm,
+      updateWidgetList:     this.updateWidgetList,
+      widgetListId:         widgetListId
     }
     if (widgetInstance !== undefined) {
       passThroughProps = Object.assign(passThroughProps, {
-        deleteWidget: () => this.deleteWidget(widgetInstance.id),
-        moveWidget: (position) => this.moveWidget(widgetInstance.id, position),
-        renderEditWidgetForm: () => this.renderEditWidgetForm(widgetInstance.id),
-        renderWidget: () => this.renderWidgetBody(widgetInstance),
+        deleteWidget:         () => this.deleteWidget(widgetInstance.id),
+        moveWidget:           position => this.moveWidget(widgetInstance.id, position),
+        renderEditWidgetForm: () =>
+          this.renderEditWidgetForm(widgetInstance.id),
+        renderWidget: () => this.renderWidgetBody(widgetInstance)
       })
     }
 
@@ -144,12 +144,12 @@ class WidgetList extends Component {
     const { widgetListId, errorHandler, fetchData, Loader } = this.props
     const { widgetInstances } = this.state
     return {
-      fetchData: fetchData,
+      fetchData:    fetchData,
       errorHandler: errorHandler,
-      Loader: Loader,
+      Loader:       Loader,
       widgetListId: widgetListId,
-      listLength: widgetInstances.length,
-      onSubmit: this.updateWidgetList,
+      listLength:   widgetInstances.length,
+      onSubmit:     this.updateWidgetList
     }
   }
 
@@ -160,19 +160,17 @@ class WidgetList extends Component {
      */
     const { ListWrapper, listWrapperProps } = this.props
     return (
-      <ListWrapper {...this.makePassThroughProps()}
-                   {...listWrapperProps}
-      />
+      <ListWrapper {...this.makePassThroughProps()} {...listWrapperProps} />
     )
   }
 
-  renderListBody = (listWrapperProps) => {
+  renderListBody = listWrapperProps => {
     /**
      * renders each widget instance
      */
     const { widgetInstances } = this.state
-    return (
-      widgetInstances.map(widgetInstance => this.renderWidget(widgetInstance, listWrapperProps))
+    return widgetInstances.map(widgetInstance =>
+      this.renderWidget(widgetInstance, listWrapperProps)
     )
   }
 
@@ -183,26 +181,23 @@ class WidgetList extends Component {
      */
     const { WidgetWrapper, widgetWrapperProps } = this.props
     return (
-      <WidgetWrapper key={widgetInstance.id}
-                     {...widgetInstance}
-                     {...this.makePassThroughProps(widgetInstance)}
-                     {...widgetWrapperProps}
-                     {...listWrapperProps}
+      <WidgetWrapper
+        key={widgetInstance.id}
+        {...widgetInstance}
+        {...this.makePassThroughProps(widgetInstance)}
+        {...widgetWrapperProps}
+        {...listWrapperProps}
       />
     )
   }
 
-  renderWidgetBody = (widgetInstance) => {
+  renderWidgetBody = widgetInstance => {
     /**
      * finds appropriate renderer and render the widget instance
      */
     const { renderers, defaultRenderer } = this.props
     const Renderer = renderers[widgetInstance.react_renderer] || defaultRenderer
-    return (
-      <Renderer {...widgetInstance}
-                {...widgetInstance.configuration}
-      />
-    )
+    return <Renderer {...widgetInstance} {...widgetInstance.configuration} />
   }
 
   renderEditWidgetForm = (widgetId, listWrapperProps) => {
@@ -212,10 +207,13 @@ class WidgetList extends Component {
      */
     const { FormWrapper, formWrapperProps } = this.props
     return (
-      <FormWrapper {...this.makePassThroughProps(widgetId)}
-                   renderForm={(formProps) => this.renderEditWidgetFormBody(widgetId, formProps)}
-                   {...formWrapperProps}
-                   {...listWrapperProps}
+      <FormWrapper
+        {...this.makePassThroughProps(widgetId)}
+        renderForm={formProps =>
+          this.renderEditWidgetFormBody(widgetId, formProps)
+        }
+        {...formWrapperProps}
+        {...listWrapperProps}
       />
     )
   }
@@ -226,38 +224,35 @@ class WidgetList extends Component {
      *    FormWrapper
      */
     return (
-      <EditWidgetForm {...this.makeFormProps()}
-                      widgetId={widgetId}
-                      {...formWrapperProps}
+      <EditWidgetForm
+        {...this.makeFormProps()}
+        widgetId={widgetId}
+        {...formWrapperProps}
       />
     )
   }
 
-  renderNewWidgetForm = (listWrapperProps) => {
+  renderNewWidgetForm = listWrapperProps => {
     /**
      * renders FormWrapper with passThroughProps, any formWrapperProps passed to widget-list, and any listWrapperProps
      *    passed from ListWrapper. Will call renderNewWidgetFormBody
      */
     const { FormWrapper, formWrapperProps } = this.props
     return (
-      <FormWrapper {...this.makePassThroughProps()}
-                   renderForm={(formProps) => this.renderNewWidgetFormBody(formProps)}
-                   {...formWrapperProps}
-                   {...listWrapperProps}
-
+      <FormWrapper
+        {...this.makePassThroughProps()}
+        renderForm={formProps => this.renderNewWidgetFormBody(formProps)}
+        {...formWrapperProps}
+        {...listWrapperProps}
       />
     )
   }
 
-  renderNewWidgetFormBody = (formWrapperProps) => {
+  renderNewWidgetFormBody = formWrapperProps => {
     /**
      * renders an NewWidgetForm with formProps and any formWrapperProps passed from FormWrapper
      */
-    return (
-      <NewWidgetForm {...this.makeFormProps()}
-                     {...formWrapperProps}
-      />
-    )
+    return <NewWidgetForm {...this.makeFormProps()} {...formWrapperProps} />
   }
 
   render() {
@@ -269,13 +264,9 @@ class WidgetList extends Component {
     if (disableWidgetFramework) {
       return null
     } else if (widgetInstances === null) {
-      return <Loader/>
+      return <Loader />
     } else {
-      return (
-        <div className="widget-list">
-          {this.renderWidgetList()}
-        </div>
-      )
+      return <div className="widget-list">{this.renderWidgetList()}</div>
     }
   }
 }
