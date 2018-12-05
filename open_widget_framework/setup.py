@@ -32,7 +32,7 @@ setup(
     name="open_widget_framework",
     version="0.2.14",
     packages=find_packages(),
-    install_requires=["Django>=2.1.2", "djangorestframework>=3", "psycopg2>=2.7"],
+    install_requires=["Django>=2.1.2", "djangorestframework>=3", "psycopg2>=2.7", "feedparser>=5.2.1"],
     license="MIT",
     author="Zagaran, Inc.",
     url="https://github.com/mitodl/open-widget-framework",
