@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.serializers import ValidationError
 
 from open_widget_framework.models import WidgetList, WidgetInstance
 from open_widget_framework.widget_serializer import WidgetSerializer, WidgetListSerializer, \
@@ -105,7 +106,11 @@ class WidgetViewSet(ModelViewSet):
             Returns the updated widget-list
         """
         self.check_widget_list_edit_permissions()
-        super().create(request, *args, **kwargs)
+        try:
+            super().create(request, *args, **kwargs)
+        except ValidationError as error:
+            print(error)
+            # TODO: handle Validation Error
         return make_widget_list_response(self.get_queryset())
 
     @atomic
@@ -142,19 +147,23 @@ class WidgetViewSet(ModelViewSet):
             Returns an updated widget list
         """
         self.check_widget_list_edit_permissions()
-        queryset = self.get_queryset().select_for_update()
-        if 'position' in request.data and 0 <= request.data['position'] <= (queryset.count() - 1):
-            target_pos = request.data['position']
-            target_widget = self.get_object()
-            current_pos = target_widget.position
+        try:
+            queryset = self.get_queryset().select_for_update()
+            if 'position' in request.data and 0 <= request.data['position'] <= (queryset.count() - 1):
+                target_pos = request.data['position']
+                target_widget = self.get_object()
+                current_pos = target_widget.position
 
-            for widget in queryset:
-                if target_pos >= widget.position > current_pos:
-                    widget.position -= 1
-                    widget.save()
-                elif current_pos > widget.position >= target_pos:
-                    widget.position += 1
-                    widget.save()
+                for widget in queryset:
+                    if target_pos >= widget.position > current_pos:
+                        widget.position -= 1
+                        widget.save()
+                    elif current_pos > widget.position >= target_pos:
+                        widget.position += 1
+                        widget.save()
 
-        super().partial_update(request, *args, **kwargs)
+            super().partial_update(request, *args, **kwargs)
+        except ValidationError as error:
+            print(error)
+            # TODO: handle Validation Error
         return make_widget_list_response(self.get_queryset())
