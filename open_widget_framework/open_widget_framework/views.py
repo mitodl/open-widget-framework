@@ -36,6 +36,7 @@ class WidgetListViewSet(ModelViewSet):
     """
     queryset = WidgetList.objects.all()
     serializer_class = WidgetListSerializer
+    permission_classes = (api_settings.WIDGET_FRAMEWORK_PERMISSION_CLASSES,)
 
     @action(detail=False)
     def get_configurations(self, request):
